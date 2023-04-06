@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    
+    <record id="my_delivery_options" model="ir.ui.view">
+        <field name="name">dmc.delivery.options</field>
+        <field name="model">delivery.options</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="carrier_name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_dmc_options" model="ir.actions.act_window">
+        <field name="res_model">delivery.options</field>
+        <field name="view_id" ref="my_delivery_options" />
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    
+    
+    <menuitem id="menu_dmc_root" name="DeliveryMatch V2" />
+    <menuitem id="menu_dmc_test" parent="menu_dmc_root" name="Delivery Options" action="action_dmc_options" />
+
+
+
+</odoo>
