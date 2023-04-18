@@ -14,7 +14,7 @@ class StockPicking(models.Model):
     dm_service_level_name = fields.Char(string="Service Level Name")
     dm_service_level_description = fields.Char(string="Service Level Description")
     dm_delivery_date = fields.Char(string="Delivery Date")
-    dm_pickup_date = fields.Char(string="Delivery Date")
+    dm_pickup_date = fields.Char(string="Pickup Date")
     dm_buy_price = fields.Float(string="Buy Price")
     dm_sell_price = fields.Float(string="Sell Price")
     dm_shipment_id = fields.Char(string="DM Shipment ID", default=None)
@@ -74,6 +74,9 @@ class StockPicking(models.Model):
         warehouse = self.env['stock.warehouse'].search([('lot_stock_id','=',self.location_id.id)])
         return warehouse
     
+    def override_product_length(self):
+        return self.env['ir.config_parameter'].sudo().get_param('dmmodule.override_length', default=False)
+    
 
     def get_dm_warehouse_id(self):
         warehouse = self.get_warehouse()
@@ -119,7 +122,7 @@ class StockPicking(models.Model):
                 operation_lines = self._origin.move_ids_without_package
                 customer= self._origin.partner_id
 
-                DmHandle = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), odoo_env=self, shipping_preference=self.get_delivery_option_preference())
+                DmHandle = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), self.override_product_length(), odoo_env=self, shipping_preference=self.get_delivery_option_preference())
                 
                 dm_shipping_response = DmHandle.get_shipping_options_delivery_level(sale_order_id=sale_order_id, operation_lines=operation_lines, sale_order=self.sale_id, delivery_id=delivery_id, customer=customer, dm_shipment_id=self.dm_shipment_id)
                 
@@ -139,7 +142,7 @@ class StockPicking(models.Model):
     
     
     def show_delivery_options(self):
-        stock_picking_handler = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), odoo_env=self)
+        stock_picking_handler = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), self.override_product_length(), odoo_env=self)
         delivery_id = self._origin.id
         sale_order_id = self._origin.sale_id.id
         operation_lines = self._origin.move_ids_without_package
@@ -166,7 +169,7 @@ class StockPicking(models.Model):
 
     def book_delivery(self):
 
-        stock_picking_handler = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), odoo_env=self)
+        stock_picking_handler = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), self.override_product_length(), odoo_env=self)
         delivery_id = self._origin.id
         sale_order_id = self._origin.sale_id.id
         dm_order_number = f'{sale_order_id}-{delivery_id}'
@@ -184,7 +187,7 @@ class StockPicking(models.Model):
         return
     
     def set_delivery_to_hub(self):
-        stock_picking_handler = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), odoo_env=self)
+        stock_picking_handler = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), self.override_product_length() ,odoo_env=self)
         delivery_id = self._origin.id
         sale_order_id = self._origin.sale_id.id
         dm_order_number = f'{sale_order_id}-{delivery_id}'

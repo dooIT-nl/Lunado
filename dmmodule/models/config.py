@@ -6,6 +6,7 @@ class Config(models.TransientModel):
     base_url = fields.Char(string='DeliveryMatch base URL *', required=True)
     api_key = fields.Char(string='API Key *', required=True)
     client_id = fields.Char(string='Client ID *', required=True)
+     
     
     delivery_option_preference = fields.Selection([
         ('lowest', 'Lowest price'),
@@ -14,7 +15,7 @@ class Config(models.TransientModel):
         ('nothing', 'No auto selection'),
     ], required=True, string="Auto select delivery option preference *")
     
-    enable_length = fields.Boolean(string="Enable specific length per order-item")
+    override_length = fields.Boolean(string="Enable specific length per order-item")
     sale_order_to_hub = fields.Boolean(string="Send sale-order to warehouse")
 
 
@@ -25,7 +26,8 @@ class Config(models.TransientModel):
             delivery_option_preference=self.env['ir.config_parameter'].sudo().get_param('dmmodule.delivery_option_preference', default='lowest'),
             client_id=self.env['ir.config_parameter'].sudo().get_param('dmmodule.client_id', default=None),
             base_url=self.env['ir.config_parameter'].sudo().get_param('dmmodule.base_url', default=None),
-            sale_order_to_hub=self.env['ir.config_parameter'].sudo().get_param('dmmodule.sale_order_to_hub', default=False)
+            sale_order_to_hub=self.env['ir.config_parameter'].sudo().get_param('dmmodule.sale_order_to_hub', default=False),
+            override_length=self.env['ir.config_parameter'].sudo().get_param('dmmodule.override_length', default=False)
         )
         return res
 
@@ -37,6 +39,7 @@ class Config(models.TransientModel):
         self.env['ir.config_parameter'].sudo().set_param('dmmodule.client_id', self.client_id)
         self.env['ir.config_parameter'].sudo().set_param('dmmodule.base_url', self.base_url)
         self.env['ir.config_parameter'].sudo().set_param('dmmodule.sale_order_to_hub', self.sale_order_to_hub)
+        self.env['ir.config_parameter'].sudo().set_param('dmmodule.override_length', self.override_length)
         self.update_sale_orders()
         
             

@@ -6,6 +6,14 @@ import requests
 class Helper:
     def __init__(self):
         pass
+
+
+    def has_sale_order_custom_length(self, order_line):
+        
+        if hasattr(order_line, 'x_studio_length'):
+            return True
+        else:
+            return False
     
     def validate_required_fields(self, fields: dict, message: str):
         for key, field in fields.items():

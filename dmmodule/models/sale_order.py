@@ -27,17 +27,13 @@ class SaleOrder(models.Model):
     shipment_label = fields.Char()
     shipment_tracking_url = fields.Char()
     show_hub_btn = fields.Boolean(default=False)
-    total_shipment_price = fields.Float(string='Total including Shipping costs', compute='_compute_my_custom_amount')
-
-  
-
+    total_shipment_price = fields.Float(string='Total including Shipping costs', compute='_compute_custom_amount')
 
     
     @api.depends('amount_total', 'amount_untaxed')
-    def _compute_my_custom_amount(self):
+    def _compute_custom_amount(self):
         for record in self:
-            record.total_shipment_price = record.amount_total + self.dm_price
-    
+            record.total_shipment_price = record.amount_total + self.dm_price    
     
     def get_api_key(self):
         return self.env['ir.config_parameter'].sudo().get_param('dmmodule.api_key', default=None)
@@ -53,7 +49,10 @@ class SaleOrder(models.Model):
 
     def get_delivery_option_preference(self):
         return self.env['ir.config_parameter'].sudo().get_param('dmmodule.delivery_option_preference', default=False)
-
+    
+    
+    def override_product_length(self):
+        return self.env['ir.config_parameter'].sudo().get_param('dmmodule.override_length', default=False)
 
 
     def warning_popup(self, title, message):
@@ -76,7 +75,7 @@ class SaleOrder(models.Model):
     def set_delivery_option(self):
         try:
             if (self._origin.id != False and self.get_delivery_option_preference() != "nothing"):
-                DmHandle = SaleOrderHandler(self, self.get_base_url(), self.get_api_key(), self.get_client_id())
+                DmHandle = SaleOrderHandler(self, self.get_base_url(), self.get_api_key(), self.get_client_id(), self.override_product_length())
                 
                 dm_delivery_option =  DmHandle.get_delivery_options(self._origin.id, self._origin.partner_id, self._origin.order_line, self._origin.incoterm.code,
                                                                     self._origin.warehouse_id, preference=self._origin.get_delivery_option_preference())
@@ -96,7 +95,7 @@ class SaleOrder(models.Model):
     def show_delivery_options(self):
         try:
             self.message_post(body="Requesting shipping options from DeliveryMatch...")
-            DmHandle = SaleOrderHandler(self, self.get_base_url(), self.get_api_key(), self.get_client_id())
+            DmHandle = SaleOrderHandler(self, self.get_base_url(), self.get_api_key(), self.get_client_id(),self.override_product_length())
             delivery_options_requested =  DmHandle.get_delivery_options(self.id, self.partner_id, self.order_line, self.incoterm.code, self.warehouse_id, manual=True)
 
             if(delivery_options_requested != True):
@@ -129,7 +128,7 @@ class SaleOrder(models.Model):
             if not self.delivery_option_selected:
                 raise ValueError("Choosing a shipping option is mandatory before booking an order.")
 
-            sale_order_handler = SaleOrderHandler(odoo_env=self,base_url=self.get_base_url(), api_key=self.get_api_key(), client_id=self.get_client_id())
+            sale_order_handler = SaleOrderHandler(odoo_env=self,base_url=self.get_base_url(), api_key=self.get_api_key(), client_id=self.get_client_id(), override_product_length=self.override_product_length())
             customer = self.partner_id
             
             order_booked = sale_order_handler.book_order_dm(
@@ -161,7 +160,7 @@ class SaleOrder(models.Model):
         
     def set_status_hub(self):
         try:
-            sale_order_handler = SaleOrderHandler(self, self.get_base_url() ,self.get_api_key(), self.get_client_id())
+            sale_order_handler = SaleOrderHandler(self, self.get_base_url() ,self.get_api_key(), self.get_client_id(), self.override_product_length())
             status_to_hub =  sale_order_handler.send_order_to_hub()
             
             if status_to_hub != True:

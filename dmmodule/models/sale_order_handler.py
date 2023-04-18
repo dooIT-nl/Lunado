@@ -50,19 +50,21 @@ class OdooDb:
 
 class SaleOrderHandler:
 
-    def __init__(self, odoo_env, base_url, api_key, client_id, delivery_option_preference=None, currency=None):
+    def __init__(self, odoo_env, base_url, api_key, client_id, override_product_length, delivery_option_preference=None, currency=None):
         self.odoo_env = odoo_env
         self.db = OdooDb(odoo_env)
         self.api = DmApi(base_url, api_key, client_id)
         self.delivery_option_preference = delivery_option_preference
         self.helper = Helper()
         self.currency = currency
+        self.override_product_length = override_product_length
     
 
     def get_delivery_options(self, order_number, customer, order_lines, incoterm, warehouse, manual=False, preference=False):
         
         try:
             order_number = order_number
+            is_company = customer.is_company
             customer_id = customer.id
             customer_name = customer.name
             customer_company_name = customer.parent_id.name
@@ -77,10 +79,13 @@ class SaleOrderHandler:
             phone = customer.phone
             email = customer.email
             
-            
+            if is_company == True:
+                customer_company_name = customer_name     
+                customer_name = None       
+
+
             fields_filled =  self.helper.validate_required_fields(
-                {"Partner Name": customer_name,
-                 "Company name": customer_company_name,
+                {
                  "Address": address1,
                  "Street": street,
                  "Zipcode": postcode,
@@ -222,7 +227,6 @@ class SaleOrderHandler:
                  "Height": product_line.dm_height,
                  "Value": price,
                  "Product quantity": quantity,
-                 "Product description": product_line.description_sale,
                  "Product name": product_line.name,
                  "Barcode (EAN)": product_line.barcode,
                  "SKU": product_line.dm_sku,
@@ -249,11 +253,18 @@ class SaleOrderHandler:
     def format_products(self, order_lines, is_external_warehouse=False) -> tuple:
         products = []
         
+        has_x_studio_length = self.helper.has_sale_order_custom_length(order_lines)
+
+
         for p in order_lines:
             product_line = p.product_template_id
             quantity = int(p.product_uom_qty)
             weight = product_line.weight
             price = p.price_unit
+            length = product_line.dm_length
+
+            if (has_x_studio_length == True and self.override_product_length and length > 0):
+                length = p.x_studio_length
             
             stock_location_id = self.odoo_env.warehouse_id.lot_stock_id.id
             product_template_id = product_line.id
@@ -270,6 +281,9 @@ class SaleOrderHandler:
 
             if not hscode: hscode = None
             if not country_origin: country_origin = None
+
+
+
             
             product =  {
                 "weight": weight,
@@ -280,7 +294,7 @@ class SaleOrderHandler:
                 "value": price,
                 "warehouse": external_warehouse_id,
                 "quantity": quantity,
-                "description": product_line.description_sale,
+                "description": p.name,
                 "content": product_line.name,
                 "SKU": product_line.dm_sku,
                 "EAN": product_line.barcode,
@@ -470,8 +484,6 @@ class SaleOrderHandler:
     def validate_order(self, customer, sale_order, operation_lines, dm_order_number):
         fields_filled = self.helper.validate_required_fields(
             {
-                "Partner Name": customer.name,
-                "Company name": customer.parent_id.name,
                 "Address": customer.street,
                 "Street": customer.street,
                 "Zipcode": customer.zip,
@@ -500,49 +512,53 @@ class SaleOrderHandler:
 
 
     def send_order_to_hub(self):
-            order_number = self.odoo_env._origin.id
-            customer_id = self.odoo_env.partner_id.id
-            customer = self.odoo_env.partner_id
-            customer_name = customer.name
-            customer_company_name = customer.parent_id.name
-            customer_ref = customer.ref
-            customer_note = html2plaintext(customer.comment)
-            address1 = customer.street
-            address2 = customer.street2
-            street = customer.street
-            postcode = customer.zip
-            city = customer.city
-            country = customer.country_code
-            phone = customer.phone
-            email = customer.email            
-            incoterm = self.odoo_env.incoterm.code
-            
-            valid_order = self.validate_order(customer, self.odoo_env, self.odoo_env.order_line, self.odoo_env.id)            
-            if valid_order != True:
-                return valid_order
-            
-            if not self.odoo_env.delivery_option_selected:
-                return "Choosing a shipping option is mandatory before booking an order."
-            
-            
-            products: tuple = self.format_products(self.odoo_env.order_line, True)
+        order_number = self.odoo_env._origin.id
+        customer_id = self.odoo_env.partner_id.id
+        customer = self.odoo_env.partner_id
+        customer_name = customer.name
+        customer_company_name = customer.parent_id.name
+        customer_ref = customer.ref
+        customer_note = html2plaintext(customer.comment)
+        address1 = customer.street
+        address2 = customer.street2
+        street = customer.street
+        postcode = customer.zip
+        city = customer.city
+        country = customer.country_code
+        phone = customer.phone
+        email = customer.email            
+        incoterm = self.odoo_env.incoterm.code
 
-            isFragile = self.has_fragile_products()
-            isDangerous = self.has_dangerous_products()
+        if customer.is_company == True:
+            customer_company_name = customer_name     
+            customer_name = None   
+        
+        valid_order = self.validate_order(customer, self.odoo_env, self.odoo_env.order_line, self.odoo_env.id)            
+        if valid_order != True:
+            return valid_order
+        
+        if not self.odoo_env.delivery_option_selected:
+            return "Choosing a shipping option is mandatory before booking an order."
+        
+        
+        products: tuple = self.format_products(self.odoo_env.order_line, True)
 
-            total_price_taxed = self.helper.order_total_price(self.odoo_env._origin.order_line, True)
-            totalPriceExclVat = ""
-            totalWeight = self.total_products_weight()
-            
+        isFragile = self.has_fragile_products()
+        isDangerous = self.has_dangerous_products()
 
-            response = self.api.postToDeliveryMatchShipment(
-                order_number, customer_ref, incoterm, customer_note, customer_id, customer_name, customer_company_name,
-                address1, address2, street, postcode, city, country, phone, email, products, isFragile, isDangerous,
-                total_price_taxed, totalPriceExclVat, totalWeight, actionBook=True
-            )
+        total_price_taxed = self.helper.order_total_price(self.odoo_env._origin.order_line, True)
+        totalPriceExclVat = ""
+        totalWeight = self.total_products_weight()
+        
 
-            valid_booking =  self.api.validate_booking_response(json.loads(response))
-            if valid_booking != True:
-                return valid_booking
-            
-            return True
+        response = self.api.postToDeliveryMatchShipment(
+            order_number, customer_ref, incoterm, customer_note, customer_id, customer_name, customer_company_name,
+            address1, address2, street, postcode, city, country, phone, email, products, isFragile, isDangerous,
+            total_price_taxed, totalPriceExclVat, totalWeight, actionBook=True
+        )
+
+        valid_booking =  self.api.validate_booking_response(json.loads(response))
+        if valid_booking != True:
+            return valid_booking
+        
+        return True

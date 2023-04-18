@@ -31,19 +31,19 @@
                     </group>
 
                     <group string="Selected shipping option">
-                            <field name="dm_shipment_url" widget="url" readonly="True"/>
-                            <field name="dm_carrier_name" readonly="True" />
-                            <field name="dm_delivery_date" readonly="True" />
-                            <field name="dm_pickup_date" readonly="True" />
-                            <field name="dm_service_level_name" readonly="True" />
-                            <field name="dm_service_level_description" readonly="True" />
-                            <field name="dm_sell_price" readonly="True"/>
-                            <field name="dm_buy_price" readonly="True" />
+                        <field name="dm_carrier_name" readonly="True" />
+                        <field name="dm_service_level_name" readonly="True" />
+                        <field name="dm_service_level_description" readonly="True" />
+                        <field name="dm_pickup_date" readonly="True" />
+                        <field name="dm_delivery_date" readonly="True" />
+                        <field name="dm_sell_price" readonly="True"/>
+                        <field name="dm_buy_price" readonly="True" />
+                        <field name="dm_shipment_url" widget="url" readonly="True" />
                     </group>
 
 
                     <group string="Tracking &amp; Shipping labels" attrs="{'invisible': [('shipment_label_attachment', '=', True)]}">
-                        <field name="shipment_tracking_url" string="Tracking Link" readonly="True" />
+                        <field name="shipment_tracking_url" string="Tracking Link" widget="url" readonly="True" />
                         <field name="shipment_label_attachment" widget="pdf_viewer" readonly="True" attrs="{'invisible': [('shipment_label_attachment', '=', True)]}"/>
                     </group>
 

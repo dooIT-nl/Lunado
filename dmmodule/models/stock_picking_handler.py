@@ -44,15 +44,13 @@ class OdooDb:
 
 
 class StockPickingHandler():
-    def __init__(self, base_url, api_key, client_id, odoo_env=None, shipping_preference=None):
+    def __init__(self, base_url, api_key, client_id,override_product_length, odoo_env=None, shipping_preference=None):
         self.odoo_env = odoo_env
         self.api = DmApi(base_url, api_key, client_id)
         self.helper = Helper()
         self.shipping_preference = shipping_preference
         self.db = OdooDb(odoo_env)
-
-
-        
+        self.override_product_length = override_product_length
 
 
 
@@ -69,14 +67,21 @@ class StockPickingHandler():
             total_weight = self.total_products_weight(operation_lines)
             total_price_taxed = self.helper.order_total_price(operation_lines)
 
+            customer_name = customer.name
+            customer_company_name = customer.parent_id.name
+
+            if customer.is_company == True:
+                customer_company_name = customer_name
+                customer_name = None
+
 
             response = self.api.postToDeliveryMatchShipment(
                 orderNumber=dm_order_number,
                 incoterm=sale_order.incoterm.code,
                 customerRef=customer.ref,
                 customerNote=html2plaintext(customer.comment),
-                customerName=customer.name,
-                customerCompanyName=customer.parent_id.name,
+                customerName=customer_name,
+                customerCompanyName=customer_company_name,
                 customerAddress1=customer.street,
                 customerAddress2=customer.street2,
                 customerStreet=customer.street,
@@ -137,13 +142,20 @@ class StockPickingHandler():
                 return order_validated
 
 
+            customer_name = customer.name
+            customer_company_name = customer.parent_id.name
+
+            if customer.is_company == True:
+                customer_company_name = customer_name
+                customer_name = None
+
             response = self.api.postToDeliveryMatchShipment(
                 orderNumber=dm_order_number,
                 incoterm=sale_order.incoterm.code,
                 customerRef=customer.ref,
                 customerNote=html2plaintext(customer.comment),
-                customerName=customer.name,
-                customerCompanyName=customer.parent_id.name,
+                customerName=customer_name,
+                customerCompanyName=customer_company_name,
                 customerAddress1=customer.street,
                 customerAddress2=customer.street2,
                 customerStreet=customer.street,
@@ -197,8 +209,6 @@ class StockPickingHandler():
     def validate_order(self, customer, sale_order, operation_lines, dm_order_number):
         fields_filled = self.helper.validate_required_fields(
             {
-                "Partner Name": customer.name,
-                "Company name": customer.parent_id.name,
                 "Address": customer.street,
                 "Street": customer.street,
                 "Zipcode": customer.zip,
@@ -240,13 +250,19 @@ class StockPickingHandler():
     
 
 
-    def format_products(self, operation_lines, is_external_warehouse=False) -> tuple:
+    def format_products(self, operation_lines, is_external_warehouse=False, sale_order=None) -> tuple:
         products = []
+        
+        # order_line = sale_order.order_line
+
         for line in operation_lines:
             product = line.product_id
             quantity = line.product_uom_qty
             location_id = self.odoo_env.location_id.id
             in_stock = self.has_product_in_stock(product.id, quantity, location_id)
+            length = product.dm_length
+
+
 
             if is_external_warehouse:
                 external_warehouse = self.helper.get_external_warehouse_id(self.odoo_env, location_id)
@@ -261,14 +277,14 @@ class StockPickingHandler():
 
             product_dict = {
                 "weight": product.weight,
-                "length": product.dm_length,
+                "length": length,
                 "width": product.dm_width,
                 "height": product.dm_height,
                 "stock": in_stock,
                 "value": product.list_price,
                 "warehouse": external_warehouse,
                 "quantity": line.product_uom_qty,
-                "description": product.description_sale,
+                "description": line.name,
                 "content": product.name,
                 "SKU": product.dm_sku,
                 "EAN": product.barcode,
@@ -322,7 +338,6 @@ class StockPickingHandler():
                  "Height": product_line.dm_height,
                  "Value": price,
                  "Product quantity": quantity,
-                 "Product description": product_line.description_sale,
                  "Product name": product_line.name,
                  "Barcode (EAN)": product_line.barcode,
                  "SKU": product_line.dm_sku,
