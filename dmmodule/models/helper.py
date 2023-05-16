@@ -1,11 +1,15 @@
-import json
+import json, logging
 from datetime import datetime
 import base64
 import requests
 
+
+class DeliveryMatchException(Exception):
+    pass
+
 class Helper:
     def __init__(self):
-        pass
+        self._logger = logging.getLogger("DeliveryMatch - Helper")
 
 
     def has_sale_order_custom_length(self, order_line):
@@ -24,9 +28,16 @@ class Helper:
 
     
     def convert_label(self, label):
-        label_response = requests.get(label)
-        converted_label = base64.b64encode(label_response.content).decode()
-        return converted_label
+        try:
+            self._logger.info("Converting label...")
+            label_response = requests.get(label)
+            label_response.raise_for_status()  # Optional: Check for HTTP errors
+            converted_label = base64.b64encode(label_response.content).decode()
+            self._logger.info("Label conversion successful")
+            return converted_label
+        except (requests.RequestException, ValueError) as e:
+            self.logger.error("Error converting label: %s", str(e))
+            raise DeliveryMatchException("Error converting label: {}".format(str(e)))
 
 
 
@@ -45,6 +56,7 @@ class Helper:
 
 
     def order_total_price(self, lines, is_product_template=False):
+        self._logger.info("calculating order total price...")
         total_price = 0
         for line in lines:
             product = line.product_id
@@ -124,3 +136,11 @@ class Helper:
                 shipping_options.append(shipping_option)
         
         return tuple(shipping_options)
+    
+    def format_dm_url(raw_url: str):
+        url_arr = raw_url.split("//")[-1].split("/")
+        base_url = url_arr[0].replace("api.", "")
+        return "https://" + base_url
+    
+    def format_wesseling_ref(wsl_ref:str) -> str:
+        return wsl_ref.replace("/", "")

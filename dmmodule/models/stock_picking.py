@@ -117,8 +117,8 @@ class StockPicking(models.Model):
         try:
             print("start")
             if(self.get_delivery_option_preference() != "nothing" and self._origin.id != False):
-                delivery_id = self._origin.id
-                sale_order_id = self._origin.sale_id.id
+                delivery_id = Helper.format_wesseling_ref(self._origin.id)
+                sale_order_id = self._origin.sale_id.display_name
                 operation_lines = self._origin.move_ids_without_package
                 customer= self._origin.partner_id
 
@@ -142,36 +142,39 @@ class StockPicking(models.Model):
     
     
     def show_delivery_options(self):
-        stock_picking_handler = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), self.override_product_length(), odoo_env=self)
-        delivery_id = self._origin.id
-        sale_order_id = self._origin.sale_id.id
-        operation_lines = self._origin.move_ids_without_package
-        customer= self._origin.partner_id
-        shipping_options_response =  stock_picking_handler.get_shipping_options_delivery_level(sale_order_id=sale_order_id, operation_lines=operation_lines, sale_order=self.sale_id, delivery_id=delivery_id, customer=customer, dm_shipment_id=self.dm_shipment_id)
-        
-        if shipping_options_response != True:
-            return self.show_popup(shipping_options_response)
+        try:
+            stock_picking_handler = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), self.override_product_length(), odoo_env=self)
+            delivery_id = Helper.format_wesseling_ref(self._origin.display_name)
+            sale_order_id = self._origin.sale_id.display_name
+            operation_lines = self._origin.move_ids_without_package
+            customer= self._origin.partner_id
+            stock_picking_handler.get_shipping_options_delivery_level(sale_order_id=sale_order_id, operation_lines=operation_lines, sale_order=self.sale_id, delivery_id=delivery_id, customer=customer, dm_shipment_id=self.dm_shipment_id)
+            
+            # if shipping_options_response != True:
+            #     return self.show_popup(shipping_options_response)
 
 
-        view_id = self.env.ref('dmmodule.delivery_options_tree_delivery_level').id
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Shipping options',
-            'res_model': 'dm.deliver.options',
-            'view_type': 'tree',
-            'view_mode': 'tree',
-            "view_id": view_id,
-            "domain": [("odooOrderId", "=", self.id)],
-            'target': 'new'
-        }    
+            view_id = self.env.ref('dmmodule.delivery_options_tree_delivery_level').id
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Shipping options',
+                'res_model': 'dm.deliver.options',
+                'view_type': 'tree',
+                'view_mode': 'tree',
+                "view_id": view_id,
+                "domain": [("odooOrderId", "=", self.id)],
+                'target': 'new'
+            }
+        except Exception as e:
+            raise UserError(e)
     
 
 
     def book_delivery(self):
 
         stock_picking_handler = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), self.override_product_length(), odoo_env=self)
-        delivery_id = self._origin.id
-        sale_order_id = self._origin.sale_id.id
+        delivery_id = Helper.format_wesseling_ref(self._origin.display_name)
+        sale_order_id = self._origin.sale_id.display_name
         dm_order_number = f'{sale_order_id}-{delivery_id}'
 
         operation_lines = self._origin.move_ids_without_package
@@ -188,8 +191,8 @@ class StockPicking(models.Model):
     
     def set_delivery_to_hub(self):
         stock_picking_handler = StockPickingHandler(self.get_base_url(), self.get_api_key(), self.get_client_id(), self.override_product_length() ,odoo_env=self)
-        delivery_id = self._origin.id
-        sale_order_id = self._origin.sale_id.id
+        delivery_id = Helper.format_wesseling_ref(self._origin.display_name)
+        sale_order_id = self._origin.sale_id.display_name
         dm_order_number = f'{sale_order_id}-{delivery_id}'
 
         operation_lines = self._origin.move_ids_without_package

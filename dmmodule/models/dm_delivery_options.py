@@ -20,6 +20,8 @@ class DmDeliveryOptions(models.Model):
     methodId = fields.Char(string="Method ID")
     checkId = fields.Char(string="Check ID")
 
+    deliverymatch_shipment_url = "https://engine-test.deliverymatch.eu/shipment/view/"
+
 
     def remove_delivery_options(self, odoo_order_id):
         self.env["dm.deliver.options"].search([('odooOrderId','=',odoo_order_id)]).unlink()      
@@ -50,7 +52,7 @@ class DmDeliveryOptions(models.Model):
         delivery_order.dm_shipment_id = selected_delivery_option.shipmentId
         delivery_order.dm_method_id = selected_delivery_option.methodId
         delivery_order.dm_check_id = selected_delivery_option.checkId
-        delivery_order.dm_shipment_url = f"https://engine.delmatch.eu/shipment/view/{selected_delivery_option.shipmentId}"
+        delivery_order.dm_shipment_url = f"{self.deliverymatch_shipment_url}{selected_delivery_option.shipmentId}"
         delivery_order.delivery_option_selected = True
 
         # POST shipmentmethod to deliverymatch
@@ -94,7 +96,7 @@ class DmDeliveryOptions(models.Model):
         update_sale_order.dm_shipment_id = selected_delivery_option.shipmentId
         update_sale_order.dm_methodId = selected_delivery_option.methodId
         update_sale_order.dm_checkId = selected_delivery_option.checkId
-        update_sale_order.shipmentURL = f"https://engine.delmatch.eu/shipment/view/{selected_delivery_option.shipmentId}"
+        update_sale_order.shipmentURL = f"{self.deliverymatch_shipment_url}{selected_delivery_option.shipmentId}"
         update_sale_order.delivery_option_selected = True
 
         # POST shipmentmethod to deliverymatch

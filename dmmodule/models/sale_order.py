@@ -1,13 +1,15 @@
 from odoo import api, fields, models, _ , exceptions
 from odoo.exceptions import UserError
-import requests, json, traceback, logging, base64
+import requests, traceback, logging
 from .sale_order_handler import SaleOrderHandler
+from .deliverymatch_exception import DeliveryMatchException
 import datetime
 
 class SaleOrder(models.Model):
     name="dm.sale.order"
+    _logger = logging.getLogger("DeliveryMatch - SaleOrder")
     _inherit = "sale.order"
-    dm_shipment_url = "https://engine.delmatch.eu/shipment/view/"
+    dm_shipment_url = "https://engine-test.deliverymatch.eu/shipment/view/"
 
     dm_carrierName = fields.Char(string="Carrier Name")
     dm_serviceLevelName = fields.Char(string="Service Level Name")
@@ -74,6 +76,7 @@ class SaleOrder(models.Model):
     @api.onchange('partner_id', 'order_line', 'incoterm', 'company_id')
     def set_delivery_option(self):
         try:
+            self._logger.info("Auto select shipping option in SaleOrder")
             if (self._origin.id != False and self.get_delivery_option_preference() != "nothing"):
                 DmHandle = SaleOrderHandler(self, self.get_base_url(), self.get_api_key(), self.get_client_id(), self.override_product_length())
                 
@@ -81,12 +84,14 @@ class SaleOrder(models.Model):
                                                                     self._origin.warehouse_id, preference=self._origin.get_delivery_option_preference())
                 
                 if dm_delivery_option != True:
+                    self._logger.error(f"An error occurred in set_delivery_option {dm_delivery_option}")
                     return self.warning_popup("DeliveryMatch - Warning", dm_delivery_option)
                 
                 self._origin.message_post(body=f"DeliveryMatch → auto selected {self._origin.get_delivery_option_preference()} delivery option!")
                 
                     
         except ValueError as e:
+            self._logger.error(f"An error occurred in set_delivery_option {e}")
             return self.warning_popup("DeliveryMatch - Warning", e)
 
 
@@ -95,11 +100,11 @@ class SaleOrder(models.Model):
     def show_delivery_options(self):
         try:
             self.message_post(body="Requesting shipping options from DeliveryMatch...")
+            self._logger.info(f"{self.show_delivery_options.__name__}: getting base_url, api_key, client_id and override product length")
             DmHandle = SaleOrderHandler(self, self.get_base_url(), self.get_api_key(), self.get_client_id(),self.override_product_length())
-            delivery_options_requested =  DmHandle.get_delivery_options(self.id, self.partner_id, self.order_line, self.incoterm.code, self.warehouse_id, manual=True)
-
-            if(delivery_options_requested != True):
-                 raise ValueError(delivery_options_requested)
+            
+            
+            DmHandle.get_delivery_options(self.id, self.partner_id, self.order_line, self.incoterm.code, self.warehouse_id, manual=True)
 
             view_id = self.env.ref('dmmodule.delivery_options_tree').id
             return {
@@ -112,29 +117,27 @@ class SaleOrder(models.Model):
                 "domain": [("odooOrderId", "=", self.id)],
                 'target': 'new'
             }
+        except DeliveryMatchException as e:
+            return self.show_popup(str(e))
 
-            
         except ValueError as e:
-
             error_message = traceback.format_exc()
-            print("________________________________________________________________________")
-            print("An error occurred")            
-            print(error_message)
-            print("________________________________________________________________________")
+            self._logger.error(error_message)
             raise UserError(e)
         
     def book_order(self):
         try:
+            self._logger.info("Booking Sales Order...")
             if not self.delivery_option_selected:
-                raise ValueError("Choosing a shipping option is mandatory before booking an order.")
+                raise Exception("Choosing a shipping option is mandatory before booking an order.")
 
             sale_order_handler = SaleOrderHandler(odoo_env=self,base_url=self.get_base_url(), api_key=self.get_api_key(), client_id=self.get_client_id(), override_product_length=self.override_product_length())
             customer = self.partner_id
             
-            order_booked = sale_order_handler.book_order_dm(
+            sale_order_handler.book_order_dm(
                 order_number=self.id,
                 incoterm=self.incoterm.code,
-                customer_ref=customer.ref,
+                customer_ref=self.client_order_ref,
                 customer_note=customer.comment,
                 customer_name=customer.name,
                 company_name=customer.company_name,
@@ -155,7 +158,7 @@ class SaleOrder(models.Model):
             time_stamp = self.get_time_stamp()
             self.message_post(body=f"Order booked to carrier in DeliveryMatch on: {time_stamp}")
             
-        except ValueError as e:
+        except Exception as e:
             raise UserError(e)
         
     def set_status_hub(self):

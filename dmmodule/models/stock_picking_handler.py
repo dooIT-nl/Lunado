@@ -1,7 +1,4 @@
-import json
-import traceback
-import requests
-import base64
+import base64, logging, requests, traceback ,json
 from .dm_api import DmApi
 from .helper import Helper
 from odoo.tools import html2plaintext
@@ -51,6 +48,9 @@ class StockPickingHandler():
         self.shipping_preference = shipping_preference
         self.db = OdooDb(odoo_env)
         self.override_product_length = override_product_length
+        self.deliverymatch_shipment_url = "https://engine-test.deliverymatch.eu/shipment/view/"
+        self._logger = logging.getLogger("DeliveryMatch - StockPickingHandler")
+        
 
 
 
@@ -78,7 +78,7 @@ class StockPickingHandler():
             response = self.api.postToDeliveryMatchShipment(
                 orderNumber=dm_order_number,
                 incoterm=sale_order.incoterm.code,
-                customerRef=customer.ref,
+                customerRef=sale_order.client_order_ref,
                 customerNote=html2plaintext(customer.comment),
                 customerName=customer_name,
                 customerCompanyName=customer_company_name,
@@ -120,8 +120,7 @@ class StockPickingHandler():
 
 
     def get_shipping_options_delivery_level(self, sale_order_id, operation_lines, sale_order, delivery_id, customer, dm_shipment_id):
-        try:
-    
+        try:    
             products = self.format_products(operation_lines)
             total_weight = self.total_products_weight(operation_lines)
             is_fragile = self.helper.has_fragile_products(operation_lines)
@@ -134,7 +133,7 @@ class StockPickingHandler():
                 if (self.api.has_ordernumber_in_dm(sale_order_id) == False):
                     return f"Shipment with the order-number {sale_order_id} not found in DeliveryMatch."
             
-            dm_order_number = f"{sale_order_id}-{delivery_id}"
+            dm_order_number = f"{delivery_id}"
 
             
             order_validated = self.validate_order(customer, sale_order, operation_lines, dm_order_number)  
@@ -152,7 +151,7 @@ class StockPickingHandler():
             response = self.api.postToDeliveryMatchShipment(
                 orderNumber=dm_order_number,
                 incoterm=sale_order.incoterm.code,
-                customerRef=customer.ref,
+                customerRef=sale_order.client_order_ref,
                 customerNote=html2plaintext(customer.comment),
                 customerName=customer_name,
                 customerCompanyName=customer_company_name,
@@ -200,13 +199,14 @@ class StockPickingHandler():
             
 
         except Exception as e:
-            print("__________________________________\n\n\n\n")
-            print(e)
-            print("__________________________________\n\n\n\n")
-            return "Something went wrong while selecting a shipping option."
+            tb = traceback.format_exc()
+            self._logger.error(f"{e} \n{tb}")
+            raise Exception("Something went wrong while selecting a shipping option.")
    
 
     def validate_order(self, customer, sale_order, operation_lines, dm_order_number):
+        self._logger.info("Method:validate_order --- validating order format...")
+        
         fields_filled = self.helper.validate_required_fields(
             {
                 "Address": customer.street,
@@ -339,7 +339,6 @@ class StockPickingHandler():
                  "Value": price,
                  "Product quantity": quantity,
                  "Product name": product_line.name,
-                 "Barcode (EAN)": product_line.barcode,
                  "SKU": product_line.dm_sku,
                  },
                 f"must have a value in the product '{product_line.name}' in order to use DeliveryMatch services, you can find this required field on the 'Products' page."
@@ -408,7 +407,7 @@ class StockPickingHandler():
             
             delivery_order.dm_method_id = dm_delivery_option.get("method_id")
             delivery_order.dm_check_id = dm_delivery_option.get("check_id")
-            delivery_order.dm_shipment_url = f"https://engine.delmatch.eu/shipment/view/{dm_delivery_option.get('shipment_id')}"
+            delivery_order.dm_shipment_url = f"{self.deliverymatch_shipment_url}{dm_delivery_option.get('shipment_id')}"
             delivery_order.delivery_option_selected = True  
         except Exception as e:
             print("__________________________________\n\n\n\n")
