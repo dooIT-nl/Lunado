@@ -9,20 +9,24 @@
                 <link rel="stylesheet" href="dmmodule/static/src/css/deliverymatch.css"/>
             </xpath> 
 
+            <field name="partner_id" position="after">
+               <field name="dm_warehouse_number"/>
+            </field>
+
             <notebook position="inside">
                 <page string="DeliveryMatch | Shipping options" name="deliverymatch_delivery_page">
                     <group string="Execution" class="col-12 col-lg-12">
                         
                         <div class="row" style="width:600px !important;">
                             <div class="col-md-4 text-center">
-                                <button class="btn btn-primary dm-orange dm-btn" name="show_delivery_options" string="Request Shipping Options" type="object"/>
+                                <button class="btn btn-primary dm-orange dm-btn" name="show_shipping_options" string="Request Shipping Options" type="object"/>
                             </div>
                             <div class="col-md-4 text-center">
                                 <button class="btn btn-primary dm-green dm-btn" name="book_delivery" string="Book order to carrier" type="object"/>
                             </div>
 
                             <div class="col-md-4 text-center">
-                                <button class="btn btn-primary dm-blue dm-btn" name="set_delivery_to_hub" string="Send order to warehouse" type="object" attrs="{'invisible': [('show_hub_btn', '=', False)]}"/>
+                                <button class="btn btn-primary dm-blue dm-btn" name="book_delivery_to_hub" string="Send order to warehouse" type="object" attrs="{'invisible': [('show_hub_btn', '=', False)]}"/>
                             </div>
 
                         </div>

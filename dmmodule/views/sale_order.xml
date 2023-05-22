@@ -26,14 +26,14 @@
                         
                         <div class="row" style="width:600px !important;">
                             <div class="col-md-4 text-center">
-                                <button class="btn btn-primary dm-orange dm-btn" name="show_delivery_options" string="Request Shipping Options" type="object"/>
+                                <button class="btn btn-primary dm-orange dm-btn" name="show_shipping_options" string="Request Shipping Options" type="object"/>
                             </div>
                             <div class="col-md-4 text-center">
-                                <button class="btn btn-primary dm-green dm-btn" name="book_order" string="Book order to carrier" type="object"/>
+                                <button class="btn btn-primary dm-green dm-btn" name="book_sale_order" string="Book order to carrier" type="object"/>
                             </div>
 
                             <div class="col-md-4 text-center">
-                                <button class="btn btn-primary dm-blue dm-btn" name="set_status_hub" string="Send order to warehouse" type="object" attrs="{'invisible': [('show_hub_btn', '=', False)]}"/>
+                                <button class="btn btn-primary dm-blue dm-btn" name="book_sale_order_to_hub" string="Send order to warehouse" type="object" attrs="{'invisible': [('show_hub_btn', '=', False)]}"/>
                             </div>
                             
                         </div>

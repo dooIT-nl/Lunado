@@ -11,6 +11,13 @@ class Helper:
     def __init__(self):
         self._logger = logging.getLogger("DeliveryMatch - Helper")
 
+    def get_time_stamp(self) -> str:
+        current_time = datetime.datetime.now()
+        # Format the current time as yy-mm-dd h:m:s
+        formatted_time = current_time.strftime("%y-%m-%d %H:%M:%S")
+        return formatted_time
+
+
 
     def has_sale_order_custom_length(self, order_line):
         
@@ -31,7 +38,7 @@ class Helper:
         try:
             self._logger.info("Converting label...")
             label_response = requests.get(label)
-            label_response.raise_for_status()  # Optional: Check for HTTP errors
+            label_response.raise_for_status()
             converted_label = base64.b64encode(label_response.content).decode()
             self._logger.info("Label conversion successful")
             return converted_label
@@ -47,12 +54,6 @@ class Helper:
             return warehouse.warehouse_options
         else:
             return None
-
-
-    def get_time_stamp(self) -> str:
-        current_time = datetime.now()
-        formatted_time = current_time.strftime("%y-%m-%d %H:%M:%S")
-        return formatted_time
 
 
     def order_total_price(self, lines, is_product_template=False):
@@ -137,10 +138,17 @@ class Helper:
         
         return tuple(shipping_options)
     
-    def format_dm_url(raw_url: str):
+    def format_dm_url(self, raw_url: str):
         url_arr = raw_url.split("//")[-1].split("/")
         base_url = url_arr[0].replace("api.", "")
         return "https://" + base_url
     
+    def view_shipment_url(self, url, shipment_id) -> str:
+        url = self.format_dm_url(url)
+        return f"{url}/shipment/view/{shipment_id}"
+    
     def format_wesseling_ref(wsl_ref:str) -> str:
-        return wsl_ref.replace("/", "")
+        if("/" in wsl_ref):
+            return wsl_ref.replace("/", "")
+        else:
+            return wsl_ref
