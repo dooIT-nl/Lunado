@@ -199,7 +199,7 @@ class DmApi:
             raise Exception("Something went wrong while requesting shipping options from DeliveryMatch")
     
     
-    def format_shipping_options(self, response) -> list[ShippingOption]:
+    def format_shipping_options(self, response):
         shipment_id = response["shipmentID"]
         shipment_methods: dict = response["shipmentMethods"]["all"]
         shipping_options: ShippingOptions = ShippingOptions()

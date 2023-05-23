@@ -285,7 +285,7 @@ class SaleOrder(models.Model):
             products = self.get_products_details()
 
             
-            shipping_options: list[ShippingOption] = order_handler.get_shipping_options(shipment, customer, products)
+            shipping_options = order_handler.get_shipping_options(shipment, customer, products)
             odoo_db = OdooDb(self)
             odoo_db.delete_delivery_option(self.id)
             odoo_db.insert_into_deliver_options(shipping_options, self.id)

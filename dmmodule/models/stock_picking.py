@@ -250,7 +250,7 @@ class StockPicking(models.Model):
             customer = self.get_customer_details()
             products = self.get_products_details()
 
-            shipping_options: list[ShippingOption] = order_handler.get_shipping_options(
+            shipping_options = order_handler.get_shipping_options(
                 shipment, customer, products, True
             )
             odoo_db = OdooDb(self)

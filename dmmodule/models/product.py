@@ -97,7 +97,7 @@ class DmProducts:
 
         return total_weight
 
-    def get_api_format(self, return_tuple=True) -> tuple[dict]:
+    def get_api_format(self, return_tuple=True):
         formatted_products = []
 
         for product in self.products:

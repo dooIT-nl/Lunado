@@ -19,7 +19,7 @@ class ShippingOptions:
     def add_shipping_option(self, shipping_option):
         self.shipping_options.append(shipping_option)
 
-    def get_shipping_options(self) -> list[ShippingOption]:
+    def get_shipping_options(self):
         return self.shipping_options
 
 

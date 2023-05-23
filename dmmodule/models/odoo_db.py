@@ -9,7 +9,7 @@ class OdooDb:
 
     # deliverOptions dict: carrierName, serviceLevelName, serviceLevelDescription, deliveryDate, buyPrice, price, shipmentId, odooOrderId
     def insert_into_deliver_options(
-        self, shipping_options: list[ShippingOption], odoo_order_id
+        self, shipping_options, odoo_order_id
     ):
         try:
             self._logger.info(
