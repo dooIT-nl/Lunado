@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-dm__deliveryoptions_user,deliveryoptions user,model_dm_deliver_options,base.group_user,1,1,1,1
-dm_popup_user,popupwizard user,model_popup_wizard,base.group_user,1,1,1,1
