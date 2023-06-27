@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_picking_view_template" model="ir.ui.view">
+        <field name="name">stock.picking.view.template</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="." position="inside">     
+                <link rel="stylesheet" href="dmmodule/static/src/css/deliverymatch.css"/>
+            </xpath> 
+
+            <field name="partner_id" position="after">
+               <field name="dm_warehouse_number"/>
+            </field>
+
+            <notebook position="inside">
+                <page string="DeliveryMatch | Shipping options" name="deliverymatch_delivery_page">
+                    <group string="Execution" class="col-12 col-lg-12">
+                        
+                    <div class="dm-row">
+                            
+                        <button class="dm-orange dm-btn" name="show_shipping_options" string="Request Shipping Options" type="object"/>
+                            
+                        <button class="dm-green dm-btn" name="book_delivery"
+                            string="Book order to carrier" type="object"
+                            attrs="{'invisible': [('dm_is_external_warehouse', '=', True), ('hide_book_carrier_btn', '=', True)]}"
+                        />
+                           
+                        <button class="dm-blue dm-btn" 
+                            name="book_delivery_to_hub"
+                            string="Send order to warehouse"
+                            type="object"
+                            attrs="{'invisible': [('dm_is_external_warehouse', '=', False)]}"/>
+                        </div>
+
+                    </group>
+
+                    <group string="Selected shipping option">
+                        <field name="dm_carrier_name" readonly="True" />
+                        <field name="dm_service_level_name" readonly="True" />
+                        <field name="dm_service_level_description" readonly="True" />
+                        <field name="dm_pickup_date" readonly="True" />
+                        <field name="dm_delivery_date" readonly="True" />
+                        <field name="dm_sell_price" readonly="True" />
+                        <field name="dm_buy_price" readonly="True" />
+                        <field name="dm_shipment_url" widget="url" readonly="True" />
+                        <field name="dm_is_external_warehouse" invisible="True" />
+                        <field name="hide_book_carrier_btn" invisible="True" />
+                    </group>
+
+
+                    <group string="Tracking &amp; Shipping labels" attrs="{'invisible': [('shipment_label_attachment', '=', True)]}">
+                        <field name="shipment_tracking_url" string="Tracking Link" widget="url" readonly="True" />
+                        <field name="shipment_label_attachment" widget="pdf_viewer" readonly="True" attrs="{'invisible': [('shipment_label_attachment', '=', True)]}"/>
+                    </group>
+
+                </page>
+            </notebook>
+
+        </field>
+    </record>
+</odoo>
