@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sh_website_product_public_category_page_view_inherit" model="ir.ui.view">
+        <field name="name">product.public.category.page.inheirt</field>
+        <field name="model">product.public.category</field>
+        <field name="inherit_id" ref="website_sale.product_public_category_form_view" />
+        <field name="arch" type="xml">
+            <field name="parent_id" position="after">
+                <field name="show_category" />
+            </field>
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Description">
+                        <field name="description" />
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+</odoo>

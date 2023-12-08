@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sh_res_config_settings_category_page_form_inherit" model="ir.ui.view">
+        <field name="name">res.config.settings.category.page.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="website.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@data-key='website']//div" position="after">
+                <h2>Website Product Category Style</h2>
+                <div class="row mt16 o_settings_container" id="category_settings">
+                    <div class="col-xs-12 col-md-6 o_setting_box" id="category_page">
+                        <div class="o_setting_left_pane"></div>
+                        <div class="o_setting_right_pane">
+                            <label for="category_style" />
+                            <div class="text-muted">
+                                Choose product category style
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field name="category_style" class="col-md-6 pull-left" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box" id="category_header_page">
+                        <div class="o_setting_left_pane"></div>
+                        <div class="o_setting_right_pane">
+                            <label for="category_header_style" />
+                            <div class="text-muted">
+                                Choose product category header style
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field name="category_header_style" class="col-md-6 pull-left" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box" id="">
+                        <div class="o_setting_left_pane"></div>
+                        <div class="o_setting_right_pane">
+                            <label for="sub_category_style" />
+                            <div class="text-muted">
+                                Choose product sub category style
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field name="sub_category_style" class="col-md-6 pull-left" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box" id="">
+                        <div class="o_setting_left_pane">
+                            <field name="sh_website_categ_page_is_end_product" class="col-md-6 pull-left" />
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="sh_website_categ_page_is_end_product" />
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

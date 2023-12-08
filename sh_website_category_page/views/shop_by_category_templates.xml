@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="website_shopby_category" model="ir.ui.view">
+        <field name="name">Shop By Category</field>
+        <field name="type">qweb</field>
+        <field name="key">website.shopby_category</field>
+        <field name="arch" type="xml">
+            <t name="Shop By Category" t-name="website.shopby_category">
+                <t t-call="website.layout">
+                    <div id="wrap">
+                        <!-- multi website -->
+                        <t t-set="multiwebsite_domain" t-value="request.website.website_domain()" />
+                        <t t-set="category_domain" t-value="[('show_category','=',True),('parent_id','=',False)]" />
+                        <t t-set="product_category" t-value="request.env['product.public.category'].sudo().search(category_domain +  multiwebsite_domain, order ='sequence asc')" />
+                        <section t-if="not website.category_style" id="no_page_style">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="sh_title">
+                                        <div class="sh_description"></div>
+                                        <h2>categories</h2>
+                                    </div>
+                                    <t t-if="product_category">
+                                        <t t-foreach="product_category" t-as="rec">
+                                            <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
+                                                <div>
+                                                    <a t-att-href="'/shop/category/%s' % (rec.id)">
+                                                        <figure>
+                                                            <img t-if="rec.image_1920" t-attf-src="data:image/gif;base64, #{rec.image_1920}" alt="rec.name" />
+                                                            <img t-if="not rec.image_1920" src="/sh_website_category_page/static/src/img/default.png" alt="Default Image" />
+                                                            <figcaption>
+                                                                <h2>
+                                                                    <span t-if="rec.name" t-field="rec.name" />
+                                                                </h2>
+                                                                <p>
+                                                                    <span t-if="rec.description" t-field="rec.description" />
+                                                                </p>
+                                                            </figcaption>
+                                                        </figure>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </t>
+                                </div>
+                            </div>
+                        </section>
+                        <!--sh_category-->
+                        <section t-if="website.category_style and website.category_style=='style1'" id="sh_category">
+                            <div class="container">
+                                <div class="sh_title">
+                                    <div class="sh_description"></div>
+                                    <h2>categories</h2>
+                                </div>
+                                <div class="row sh_sub_category">
+                                    <t t-if="product_category">
+                                        <t t-foreach="product_category" t-as="rec">
+                                            <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
+                                                <a t-att-href="'/shop/category/%s' % (rec.id)">
+                                                    <figure class="sh_effect">
+                                                        <div class="img_class">
+                                                            <img t-if="rec.image_1920" t-attf-src="data:image/gif;base64, #{rec.image_1920}" height="400" alt="rec.name" />
+                                                            <img t-if="not rec.image_1920" src="/sh_website_category_page/static/src/img/default.png" alt="Default Image" />
+                                                        </div>
+                                                        <figcaption>
+                                                            <h2 t-if="rec.name" t-field="rec.name" />
+                                                            <span t-if="rec.description" t-field="rec.description" />
+                                                        </figcaption>
+                                                    </figure>
+                                                </a>
+                                            </div>
+                                        </t>
+                                    </t>
+                                </div>
+                            </div>
+                        </section>
+                        <!--sh_category-->
+                        <!--sh_compan-->
+                        <section t-if="website.category_style and website.category_style=='style2'" id="sh_company">
+                            <div class="container">
+                                <div class="sh_title">
+                                    <div class="sh_description"></div>
+                                    <h2>categories</h2>
+                                </div>
+                                <div t-if="product_category" class="row sub_company">
+                                    <t t-foreach="product_category" t-as="rec">
+                                        <div class="col-lg-3 col-md-4 col-sm-12 col-xs-6">
+                                            <div class="main_box">
+                                                <div class="img_box">
+                                                    <div class="img_box_inner">
+                                                        <a t-att-href="'/shop/category/%s' % (rec.id)">
+                                                            <div class="comp_img">
+                                                                <img t-if="rec.image_1920" t-attf-src="data:image/gif;base64, #{rec.image_1920}" alt="rec.name" />
+                                                                <img t-if="not rec.image_1920" src="/sh_website_category_page/static/src/img/default.png" alt="Default Image" />
+                                                            </div>
+                                                            <div class="comp_content">
+                                                                <h4 class="title">
+                                                                    <span t-if="rec.name" t-field="rec.name" />
+                                                                </h4>
+                                                                <div class="comp_dec">
+                                                                    <p t-if="rec.description" t-field="rec.description" />
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </section>
+                        <!--sh_compan-->
+                        <!--shop_category_1-->
+                        <section t-if="website.category_style and website.category_style=='style3'" id="shop_category_1">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="sh_title">
+                                        <div class="sh_description"></div>
+                                        <h2>categories</h2>
+                                    </div>
+                                    <t t-if="product_category" t-foreach="product_category" t-as="rec">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-6">
+                                            <a t-att-href="'/shop/category/%s' % (rec.id)">
+                                                <div class="shop_cate">
+                                                    <div class="img_box">
+                                                        <img t-if="rec.image_1920" t-attf-src="data:image/gif;base64, #{rec.image_1920}" alt="rec.name" />
+                                                        <img t-if="not rec.image_1920" src="/sh_website_category_page/static/src/img/default.png" alt="Default Image" />
+                                                    </div>
+                                                    <div class="sh_text">
+                                                        <h4>
+                                                            <span t-if="rec.name" t-field="rec.name" />
+                                                        </h4>
+                                                    </div>
+                                                    <div class="cate_menu">
+                                                        <div class="menu_title">
+                                                            <span t-if="rec.name" t-field="rec.name" />
+                                                        </div>
+                                                        <p class="site_cate" t-if="rec.description" t-field="rec.description" />
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </section>
+                        <!--shop_category_1-->
+                        <!--shop_category_ 4 -->
+                        <section t-if="website.category_style and website.category_style=='style4'">
+                            <div class="container">
+                                <div class="sh_title">
+                                    <div class="sh_description"></div>
+                                    <h2>categories</h2>
+                                </div>
+                                <div class="row">
+                                    <t t-if="product_category" t-foreach="product_category" t-as="rec">
+                                        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-xs-12">
+                                            <a t-att-href="'/shop/category/%s' % (rec.id)">
+                                                <p class="sh_gradient">
+                                                    <span t-if="rec.name" t-field="rec.name" />
+                                                </p>
+                                            </a>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </section>
+                        <!--shop_category_4-->
+                        <!--shop_category_5 -->
+                        <section t-if="website.category_style and website.category_style=='style5'" id="sh_website_page_categ_style_5">
+                            <div class="container">
+                                <div class="sh_title">
+                                    <h2>Categories</h2>
+                                </div>
+                                <div class="row">
+                                    <t t-if="product_category" t-foreach="product_category" t-as="rec">
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-bottom: 2pc;">
+                                            <a t-att-href="'/shop/category/%s' % (rec.id)">
+                                                <div class="main_box">
+                                                    <div class="img_box">
+                                                        <img class="img img-fluid" t-if="rec.image_1920" t-attf-src="data:image/gif;base64, #{rec.image_1920}" alt="rec.name" />
+                                                        <img class="img img-fluid" t-if="not rec.image_1920" src="/sh_website_category_page/static/src/img/default.png" alt="Default Image" />
+                                                    </div>
+                                                    <div class="text_box">
+                                                        <div class="text_text">
+                                                            <h3 t-if="rec.name" t-field="rec.name" />
+                                                            <p t-if="rec.description" t-field="rec.description" class="description" />
+                                                            <button class="btn btn-primary">
+                                                                <i class="fa fa-long-arrow-right" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </section>
+                        <!--shop_category_5-->
+                        <!--shop_category_6-->
+                        <section t-if="website.category_style and website.category_style=='style6'" id="sh_website_page_categ_style_6">
+                            <div class="container">
+                                <div class="sh_title">
+                                    <h2>Categories</h2>
+                                </div>
+                                <div class="row">
+                                    <t t-if="product_category" t-foreach="product_category" t-as="rec">
+                                        <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+                                            <a t-att-href="'/shop/category/%s' % (rec.id)">
+                                                <div class="main_box">
+                                                    <div class="inner-box">
+                                                        <div class="image-box">
+                                                            <div class="img_box">
+                                                                <img class="img img-fluid" t-if="rec.image_1920" t-attf-src="data:image/gif;base64, #{rec.image_1920}" alt="rec.name" />
+                                                                <img class="img img-fluid" t-if="not rec.image_1920" src="/sh_website_category_page/static/src/img/default.png" alt="Default Image" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="overlay-box" t-if="rec.description">
+                                                            <p t-if="rec.description" t-field="rec.description" class="description" />
+                                                        </div>
+                                                        <div class="lower-content">
+                                                            <div class="inner">
+                                                                <h4 t-if="rec.name" t-field="rec.name" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </section>
+                        <!--shop_category_6-->
+                        <!--shop_category_7-->
+                        <section t-if="website.category_style and website.category_style=='style7'" id="sh_website_page_categ_style_7">
+                            <div class="container">
+                                <div class="sh_title">
+                                    <h2>Categories</h2>
+                                </div>
+                                <div class="row">
+                                    <t t-if="product_category" t-foreach="product_category" t-as="rec">
+                                        <div class="col-lg-4 col-md-6 col-sm-12">
+                                            <a t-att-href="'/shop/category/%s' % (rec.id)">
+                                                <div class="main_box">
+                                                    <div class="img_box">
+                                                        <img class="img img-fluid" t-if="rec.image_1920" t-attf-src="data:image/gif;base64, #{rec.image_1920}" alt="rec.name" style="width: 100%; height: 100%;" />
+                                                        <img class="img img-fluid" t-if="not rec.image_1920" src="/sh_website_category_page/static/src/img/default.png" alt="Default Image" style="width: 100%; height: 100%;" />
+                                                    </div>
+                                                    <div class="text_box">
+                                                        <div class="text_box_inner">
+                                                            <div class="text_box_inner_1"></div>
+                                                        </div>
+                                                        <h5 class="text_title" t-if="rec.name" t-field="rec.name" />
+                                                        <div class="text_desc">
+                                                            <p t-if="rec.description" t-field="rec.description" class="description" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </section>
+                        <!--shop_category_7-->
+                    </div>
+                </t>
+            </t>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="shopby_category_page" model="website.page">
+        <field name="url">/shopby_category</field>
+        <field name="website_published">True</field>
+        <field name="view_id" ref="website_shopby_category" />
+    </record>
+    <record id="menu_shopby_category" model="website.menu">
+        <field name="name">Shop by Category</field>
+        <field name="url">/shopby_category</field>
+        <field name="parent_id" ref="website.main_menu" />
+        <field name="sequence" type="int">50</field>
+        <field name="page_id" ref="shopby_category_page" />
+    </record>
+</odoo>
