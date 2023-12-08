@@ -1,0 +1,196 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sh_category_snippet
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-02 12:08+0000\n"
+"PO-Revision-Date: 2020-11-02 12:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_14
+msgid "<span class=\"badge badge-primary\">Top Rated</span>"
+msgstr "<span class=\"badge badge-primary\">أعلى التقييمات</span>"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippets
+msgid "Category snippet"
+msgstr "مقتطف الفئة"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Create Date asc"
+msgstr "إنشاء تاريخ تصاعدي"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Create Date desc"
+msgstr "وصف تاريخ الإنشاء"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category__sh_category_snippet_desc
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Description"
+msgstr "وصف"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category__display_name
+msgid "Display Name"
+msgstr "اسم العرض"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category__id
+msgid "ID"
+msgstr "هوية شخصية"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Image"
+msgstr "صورة"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_17
+msgid "Items]"
+msgstr "العناصر]"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category____last_update
+msgid "Last Modified on"
+msgstr "تاريخ آخر تعديل"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_21
+msgid "More Items"
+msgstr "المزيد من العناصر"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_15
+msgid "More items"
+msgstr "المزيد من العناصر"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Order by"
+msgstr "ترتيب حسب"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_11
+msgid "PRODUCTS"
+msgstr "منتجات"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Product Count"
+msgstr "عدد المنتجات"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_13
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_15
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_16
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_17
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_18
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_2
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_21
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_22
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_24
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_25
+msgid "Products"
+msgstr "منتجات"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_6
+msgid "See More <span class=\"fa fa-angle-right\"/>"
+msgstr "شاهد المزيد<span class=\"fa fa-angle-right\"/>"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_3
+msgid "See more"
+msgstr "شاهد المزيد"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Sequence asc"
+msgstr "تسلسل تصاعدي"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Sequence desc"
+msgstr "تسلسل تنازلي"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_24
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_4
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_8
+msgid "Shop Now"
+msgstr "تسوق الآن"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_11
+msgid "TOTAL"
+msgstr "مجموع"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_14
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_16
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_17
+msgid "View more"
+msgstr "عرض المزيد"
+
+#. module: sh_category_snippet
+#: model:ir.model,name:sh_category_snippet.model_product_public_category
+msgid "Website Product Category"
+msgstr "فئة منتج الموقع"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_15
+msgid "alarmclock"
+msgstr "منبه"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "default"
+msgstr "إفتراضي"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "name (A-Z)"
+msgstr "الاسم (A-Z)"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "name (Z-A)"
+msgstr "الاسم (Z-A)"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_7
+msgid "new Style"
+msgstr "أسلوب جديد"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_1
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_3
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_4
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_5
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_6
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_7
+msgid "product"
+msgstr "المنتج"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_10
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_8
+msgid "products"
+msgstr "منتجات"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_25
+msgid "view more <span class=\"fa fa-angle-double-right\"/>"
+msgstr "عرض المزيد<span class=\"fa fa-angle-double-right\"/>"

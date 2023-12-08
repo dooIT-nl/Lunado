@@ -1,0 +1,196 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sh_category_snippet
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-02 12:08+0000\n"
+"PO-Revision-Date: 2020-11-02 12:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_14
+msgid "<span class=\"badge badge-primary\">Top Rated</span>"
+msgstr "<span class=\"badge badge-primary\">最高评价</span"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippets
+msgid "Category snippet"
+msgstr "类别片段"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Create Date asc"
+msgstr "创建日期ASC."
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Create Date desc"
+msgstr "创建日期DESC"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category__sh_category_snippet_desc
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Description"
+msgstr "描述"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category__display_name
+msgid "Display Name"
+msgstr "显示名称"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category__id
+msgid "ID"
+msgstr "ID"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Image"
+msgstr "图片"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_17
+msgid "Items]"
+msgstr "项目]"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category____last_update
+msgid "Last Modified on"
+msgstr "最后修改了"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_21
+msgid "More Items"
+msgstr "更多项目"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_15
+msgid "More items"
+msgstr "更多项目"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Order by"
+msgstr "订购"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_11
+msgid "PRODUCTS"
+msgstr "产品"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Product Count"
+msgstr "产品数量"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_13
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_15
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_16
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_17
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_18
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_2
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_21
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_22
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_24
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_25
+msgid "Products"
+msgstr "产品"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_6
+msgid "See More <span class=\"fa fa-angle-right\"/>"
+msgstr "查看更多 <span class=\"fa fa-angle-right\"/>"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_3
+msgid "See more"
+msgstr "查看更多"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Sequence asc"
+msgstr "序列ASC."
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Sequence desc"
+msgstr "序列除外"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_24
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_4
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_8
+msgid "Shop Now"
+msgstr "现在去购物"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_11
+msgid "TOTAL"
+msgstr "全部的"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_14
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_16
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_17
+msgid "View more"
+msgstr "查看更多"
+
+#. module: sh_category_snippet
+#: model:ir.model,name:sh_category_snippet.model_product_public_category
+msgid "Website Product Category"
+msgstr "网站产品类别"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_15
+msgid "alarmclock"
+msgstr "armarkclock."
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "default"
+msgstr "默认"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "name (A-Z)"
+msgstr "名称（A-Z）"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "name (Z-A)"
+msgstr "姓名（z-a）"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_7
+msgid "new Style"
+msgstr "新风格"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_1
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_3
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_4
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_5
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_6
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_7
+msgid "product"
+msgstr "产品"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_10
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_8
+msgid "products"
+msgstr "产品"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_25
+msgid "view more <span class=\"fa fa-angle-double-right\"/>"
+msgstr "查看更多 <span class=\"fa fa-angle-double-right\"/>"

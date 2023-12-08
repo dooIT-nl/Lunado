@@ -1,0 +1,196 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sh_category_snippet
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-02 12:08+0000\n"
+"PO-Revision-Date: 2020-11-02 12:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_14
+msgid "<span class=\"badge badge-primary\">Top Rated</span>"
+msgstr "<span class=\"badge badge-primary\">Top noté</span>"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippets
+msgid "Category snippet"
+msgstr "Snippet de catégorie"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Create Date asc"
+msgstr "Créer la date ASC"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Create Date desc"
+msgstr "Créer une date de descendance"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category__sh_category_snippet_desc
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Description"
+msgstr "La description"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category__display_name
+msgid "Display Name"
+msgstr "Afficher un nom"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category__id
+msgid "ID"
+msgstr "identifiant"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Image"
+msgstr "Image"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_17
+msgid "Items]"
+msgstr "Articles]"
+
+#. module: sh_category_snippet
+#: model:ir.model.fields,field_description:sh_category_snippet.field_product_public_category____last_update
+msgid "Last Modified on"
+msgstr "Dernière modification sur"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_21
+msgid "More Items"
+msgstr "Plus d'articles"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_15
+msgid "More items"
+msgstr "Plus d'articles"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Order by"
+msgstr "Commandé par"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_11
+msgid "PRODUCTS"
+msgstr "DES PRODUITS"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Product Count"
+msgstr "Nombre de produits"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_13
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_15
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_16
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_17
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_18
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_2
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_21
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_22
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_24
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_25
+msgid "Products"
+msgstr "Des produits"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_6
+msgid "See More <span class=\"fa fa-angle-right\"/>"
+msgstr "Voir plus <span class=\"fa fa-angle-right\"/>"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_3
+msgid "See more"
+msgstr "Voir plus"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Sequence asc"
+msgstr "Séquence ASC"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "Sequence desc"
+msgstr "Séquence Desc"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_24
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_4
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_8
+msgid "Shop Now"
+msgstr "Achetez maintenant"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_11
+msgid "TOTAL"
+msgstr "LE TOTAL"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_14
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_16
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_17
+msgid "View more"
+msgstr "Voir plus"
+
+#. module: sh_category_snippet
+#: model:ir.model,name:sh_category_snippet.model_product_public_category
+msgid "Website Product Category"
+msgstr "Site Web Catégorie de produit"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_15
+msgid "alarmclock"
+msgstr "réveil"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "default"
+msgstr "défaut"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "name (A-Z)"
+msgstr "Nom (A-Z)"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_website_snippet_options
+msgid "name (Z-A)"
+msgstr "Nom (Z-A)"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_7
+msgid "new Style"
+msgstr "nouveau style"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_1
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_3
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_4
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_5
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_6
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_7
+msgid "product"
+msgstr "produit"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_10
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_8
+msgid "products"
+msgstr "des produits"
+
+#. module: sh_category_snippet
+#: model_terms:ir.ui.view,arch_db:sh_category_snippet.sh_category_snippet_item_25
+msgid "view more <span class=\"fa fa-angle-double-right\"/>"
+msgstr "Voir plus <span class=\"fa fa-angle-double-right\"/>"
