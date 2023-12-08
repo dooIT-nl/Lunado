@@ -1,0 +1,1136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- snippet ITEM 1 -->
+    <template id="sh_category_snippet_item_1" name="Sh Snippet item 1">
+        <div class="owl-carousel owl-theme">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="sh_content">
+                            <a t-att-href="categ['categ_url']">
+                                <img t-if="is_show_categ_image" t-att-src="categ['categ_img_url']" />
+                            </a>
+                            <a t-att-href="categ['categ_url']">
+                                <div class="sh_description">
+                                    <h3>
+                                        <t t-esc="categ['categ_name']" />
+                                    </h3>
+                                    <h2 t-if="is_show_categ_desc">
+                                        <t t-raw="categ['categ_desc']" />
+                                    </h2>
+                                </div>
+                                <div t-if="is_show_categ_prod_count" class="sh_product">
+                                    <span class="sh_product_item">
+                                        <t t-esc="categ['product_count']" /> product </span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- snippet ITEM 1 -->
+
+    <!-- snippet ITEM 2 -->
+    <template id="sh_category_snippet_item_2" name="Sh Snippet item 2">
+        <div class="owl-carousel owl-theme">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="sh_content">
+                            <a t-att-href="categ['categ_url']" class="d-block">
+                                <div class="sh_img">
+                                    <img t-if="is_show_categ_image"
+                                        t-att-src="categ['categ_img_url']" />
+                                </div>
+                            </a>
+                            <div class="sh_pro_name">
+                                <div class="sh_name">
+                                    <a t-att-href="categ['categ_url']">
+                                        <p>
+                                            <t t-esc="categ['categ_name']" />
+                                        </p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="sh_hover_part">
+                                <a t-att-href="categ['categ_url']" class="d-block">
+                                    <p>
+                                        <t t-esc="categ['categ_name']" />
+                                    </p>
+                                </a>
+                                <ul class="sh_product">
+                                    <p t-if="is_show_categ_desc">
+                                        <t t-raw="categ['categ_desc']" />
+                                    </p>
+                                </ul>
+                                <a t-att-href="categ['categ_url']" class="d-block">
+                                    <span class="sh_product_item">
+                                        <t t-esc="categ['product_count']" /> Products </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- snippet ITEM 2 -->
+
+    <!-- snippet ITEM 3 -->
+    <template id="sh_category_snippet_item_3" name="Sh Snippet item 3">
+        <div class="owl-carousel owl-theme">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="sh_content">
+                            <div class="sh_pro_name">
+                                <a t-att-href="categ['categ_url']"
+                                    style="text-decoration: none !important;">
+                                    <h4>
+                                        <t t-esc="categ['categ_name']" />
+                                    </h4>
+                                </a>
+                            </div>
+                            <div class="sh_img">
+                                <a t-att-href="categ['categ_url']">
+                                    <img t-if="is_show_categ_image"
+                                        t-att-src="categ['categ_img_url']" />
+                                </a>
+                                <p t-if="is_show_categ_desc">
+                                    <t t-raw="categ['categ_desc']" />
+                                </p>
+                            </div>
+                            <div class="sh_more">
+                                <a t-att-href="categ['categ_url']" class="see_more">See more</a>
+                            </div>
+                            <div t-if="is_show_categ_prod_count" class="sh_product">
+                                <span class="sh_product_item">
+                                    <t t-esc="categ['product_count']" /> product </span>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- snippet ITEM 3 -->
+
+    <!-- snippet ITEM 4 -->
+    <template id="sh_category_snippet_item_4" name="Sh Snippet item 4">
+        <div class="owl-carousel owl-theme">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="sh_content">
+                            <div class="sh_img">
+                                <a t-att-href="categ['categ_url']">
+                                    <img t-if="is_show_categ_image"
+                                        t-att-src="categ['categ_img_url']" />
+                                </a>
+                            </div>
+                            <div t-if="is_show_categ_prod_count" class="sh_product">
+                                <span class="sh_product_item">
+                                    <t t-esc="categ['product_count']" /> product </span>
+                            </div>
+                            <div class="sh_description">
+                                <h4>
+                                    <t t-esc="categ['categ_name']" />
+                                </h4>
+                                <p t-if="is_show_categ_desc">
+                                    <t t-raw="categ['categ_desc']" />
+                                </p>
+                                <a t-att-href="categ['categ_url']" class="btn btn-primary shop-now">Shop
+                                    Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- snippet ITEM 4 -->
+
+    <!-- snippet ITEM 5 -->
+    <template id="sh_category_snippet_item_5" name="Sh Snippet item 5">
+        <div class="owl-carousel owl-theme">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="sh_content">
+                            <div class="sh_img">
+                                <a t-att-href="categ['categ_url']">
+                                    <img t-if="is_show_categ_image"
+                                        t-att-src="categ['categ_img_url']" />
+                                    <div class="sh_cate">
+                                        <h3>
+                                            <t t-esc="categ['categ_name']" />
+                                        </h3>
+                                        <span class="sh_product_item">
+                                            <t t-esc="categ['product_count']" /> product </span>
+                                        <p class="sh_text" t-if="is_show_categ_desc">
+                                            <t t-raw="categ['categ_desc']" />
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- snippet ITEM 5 -->
+
+    <!-- snippet ITEM 6 -->
+    <template id="sh_category_snippet_item_6" name="Sh Snippet item 6">
+        <div class="owl-carousel owl-theme">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="sh_content">
+                            <a t-att-href="categ['categ_url']">
+                                <img t-if="is_show_categ_image" t-att-src="categ['categ_img_url']" />
+                                <div class="sh_hover_part">
+                                    <p t-if="is_show_categ_desc">
+                                        <t t-raw="categ['categ_desc']" />
+                                    </p>
+                                </div>
+                            </a>
+                            <div t-if="is_show_categ_prod_count" class="sh_product">
+                                <span class="sh_product_item">
+                                    <t t-esc="categ['product_count']" /> product </span>
+                            </div>
+                            <div class="sh_content_title">
+                                <a t-att-href="categ['categ_url']" style="text-decoration: none;">
+                                    <h3 style="text-align: left;">
+                                        <t t-esc="categ['categ_name']" />
+                                    </h3>
+                                </a>
+                                <a t-att-href="categ['categ_url']" class="sh_more"> See More <span
+                                        class="fa fa-angle-right"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- snippet ITEM 6 -->
+
+    <!-- snippet ITEM 7 -->
+    <template id="sh_category_snippet_item_7" name="Sh Snippet item 7">
+        <div class="owl-carousel owl-theme">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="sh_content">
+                            <div class="sh_img">
+                                <a t-att-href="categ['categ_url']">
+                                    <img t-if="is_show_categ_image"
+                                        t-att-src="categ['categ_img_url']" />
+                                </a>
+                            </div>
+                            <div class="sh_description">
+                                <h3>
+                                    <a t-att-href="categ['categ_url']">
+                                        <t t-esc="categ['categ_name']" />
+                                    </a>
+                                </h3>
+
+                                <span class="sh_product_item">
+                                    <t t-esc="categ['product_count']" /> product </span>
+                                <p class="sh_text" t-if="is_show_categ_desc">
+                                    <t t-raw="categ['categ_desc']" />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- snippet ITEM 7 -->
+
+    <!-- snippet ITEM 8 -->
+    <template id="sh_category_snippet_item_8" name="Sh Snippet item 8">
+        <div class="owl-carousel owl-theme">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="sh_content">
+                            <div class="sh_img">
+                                <img t-if="is_show_categ_image" t-att-src="categ['categ_img_url']" />
+                            </div>
+                            <div class="sh_description">
+                                <a t-att-href="categ['categ_url']" style="text-decoration: none;">
+                                    <h1>
+                                        <t t-esc="categ['categ_name']" />
+                                    </h1>
+                                </a>
+                                <p t-if="is_show_categ_desc">
+                                    <t t-raw="categ['categ_desc']" />
+                                </p>
+                                <a t-att-href="categ['categ_url']" class="btn btn-primary d-block">Shop
+                                    Now</a>
+                            </div>
+                            <div class="sh_product">
+                                <span class="sh_product_item">
+                                    <t t-esc="categ['product_count']" /> products </span>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- snippet ITEM 8 -->
+
+    <!-- snippet ITEM 9 -->
+    <template id="sh_category_snippet_item_9" name="Sh Snippet item 9">
+        <div class="owl-carousel owl-theme">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="sh_content">
+                            <a t-att-href="categ['categ_url']">
+                                <img t-if="is_show_categ_image" t-att-src="categ['categ_img_url']" />
+                                <div class="sh_hover_part">
+                                    <div class="sh_description">
+                                        <div class="sh_descri_back"></div>
+
+                                        <h3>
+                                            <t t-esc="categ['categ_name']" />
+                                        </h3>
+                                        <span class="sh_product_item">
+                                            <t t-esc="categ['product_count']" /> products </span>
+
+                                        <p t-if="is_show_categ_desc">
+                                            <t t-raw="categ['categ_desc']" />
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- snippet ITEM 9 -->
+
+    <!-- snippet ITEM 10 -->
+    <template id="sh_category_snippet_item_10" name="Sh Snippet item 10">
+        <div class="owl-carousel owl-theme">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <a t-att-href="categ['categ_url']" class="card text-center d-block">
+                            <h3>
+                                <t t-esc="categ['categ_name']" />
+                            </h3>
+                            <div class="img">
+                                <center>
+                                    <img t-if="is_show_categ_image"
+                                        t-att-src="categ['categ_img_url']" />
+                                </center>
+                            </div>
+                            <div class="card-body">
+                                <p class="sh_product_item">
+                                    <t t-esc="categ['product_count']" /> PRODUCTS </p>
+                                <p class="sh_text" t-if="is_show_categ_desc">
+                                    <t t-raw="categ['categ_desc']" />
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- snippet ITEM 10 -->
+
+    <!-- Category snippet 11 -->
+    <template id="sh_category_snippet_item_11" name="Sh Snippet item 11">
+        <div class="owl-carousel owl-theme card-deck">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="card">
+                            <div class="img">
+                                <span class="badge bg-primary">
+                                    <span class="sh_product_item">
+                                        <t t-esc="categ['product_count']" />
+                                    </span>
+                                    Products </span>
+                                <a t-att-href="categ['categ_url']">
+                                    <img t-if="is_show_categ_image"
+                                        t-att-src="categ['categ_img_url']" class="card-img-top" />
+                                </a>
+                            </div>
+                            <div class="card-body bg-light">
+                                <h5 class="card-title text-primary">
+                                    <a t-att-href="categ['categ_url']">
+                                        <t t-esc="categ['categ_name']" />
+                                    </a>
+                                </h5>
+                                <p class="card-text" t-if="is_show_categ_desc">
+                                    <t t-raw="categ['categ_desc']" />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- Category snippet 11 -->
+
+    <!-- Category snippet 12 -->
+    <template id="sh_category_snippet_item_12" name="Sh Snippet item 12">
+        <section class="owl-carousel owl-theme card-deck">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="card">
+                            <div class="img bg-light">
+                                <span class="badge bg-primary">Top Rated</span>
+                                <center>
+                                    <img t-if="is_show_categ_image"
+                                        t-att-src="categ['categ_img_url']" class="card-img-top" />
+                                </center>
+                            </div>
+                            <div class="card-body bg-white">
+                                <h5 class="card-title text-dark">
+                                    <a t-att-href="categ['categ_url']"
+                                        style="text-decoration: none;">
+                                        <t t-esc="categ['categ_name']" />
+                                    </a>
+                                    <span class="numberofproduct text-secondary"> ( <span
+                                            class="sh_product_item">
+                                            <t t-esc="categ['product_count']" />
+                                        </span>
+                                        ) </span>
+                                </h5>
+                                <p class="card-text text-secondary" t-if="is_show_categ_desc">
+                                    <t t-raw="categ['categ_desc']" />
+                                </p>
+                                <div
+                                    class="starrating star-rating risingstar d-flex flex-row-reverse">
+                                    <input type="radio" id="5-stars" name="rating" value="5" />
+                                    <label for="5-stars" class="star">&#9733;</label>
+                                    <input type="radio" id="4-stars" name="rating" value="4" />
+                                    <label for="4-stars" class="star">&#9733;</label>
+                                    <input type="radio" id="3-stars" name="rating" value="3" />
+                                    <label for="3-stars" class="star">&#9733;</label>
+                                    <input type="radio" id="2-stars" name="rating" value="2" />
+                                    <label for="2-stars" class="star">&#9733;</label>
+                                    <input type="radio" id="1-star" name="rating" value="1" />
+                                    <label for="1-star" class="star">&#9733;</label>
+                                </div>
+                                <a t-att-href="categ['categ_url']">
+                                    <button type="button" class="btn btn-secondary">View more</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 12 -->
+
+    <!-- Category snippet 13 -->
+    <template id="sh_category_snippet_item_13" name="Sh Snippet item 13">
+        <section class="owl-carousel owl-theme card-deck">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="item">
+                        <div class="card mb-3">
+                            <div class="row no-gutters">
+                                <div class="col-md-4 align-self-center img">
+                                    <img t-if="is_show_categ_image"
+                                        t-att-src="categ['categ_img_url']" class="card-img"
+                                        alt="alarmclock" />
+                                </div>
+                                <div class="col-md-8 bg-light content">
+                                    <span class="badge badge-secondary badgetop">
+                                        <span class="sh_product_item">
+                                            <t t-esc="categ['product_count']" />
+                                        </span>
+                                        Products </span>
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <a t-att-href="categ['categ_url']"
+                                                style="text-decoration: none;">
+                                                <t t-esc="categ['categ_name']" />
+                                            </a>
+                                        </h5>
+                                        <p class="card-text" t-if="is_show_categ_desc">
+                                            <t t-raw="categ['categ_desc']" />
+                                        </p>
+                                        <a t-att-href="categ['categ_url']">
+                                            <button type="button" class="btn btn-primary">More items</button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 13 -->
+
+    <!-- Category snippet 14 -->
+    <template id="sh_category_snippet_item_14" name="Sh Snippet item 14">
+        <section class="owl-carousel owl-theme card-deck">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="card sh_animation_part">
+                        <div class="img">
+                            <span class="badge">
+                                <span class="sh_product_item">
+                                    <t t-esc="categ['product_count']" />
+                                </span>
+                                Products </span>
+                            <img t-if="is_show_categ_image" t-att-src="categ['categ_img_url']"
+                                class="card-img-top" alt="Products" width="100%" height="235px" />
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a t-att-href="categ['categ_url']" style="text-decoration: none;">
+                                    <t t-esc="categ['categ_name']" />
+                                </a>
+                            </h5>
+                            <p class="card-text description" t-if="is_show_categ_desc">
+                                <t t-raw="categ['categ_desc']" />
+                            </p>
+                            <a t-att-href="categ['categ_url']" class="btn btn-primary">View more</a>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 14 -->
+
+    <!-- Category snippet 15 -->
+    <template id="sh_category_snippet_item_15" name="Sh Snippet item 15">
+        <section class="owl-carousel owl-theme card-deck">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="card bg-dark text-white">
+                        <div class="img">
+                            <span class="card-img">
+                                <img t-if="is_show_categ_image" t-att-src="categ['categ_img_url']"
+                                    alt="Products" />
+                            </span>
+                        </div>
+                        <div class="card-img-overlay">
+                            <h5 class="card-title">
+                                <t t-esc="categ['categ_name']" />
+                            </h5>
+                            <p class="card-text description" t-if="is_show_categ_desc">
+                                <t t-raw="categ['categ_desc']" />
+                            </p>
+                            <p class="card-text"> [ <t t-esc="categ['product_count']" /> Items] </p>
+                            <a t-att-href="categ['categ_url']" class="badge">View more</a>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 15 -->
+
+    <!-- Category snippet 16 -->
+    <template id="sh_category_snippet_item_16" name="Sh Snippet item 16">
+        <section class="row js_cls_categ_snipp_fixed">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-12 col">
+                        <figure class="effect">
+                            <span class="badge bg-primary">
+                                <t t-esc="categ['product_count']" /> Product </span>
+                            <span class="card-img">
+                                <img t-if="is_show_categ_image" t-att-src="categ['categ_img_url']"
+                                    alt="Products" />
+                            </span>
+                            <a t-att-href="categ['categ_url']">
+                                <div>
+                                    <p class="card-text description" t-if="is_show_categ_desc">
+                                        <t t-raw="categ['categ_desc']" />
+                                    </p>
+                                </div>
+                                <h4 class="text-white">
+                                    <t t-esc="categ['categ_name']" />
+                                </h4>
+                            </a>
+                        </figure>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 16 -->
+
+    <!-- Category snippet 17 -->
+    <template id="sh_category_snippet_item_17" name="Sh Snippet item 17">
+        <section class="row js_cls_categ_snipp_fixed">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="col col-lg-2 col-md-4 col-sm-6 col-12 text-center">
+                        <div class="card">
+                            <a t-att-href="categ['categ_url']" style="text-decoration: none;">
+                                <div class="sh-card-body">
+                                    <span>
+                                        <t t-esc="categ['categ_name']" />
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 17 -->
+
+    <!-- Category snippet 18 -->
+    <template id="sh_category_snippet_item_18" name="Sh Snippet item 18">
+        <section class="owl-carousel owl-theme card-deck">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="card">
+                        <div class="rounded-img text-center">
+                            <div class="badgetop">
+                                <span class="badgeright">
+                                    <span class="sh_product_item">
+                                        <t t-esc="categ['product_count']" />
+                                    </span>
+                                    Products </span>
+                            </div>
+                            <img t-if="is_show_categ_image" t-att-src="categ['categ_img_url']"
+                                class="card-img-top" alt="Products" />
+                        </div>
+                        <div class="card-body mb-4">
+                            <h5 class="card-title">
+                                <a t-att-href="categ['categ_url']" style="text-decoration: none;">
+                                    <t t-esc="categ['categ_name']" />
+                                </a>
+                            </h5>
+                            <p class="card-text" t-if="is_show_categ_desc">
+                                <t t-raw="categ['categ_desc']" />
+                            </p>
+                            <a t-att-href="categ['categ_url']"
+                                style="text-decoration: none !important;">
+                                <button class="btn btn-block btn-primary">More Items</button>
+                            </a>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 18 -->
+
+    <!-- Category snippet 19 -->
+    <template id="sh_category_snippet_item_19" name="Sh Snippet item 19">
+        <div class="row js_cls_categ_snipp_fixed">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="col col-lg-3 col-md-4 col-sm-6 col-12 text-center">
+                        <div class="box">
+                            <div class="badgetop">
+                                <span class="badge">
+                                    <span class="sh_product_item">
+                                        <t t-esc="categ['product_count']" />
+                                    </span>
+                                    Products </span>
+                            </div>
+                            <div class="content">
+                                <h5 class="title">
+                                    <a t-att-href="categ['categ_url']"
+                                        style="text-decoration: none;">
+                                        <t t-esc="categ['categ_name']" />
+                                    </a>
+                                </h5>
+                                <p class="card-text text" t-if="is_show_categ_desc">
+                                    <t t-raw="categ['categ_desc']" />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- Category snippet 19 -->
+
+    <!-- Category snippet 20 -->
+    <template id="sh_category_snippet_item_20" name="Sh Snippet item 20">
+        <div class="row js_cls_categ_snipp_fixed">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="col col-lg-3 col-md-6 col-sm-6 col-12 text-center mb-2">
+                        <div class="box">
+                            <a t-att-href="categ['categ_url']">
+                                <h5 class="content">
+                                    <t t-esc="categ['categ_name']" />
+                                </h5>
+                            </a>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- Category snippet 20 -->
+
+    <!-- Category snippet 21 -->
+    <template id="sh_category_snippet_item_21" name="Sh Snippet item 21">
+        <div class="row js_cls_categ_snipp_fixed">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 col">
+                        <div class="sh_content">
+                            <div class="sh_img">
+                                <a t-att-href="categ['categ_url']">
+                                    <span>
+                                        <img t-if="is_show_categ_image"
+                                            t-att-src="categ['categ_img_url']" class="card-img-top"
+                                            alt="Products" />
+                                    </span>
+                                    ] </a>
+                            </div>
+                            <div class="sh_description">
+                                <h4>
+                                    <a t-att-href="categ['categ_url']"
+                                        style="text-decoration: none;">
+                                        <t t-esc="categ['categ_name']" />
+                                    </a>
+                                </h4>
+                                <p class="card-text text" t-if="is_show_categ_desc">
+                                    <t t-raw="categ['categ_desc']" />
+                                </p>
+                                <a t-att-href="categ['categ_url']" class="shop-now btn btn-primary">Shop
+                                    Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- Category snippet 21 -->
+
+    <!-- Category snippet 22 -->
+    <template id="sh_category_snippet_item_22" name="Sh Snippet item 22">
+        <div class="row js_cls_categ_snipp_fixed">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                        <div class="box">
+                            <div class="badgetop">
+                                <span class="badge-ribbon">
+                                    <span class="sh_product_item">
+                                        <t t-esc="categ['product_count']" />
+                                    </span>
+                                    Products </span>
+                            </div>
+                            <div class="content">
+                                <h5 class="title">
+                                    <a
+                                        style="text-decoration: none;">
+                                        <t t-esc="categ['categ_name']" />
+                                    </a>
+                                </h5>
+                                <p class="card-text text" t-if="is_show_categ_desc">
+                                    <t t-raw="categ['categ_desc']" />
+                                </p>
+                                <a t-att-href="categ['categ_url']"> view more <span
+                                        class="fa fa-angle-double-right"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </template>
+    <!-- Category snippet 22 -->
+
+    <!-- Category snippet 23 -->
+    <template id="sh_category_snippet_item_23" name="Sh Snippet item 23">
+        <section class="owl-carousel owl-theme card-deck sh_category_snippet_23">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                <div class="container">
+                    <div class="row">
+                            <div class="col-xxl-2 col-xl-3 col-lg-2 col-md-4 col-6">
+                                <div class="sh_category_box">
+                                    <!-- <a href="#" target="_self"> -->
+                                    <a t-att-href="categ['categ_url']"
+                                        style="text-decoration: none;">
+
+                                        <div class="sh_cat_img">
+                                            <img t-if="is_show_categ_image"
+                                                t-att-src="categ['categ_img_url']"
+                                                class="card-img-top"
+                                                alt="Products">
+
+                                            </img>
+                                        </div>
+                                        <div class="sh_cat_text">
+                                            <h1>
+                                                <t t-esc="categ['categ_name']" />
+                                            </h1>
+                                            <h5>
+                                                <span class="sh_product_item">
+                                                    <t t-esc="categ['product_count']" />
+                                                </span>
+                                            </h5>
+                                            <p class="card-text text"
+                                                t-if="is_show_categ_desc">
+                                                <t t-raw="categ['categ_desc']" />
+                                            </p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 23 -->
+
+    <!-- Category snippet 24 -->
+    <template id="sh_category_snippet_item_24" name="Sh Snippet item 24">
+
+        <section class="owl-carousel owl-theme card-deck sh_category_snippet_24">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="container">
+                        <div class="sh_category_group">
+                            <div class=" sh_category_box">
+                                <div class="sh_cat_img">
+                                    <img t-if="is_show_categ_image"
+                                        t-att-src="categ['categ_img_url']" class="card-img-top"
+                                        alt="Products" />
+                                </div>
+                                <div class="sh_cat_text">
+                                    <h1>
+                                        <t t-esc="categ['categ_name']" />
+                                    </h1>
+                                    <h6>
+                                        <t t-esc="categ['product_count']" />
+                                    </h6>
+                                    <p class="card-text text"
+                                        t-if="is_show_categ_desc">
+                                        <t t-raw="categ['categ_desc']" />
+                                    </p>
+                                </div>
+                                <div class="sh_aero">
+                                    <a t-att-href="categ['categ_url']">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="icon icon-tabler icon-tabler-chevron-right"
+                                            width="44"
+                                            height="44" viewBox="0 0 24 24" stroke-width="1.5"
+                                            stroke="currentColor" fill="none"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M9 6l6 6l-6 6" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 24 -->
+
+    <!-- Category snippet 25 -->
+    <template id="sh_category_snippet_item_25" name="Sh Snippet item 25">
+        <section class="owl-carousel owl-theme card-deck sh_category_snippet_25">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="container">
+                        <div class="row">
+
+                            <div class="card col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-12">
+                                <a t-att-href="categ['categ_url']" class="sh_category_box">
+
+                                    <div class="sh_cat_img">
+                                        <img t-if="is_show_categ_image"
+                                            t-att-src="categ['categ_img_url']" class="card-img-top"
+                                            alt="Products" />
+                                    </div>
+                                    <div class="sh_cat_text">
+                                        <h1>
+                                            <t t-esc="categ['categ_name']" />
+                                        </h1>
+
+                                        <h6>
+                                            <t t-esc="categ['product_count']" />
+                                        </h6>
+                                        <p class="card-text text"
+                                            t-if="is_show_categ_desc">
+                                            <t t-raw="categ['categ_desc']" />
+                                        </p>
+                                    </div>
+
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 25 -->
+
+    <!-- Category snippet 26 -->
+    <template id="sh_category_snippet_item_26" name="Sh Snippet item 26">
+
+        <section class="owl-carousel owl-theme card-deck sh_category_snippet_26">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                <div class="container">
+                    <div class="row justify-content-center">
+
+                            <div class="col-xxl-3 col-xl-3 col-lg-6 col-md-6 col-12">
+                                <div class="sh_category_box">
+                                    <a t-att-href="categ['categ_url']">
+                                        <div class="sh_cat_img">
+                                            <img t-if="is_show_categ_image"
+                                                t-att-src="categ['categ_img_url']"
+                                                class="card-img-top"
+                                                alt="Products" />
+                                        </div>
+                                        <div class="sh_cat_text">
+                                            <h1>
+                                                <a t-att-href="categ['categ_url']"
+                                                    style="text-decoration: none;">
+                                                    <t t-esc="categ['categ_name']" />
+                                                </a>
+                                            </h1>
+
+                                            <h5>
+                                                <span class="sh_product_item">
+                                                    <t t-esc="categ['product_count']" />
+                                                </span>
+                                            </h5>
+                                            <p class="card-text text" t-if="is_show_categ_desc">
+                                                <t t-raw="categ['categ_desc']" />
+                                            </p>
+                                        </div>
+                                        <div class="sh_divider">
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 26 -->
+
+    <!-- Category snippet 27 -->
+    <template id="sh_category_snippet_item_27" name="Sh Snippet item 27">
+        <section class="owl-carousel owl-theme card-deck sh_category_snippet_27">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-12">
+                                <div class="sh_category_box">
+                                    <a t-att-href="categ['categ_url']">
+                                        <div class="sh_cat_img">
+                                            <img t-if="is_show_categ_image"
+                                                t-att-src="categ['categ_img_url']"
+                                                class="card-img-top"
+                                                alt="Products">
+
+                                                <h4 class="sh_cat_name">
+                                                    <a t-att-href="categ['categ_url']"
+                                                        style="text-decoration: none;">
+                                                        <t t-esc="categ['categ_name']" />
+                                                    </a>
+                                                </h4>
+
+                                            </img>
+                                        </div>
+                                        <div class="sh_cat_info">
+                                            <div>
+                                                <span class="sh_product_item">
+                                                    <t t-esc="categ['product_count']" />
+                                                </span>
+                                            </div>
+                                            <div>New items</div>
+                                            <p class="card-text text" t-if="is_show_categ_desc">
+                                                <t t-raw="categ['categ_desc']" />
+                                            </p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 27 -->
+
+    <!-- Category snippet 28 -->
+    <template id="sh_category_snippet_item_28" name="Sh Snippet item 28">
+        <section class="owl-carousel owl-theme card-deck sh_category_snippet_28">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-12 sh_item">
+                                <div class="sh_cat_box">
+                                    <div class="sh_cat_img">
+                                        <a t-att-href="categ['categ_url']">
+                                            <img t-if="is_show_categ_image"
+                                                t-att-src="categ['categ_img_url']"
+                                                class="card-img-top" alt="Products" />
+
+                                        </a>
+                                        <div class="sh_cat_text">
+                                            <div class="sh_title">
+                                                <a t-att-href="categ['categ_url']"
+                                                    style="text-decoration: none;">
+                                                    <t t-esc="categ['categ_name']" />
+                                                </a>
+
+                                                <span class="sh_count">
+                                                    <t t-esc="categ['product_count']" />
+                                                </span>
+                                            </div>
+                                            <p class="card-text text" t-if="is_show_categ_desc">
+                                                <t t-raw="categ['categ_desc']" />
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 28 -->
+
+    <!-- Category snippet 29 -->
+    <template id="sh_category_snippet_item_29" name="Sh Snippet item 29">
+        <section class="owl-carousel owl-theme card-deck sh_category_snippet_29">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-6 p-0">
+                                <div class="sh_item_product_box">
+                                    <span>
+                                        <t t-esc="categ['product_count']" />
+                                    </span>
+                                    <div class="sh_content">
+                                        <h2 class="sh_item_title">
+                                            <a t-att-href="categ['categ_url']">
+                                                <t t-esc="categ['categ_name']" />
+                                            </a>
+                                        </h2>
+                                        <ul class="sh_item_sub_cat">
+                                            <li>
+                                                <a t-att-href="categ['categ_url']">
+                                                    <t t-raw="categ['categ_desc']" />
+                                                </a>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                    <a t-att-href="categ['categ_url']" class="sh_cat_image">
+                                        <div class="sh_content_image">
+                                            <div class="sh_item_image">
+
+                                                <img t-if="is_show_categ_image"
+                                                    t-att-src="categ['categ_img_url']"
+                                                    class="card-img-top" alt="Products">
+
+                                                </img>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 29 -->
+
+    <!-- Category snippet 30 -->
+    <template id="sh_category_snippet_item_30" name="Sh Snippet item 30">
+        <section class="owl-carousel owl-theme card-deck sh_category_snippet_30">
+            <t t-if="list_categs">
+                <t t-foreach="list_categs" t-as="categ">
+                    <div class="container">
+                        <div class="sh_main_box">
+                            <div class="card sh_item_product_box">
+                                <a t-att-href="categ['categ_url']" class="sh_cat_image">
+                                    <div class="sh_content_image">
+                                        <div class="sh_item_image">
+                                            <img t-if="is_show_categ_image"
+                                                t-att-src="categ['categ_img_url']"
+                                                class="card-img-top" alt="Products">
+
+                                            </img>
+                                        </div>
+                                    </div>
+                                    <div class="sh_content">
+                                        <h2 class="sh_item_title">
+                                            <a t-att-href="categ['categ_url']">
+                                                <t t-esc="categ['categ_name']" />
+                                            </a>
+                                            <span>
+                                                <t t-esc="categ['product_count']" />
+                                            </span>
+                                        </h2>
+                                        <p class="sh_text">
+                                            <a t-att-href="categ['categ_url']">
+                                                <t t-raw="categ['categ_desc']" />
+                                            </a>
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </section>
+    </template>
+    <!-- Category snippet 30 -->
+</odoo>

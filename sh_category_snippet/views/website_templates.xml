@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="sh_category_snippet_website_snippet_options" inherit_id="website.snippet_options">
+        <xpath expr="//div" position="after">
+            <div
+                data-selector="#sh_category_snippet_section_1,#sh_category_snippet_section_2,
+                #sh_category_snippet_section_3,#sh_category_snippet_section_4,
+                #sh_category_snippet_section_5,#sh_category_snippet_section_6,
+                #sh_category_snippet_section_7,#sh_category_snippet_section_8,
+                #sh_category_snippet_section_9,#sh_category_snippet_section_10,
+                #sh_category_snippet_section_11,#sh_category_snippet_section_12,
+                #sh_category_snippet_section_13,#sh_category_snippet_section_14,
+                #sh_category_snippet_section_15,#sh_category_snippet_section_16,
+                #sh_category_snippet_section_17,#sh_category_snippet_section_18,
+                #sh_category_snippet_section_19,#sh_category_snippet_section_20,
+                #sh_category_snippet_section_21,#sh_category_snippet_section_22,
+                #sh_category_snippet_section_23,#sh_category_snippet_section_24,
+                #sh_category_snippet_section_25,#sh_category_snippet_section_26,
+                #sh_category_snippet_section_27,#sh_category_snippet_section_28,
+                #sh_category_snippet_section_29,#sh_category_snippet_section_30">
+                <t t-set="sh_categ_snipp_categories"
+                    t-value="request.env['product.public.category'].search([])" />
+                <t t-if="len(sh_categ_snipp_categories)">
+                    <t t-foreach="sh_categ_snipp_categories" t-as="categ">
+                        <t t-set="sh_categ_snipp_data_cls"
+                            t-value="'sh_categ_snipp_' + str(categ.id) + '_cend'" />
+                        <we-checkbox t-att-string="categ.name"
+                            t-att-data-select-class="sh_categ_snipp_data_cls" />
+                    </t>
+                </t>
+
+                <we-select string="Order by" data-attribute-name="data-order">
+                    <we-button data-select-attribute="">default</we-button>
+                    <we-button data-select-attribute="name asc">name (A-Z)</we-button>
+                    <we-button data-select-attribute="name desc">name (Z-A)</we-button>
+                    <we-button data-select-attribute="create_date asc">Create Date asc</we-button>
+                    <we-button data-select-attribute="create_date desc">Create Date desc</we-button>
+                    <we-button data-select-attribute="sequence asc">Sequence asc</we-button>
+                    <we-button data-select-attribute="sequence desc">Sequence desc</we-button>
+                </we-select>
+
+                <we-checkbox string="Description" data-select-data-attribute="true"
+                    data-attribute-name="displayDescription" />
+                <we-checkbox string="Image" data-select-data-attribute="true"
+                    data-attribute-name="displayImage" />
+                <we-checkbox string="Product Count" data-select-data-attribute="true"
+                    data-attribute-name="displayProductCount" />
+            </div>
+        </xpath>
+    </template>
+
+
+    <template id="sh_category_snippet_website_snippets" inherit_id="website.snippets"
+        name="Ecommerce Snippet">
+        <xpath expr="//div[@id='snippet_structure']" position="before">
+            <div id="sh_category_snippet" class="o_panel">
+                <div class="o_panel_header">
+                    Category snippet
+                </div>
+                <div class="o_panel_body">
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_1"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_1.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_2"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_2.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_3"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_3.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_4"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_4.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_5"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_5.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_6"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_6.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_7"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_7.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_8"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_8.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_9"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_9.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_10"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_10.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_11"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_11.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_12"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_12.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_13"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_13.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_14"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_14.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_15"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_15.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_16"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_16.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_17"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_17.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_18"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_18.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_19"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_19.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_20"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_20.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_21"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_21.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_22"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_22.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_23"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_23.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_24"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_24.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_25"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_25.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_26"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_26.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_27"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_27.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_28"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_28.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_29"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_29.svg" />
+                    <t t-snippet="sh_category_snippet.sh_category_snippet_tmpl_30"
+                        t-thumbnail="/sh_category_snippet/static/src/img/blocks/sh_category_30.svg" />
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

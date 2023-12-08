@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="sh_category_snippet_product_public_categ_form" model="ir.ui.view">
+        <field name="name">sh.category.snippet.product.public.categ.form</field>
+        <field name="model">product.public.category</field>
+        <field name="inherit_id" ref="website_sale.product_public_category_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_left')]" position="after">
+                <group name="group_sh_category_snippet">
+                    <field name="sh_category_snippet_desc" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

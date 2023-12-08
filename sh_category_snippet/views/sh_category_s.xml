@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ecommerce snippet 1 -->
+    <template id="sh_category_snippet_tmpl_1" name="Sh Snippet 1">
+        <section id="sh_category_snippet_section_1"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_1"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+
+    <!-- ecommerce snippet 2 -->
+    <template id="sh_category_snippet_tmpl_2" name="Sh Snippet 2">
+        <section id="sh_category_snippet_section_2"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_2"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- ecommerce snippet 2 -->
+
+    <!-- ecommerce snippet 3 -->
+    <template id="sh_category_snippet_tmpl_3" name="Sh Snippet 3">
+        <section id="sh_category_snippet_section_3"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_3"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- ecommerce snippet 3 -->
+
+    <!-- ecommerce snippet 4 -->
+    <template id="sh_category_snippet_tmpl_4" name="Sh Snippet 4">
+        <section id="sh_category_snippet_section_4"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_4"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="2">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- ecommerce snippet 4 -->
+
+    <!-- ecommerce snippet 5 -->
+    <template id="sh_category_snippet_tmpl_5" name="Sh Snippet 5">
+        <section id="sh_category_snippet_section_5"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_5"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="4">
+            <div class="container">
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- ecommerce snippet 5 -->
+
+    <!-- Category snippet 6 -->
+    <template id="sh_category_snippet_tmpl_6" name="Sh Snippet 6">
+        <section id="sh_category_snippet_section_6"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_6"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 6 -->
+
+    <!-- Category snippet 7 -->
+    <template id="sh_category_snippet_tmpl_7" name="Sh Snippet 7">
+        <section id="sh_category_snippet_section_7"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_7"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="4">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 7 -->
+
+    <!-- Category snippet 8 -->
+    <template id="sh_category_snippet_tmpl_8" name="Sh Snippet 8">
+        <section id="sh_category_snippet_section_8"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_8"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="2">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 8 -->
+
+    <!-- Category snippet 9 -->
+    <template id="sh_category_snippet_tmpl_9" name="Sh Snippet 9">
+        <section id="sh_category_snippet_section_9"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_9"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="2">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 9 -->
+
+    <!-- Category snippet 10 -->
+    <template id="sh_category_snippet_tmpl_10" name="Sh Snippet 10">
+        <section id="sh_category_snippet_section_10"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_10"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 10 -->
+
+    <!-- Category snippet 11 -->
+    <template id="sh_category_snippet_tmpl_11" name="Sh Snippet 11">
+        <section id="sh_category_snippet_section_11" class="js_cls_get_sh_categ_s_category"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_11"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 11 -->
+
+    <!-- Category snippet 12 -->
+    <template id="sh_category_snippet_tmpl_12" name="Sh Snippet 12">
+        <section id="sh_category_snippet_section_12"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_12"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 12 -->
+
+    <!-- Category snippet 13 -->
+    <template id="sh_category_snippet_tmpl_13" name="Sh Snippet 13">
+        <section id="sh_category_snippet_section_13"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_13"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="2">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 13 -->
+
+    <!-- Category snippet 14 -->
+    <template id="sh_category_snippet_tmpl_14" name="Sh Snippet 14">
+        <section id="sh_category_snippet_section_14"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_14"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 14 -->
+
+    <!-- Category snippet 15 -->
+    <template id="sh_category_snippet_tmpl_15" name="Sh Snippet 15">
+        <section id="sh_category_snippet_section_15"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_15"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="2">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 15 -->
+
+    <!-- Category snippet 16 -->
+    <template id="sh_category_snippet_tmpl_16" name="Sh Snippet 16">
+        <section id="sh_category_snippet_section_16"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_16"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 16 -->
+
+    <!-- Category snippet 17 -->
+    <template id="sh_category_snippet_tmpl_17" name="Sh Snippet 17">
+        <section id="sh_category_snippet_section_17"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_17"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- category snippet 17 -->
+
+    <!-- Category snippet 18 -->
+    <template id="sh_category_snippet_tmpl_18" name="Sh Snippet 18">
+        <section id="sh_category_snippet_section_18"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_18"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 18 -->
+
+    <!-- Category snippet 19 -->
+    <template id="sh_category_snippet_tmpl_19" name="Sh Snippet 19">
+        <section id="sh_category_snippet_section_19"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_19"
+            data-owl_item_mobile="1" data-owl_item_tablet="3" data-owl_item_desktop="4">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 19 -->
+
+    <!-- Category snippet 20 -->
+    <template id="sh_category_snippet_tmpl_20" name="Sh Snippet 20">
+        <section id="sh_category_snippet_section_20"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_20"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 20 -->
+
+    <!-- Category snippet 21 -->
+    <template id="sh_category_snippet_tmpl_21" name="Sh Snippet 21">
+        <section id="sh_category_snippet_section_21"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_21"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="2">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 21 -->
+
+    <!-- Category snippet 22 -->
+    <template id="sh_category_snippet_tmpl_22" name="Sh Snippet 22">
+        <section id="sh_category_snippet_section_22"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_22"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 22 -->
+
+    <!-- Category snippet 23 -->
+    <template id="sh_category_snippet_tmpl_23" name="Sh Snippet 23">
+        <section id="sh_category_snippet_section_23"
+            class="js_cls_get_sh_categ_s_category
+    sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_23"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 23 -->
+
+    <!-- Category snippet 24 -->
+    <template id="sh_category_snippet_tmpl_24" name="Sh Snippet 24">
+        <section id="sh_category_snippet_section_24"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_24"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="5">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 24 -->
+
+    <!-- Category snippet 25 -->
+    <template id="sh_category_snippet_tmpl_25" name="Sh Snippet 25">
+        <section id="sh_category_snippet_section_25"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_25"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 25 -->
+
+    <!-- Category snippet 26 -->
+    <template id="sh_category_snippet_tmpl_26" name="Sh Snippet 26">
+        <section id="sh_category_snippet_section_26"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_26"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 26 -->
+
+    <!-- Category snippet 27 -->
+    <template id="sh_category_snippet_tmpl_27" name="Sh Snippet 27">
+        <section id="sh_category_snippet_section_27"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_27"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 27 -->
+
+    <!-- Category snippet 28 -->
+    <template id="sh_category_snippet_tmpl_28" name="Sh Snippet 28">
+        <section id="sh_category_snippet_section_28"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_28"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 28 -->
+
+    <!-- Category snippet 29 -->
+    <template id="sh_category_snippet_tmpl_29" name="Sh Snippet 29">
+        <section id="sh_category_snippet_section_29"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_29"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 29 -->
+
+    <!-- Category snippet 30 -->
+    <template id="sh_category_snippet_tmpl_30" name="Sh Snippet 30">
+        <section id="sh_category_snippet_section_30"
+            class="js_cls_get_sh_categ_s_category sh_animation_part"
+            data-item_template="sh_category_snippet.sh_category_snippet_item_30"
+            data-owl_item_mobile="1" data-owl_item_tablet="2" data-owl_item_desktop="3">
+            <div class="container">
+
+                <div class="js_cls_render_dynamic_category_area o_not_editable" />
+            </div>
+        </section>
+    </template>
+    <!-- Category snippet 30 -->
+
+
+</odoo>
