@@ -1,0 +1,10 @@
+// FIXME: REMOVE OVERFLOW IN wrap WHEN FINALIZE
+// TO HIDE SCROLL IN ANIMATION.
+
+#wrap{
+overflow:hidden;
+}
+
+#wrapwrap{
+  overflow-x:hidden;
+}
