@@ -1,0 +1,436 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sh_snippet_adv
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-28 14:07+0000\n"
+"PO-Revision-Date: 2020-10-28 14:07+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Animation"
+msgstr "Animation"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Box Shadow"
+msgstr "Box Schatten"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Box Shadow Hover"
+msgstr "Box Shadow Hover"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_margin_widgets
+msgid "Margin Bottom"
+msgstr "Rand unten"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_margin_widgets
+msgid "Margin Left"
+msgstr "Rand links"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_margin_widgets
+msgid "Margin Right"
+msgstr "Margin Right"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_margin_widgets
+msgid "Margin Top"
+msgstr "Rand oben"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "None"
+msgstr "Keiner"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_padding_widgets
+msgid "Padding Bottom"
+msgstr "Polsterung unten"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_padding_widgets
+msgid "Padding Left"
+msgstr "Polsterung links"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_padding_widgets
+msgid "Padding Right"
+msgstr "Polsterung richtig"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_padding_widgets
+msgid "Padding Top"
+msgstr "Polsterung oben"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow 1"
+msgstr "Schatten 1"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow 2"
+msgstr "Schatten 2"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow 3"
+msgstr "Schatten 3"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow 4"
+msgstr "Schatten 4"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow 5"
+msgstr "Schatten 5"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow Hover 1"
+msgstr "Schattenschwebeflug 1"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow Hover 2"
+msgstr "Schattenschwebeflug 2"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow Hover 3"
+msgstr "Schattenschwebeflug 3"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow Hover 4"
+msgstr "Schattenschwebeflug 4"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow Hover 5"
+msgstr "Schattenschwebeflug 5"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounce"
+msgstr "prallen"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceInDown"
+msgstr "bounceInDown"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceInLeft"
+msgstr "bounceInLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceInRight"
+msgstr "bounceInRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceInUp"
+msgstr "bounceInUp"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceOut"
+msgstr "bounceOut"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceOutDown"
+msgstr "bounceOutDown"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceOutLeft"
+msgstr "bounceOutLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceOutRight"
+msgstr "bounceOutRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceOutUp"
+msgstr "bounceOutUp"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeIn"
+msgstr "einblenden"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInDown"
+msgstr "fadeInDown"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInDownBig"
+msgstr "fadeInDownBig"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInLeft"
+msgstr "fadeInLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInLeftBig"
+msgstr "fadeInLeftBig"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInRight"
+msgstr "fadeInRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInRightBig"
+msgstr "fadeInRightBig"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInUp"
+msgstr "fadeInUp"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInUpBig"
+msgstr "fadeInUpBig"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOut"
+msgstr "ausblenden"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutDown"
+msgstr "fadeOutDown"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutDownBig"
+msgstr "fadeOutDownBig"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutLeft"
+msgstr "fadeOutLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutLeftBig"
+msgstr "fadeOutLeftBig"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutRight"
+msgstr "fadeOutRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutRightBig"
+msgstr "fadeOutRightBig"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutUp"
+msgstr "fadeOutUp"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutUpBig"
+msgstr "fadeOutUpBig"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "flip"
+msgstr "Flip"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "flipInX"
+msgstr "flipInX"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "flipInY"
+msgstr "flipInY"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "flipOutX"
+msgstr "flipOutX"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "flipOutY"
+msgstr "flipOutY"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "hinge"
+msgstr "Scharnier"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "jackInTheBox"
+msgstr "Springteufel"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "lightSpeedIn"
+msgstr "lightSpeedIn"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "lightSpeedOut"
+msgstr "lightSpeedOut"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rollIn"
+msgstr "rollIn"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rollOut"
+msgstr "ausrollen"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateIn"
+msgstr "drehenIn"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateInDownLeft"
+msgstr "rotateInDownLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateInDownRight"
+msgstr "rotateInDownRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateInUpLeft"
+msgstr "rotateInUpLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateInUpRight"
+msgstr "rotateInUpRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateOut"
+msgstr "drehenOut"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateOutDownLeft"
+msgstr "rotateOutDownLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateOutDownRight"
+msgstr "rotateOutDownRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateOutUpLeft"
+msgstr "rotateOutUpLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateOutUpRight"
+msgstr "rotateOutUpRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideInDown"
+msgstr "slideInDown"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideInLeft"
+msgstr "slideInLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideInRight"
+msgstr "slideInRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideInUp"
+msgstr "slideInUp"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideOutDown"
+msgstr "slideOutDown"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideOutLeft"
+msgstr "slideOutLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideOutRight"
+msgstr "slideOutRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideOutUp"
+msgstr "slideOutUp"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "zoomIn"
+msgstr "hineinzoomen"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "zoomInDown"
+msgstr "zoomInDown"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "zoomInLeft"
+msgstr "zoomInLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "zoomInRight"
+msgstr "zoomInRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "zoomInUp"
+msgstr "zoomInUp"

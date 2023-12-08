@@ -1,0 +1,436 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sh_snippet_adv
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-28 14:07+0000\n"
+"PO-Revision-Date: 2020-10-28 14:07+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Animation"
+msgstr "الرسوم المتحركة"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Box Shadow"
+msgstr "مربع الظل"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Box Shadow Hover"
+msgstr "مربع الظل تحوم"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_margin_widgets
+msgid "Margin Bottom"
+msgstr "الهامش السفلي"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_margin_widgets
+msgid "Margin Left"
+msgstr "الهامش الأيسر"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_margin_widgets
+msgid "Margin Right"
+msgstr "الهامش الأيمن"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_margin_widgets
+msgid "Margin Top"
+msgstr "أعلى الهامش"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "None"
+msgstr "لا شيء"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_padding_widgets
+msgid "Padding Bottom"
+msgstr "أسفل الحشو"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_padding_widgets
+msgid "Padding Left"
+msgstr "المساحة المتروكة لليسار"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_padding_widgets
+msgid "Padding Right"
+msgstr "ترك مساحة لليمين"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options_padding_widgets
+msgid "Padding Top"
+msgstr "أعلى الحشو"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow 1"
+msgstr "الظل 1"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow 2"
+msgstr "الظل 2"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow 3"
+msgstr "الظل 3"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow 4"
+msgstr "الظل 4"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow 5"
+msgstr "الظل 5"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow Hover 1"
+msgstr "الظل تحوم 1"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow Hover 2"
+msgstr "الظل تحوم 2"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow Hover 3"
+msgstr "تحوم الظل 3"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow Hover 4"
+msgstr "تحوم الظل 4"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "Shadow Hover 5"
+msgstr "تحوم الظل 5"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounce"
+msgstr "وثب، ارتداد"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceInDown"
+msgstr "bounceInDown"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceInLeft"
+msgstr "ترتد في اليسار"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceInRight"
+msgstr "ترتد"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceInUp"
+msgstr "bounceInUp"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceOut"
+msgstr "ترتد"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceOutDown"
+msgstr "bounceOutDown"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceOutLeft"
+msgstr "bounceOutLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceOutRight"
+msgstr "bounceOutRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "bounceOutUp"
+msgstr "bounceOutUp"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeIn"
+msgstr "اختفي"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInDown"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInDownBig"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInLeft"
+msgstr "تتلاشى في اليسار"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInLeftBig"
+msgstr "تتلاشى في اليسار"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInRight"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInRightBig"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInUp"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeInUpBig"
+msgstr "fadeInUpBig"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOut"
+msgstr "تتآكل"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutDown"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutDownBig"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutLeft"
+msgstr "تتلاشى اليسار"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutLeftBig"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutRight"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutRightBig"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutUp"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "fadeOutUpBig"
+msgstr "تتلاشى"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "flip"
+msgstr "يواجه"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "flipInX"
+msgstr "flipInX"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "flipInY"
+msgstr "فليبيني"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "flipOutX"
+msgstr "flipOutX"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "flipOutY"
+msgstr "الوجه"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "hinge"
+msgstr "مفصل"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "jackInTheBox"
+msgstr "جاك في الصندوق"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "lightSpeedIn"
+msgstr "lightSpeedIn"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "lightSpeedOut"
+msgstr "lightSpeedOut"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rollIn"
+msgstr "رولين"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rollOut"
+msgstr "يطرح"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateIn"
+msgstr "تناوب في"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateInDownLeft"
+msgstr "rotateInDownLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateInDownRight"
+msgstr "استدارة لليمين"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateInUpLeft"
+msgstr "rotateInUpLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateInUpRight"
+msgstr "rotateInUpRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateOut"
+msgstr "استدارة"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateOutDownLeft"
+msgstr "استدارة إلى اليسار"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateOutDownRight"
+msgstr "استدارة لليمين"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateOutUpLeft"
+msgstr "rotateOutUpLeft"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "rotateOutUpRight"
+msgstr "rotateOutUpRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideInDown"
+msgstr "انزلاق"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideInLeft"
+msgstr "انزلاق إلى اليسار"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideInRight"
+msgstr "انزلاق إلى اليمين"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideInUp"
+msgstr "slideInUp"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideOutDown"
+msgstr "الانزلاق"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideOutLeft"
+msgstr "الانزلاق لليسار"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideOutRight"
+msgstr "slideOutRight"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "slideOutUp"
+msgstr "slideOutUp"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "zoomIn"
+msgstr "تكبير"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "zoomInDown"
+msgstr "تكبير / تصغير"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "zoomInLeft"
+msgstr "تكبير / تصغير"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "zoomInRight"
+msgstr "تكبير / تصغير"
+
+#. module: sh_snippet_adv
+#: model_terms:ir.ui.view,arch_db:sh_snippet_adv.snippet_options
+msgid "zoomInUp"
+msgstr "ZoomInUp"
