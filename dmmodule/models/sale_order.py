@@ -105,9 +105,16 @@ class SaleOrder(models.Model):
         packages = list(map(lambda line: line.as_deliverymatch_packages(), order_lines))
 
         if len(combinable) > 0:
-            combined_qty = sum(c.product_uom_qty for c in combinable)
-            combined_weight = sum(c.product_template_id.weight * c.product_uom_qty for c in combinable)
-            packages.append(combinable[0].as_deliverymatch_packages(combined_qty, combined_weight))
+            combined_values = {
+                "weight": 0,
+                "volume": 0
+            }
+
+            for product in combinable:
+                combined_values["weight"] = combined_values["weight"] + (product.product_template_id.weight * product.product_uom_qty)
+                combined_values["volume"] = combined_values["volume"] + (product.volume * product.product_uom_qty)
+
+            packages.append(combinable[0].as_deliverymatch_packages(combined_values))
 
         return [i for i in ListHelper.flatten(packages) if i is not None]
 

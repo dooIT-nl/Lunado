@@ -39,9 +39,9 @@ class DmApi:
                 method=method, url=url, headers=headers, data=body
             )
 
-            self._logger.info(f"Request URL: {str(url)}")
-            self._logger.info(f"Request Body: {str(body)}")
-            self._logger.info(f"response:{str(response.text)}")
+            # self._logger.debug(f"Request URL: {str(url)}")
+            # self._logger.debug(f"Request Body: {str(body)}")
+            # self._logger.debug(f"response:{str(response.text)}")
 
             if return_raw: return response
 
@@ -426,8 +426,8 @@ class DmApi:
 
     def validate_shipment_options_response(self, response):
         try:
-            self._logger.info("Validating shipment options response...")
-            self._logger.info(f"response= {str(response)}")
+            self._logger.debug("Validating shipment options response...")
+            self._logger.debug(f"response= {str(response)}")
 
             if "status" in response and "code" in response and "message" in response:
                 if response["code"] != 30 and response["status"] != "success":

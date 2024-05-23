@@ -374,9 +374,16 @@ class StockPicking(models.Model):
         packages = list(map(lambda m: m.as_deliverymatch_packages(), move_ids))
 
         if len(combinable) > 0:
-            combined_qty = sum(c.product_uom_qty for c in combinable)
-            combined_weight = sum(c.product_tmpl_id.weight * c.product_uom_qty for c in combinable)
-            packages.append(combinable[0].as_deliverymatch_packages(combined_qty, combined_weight))
+            combined_values = {
+                "weight": 0,
+                "volume": 0
+            }
+
+            for product in combinable:
+                combined_values["weight"] = combined_values["weight"] + (product.product_tmpl_id.weight * product.product_uom_qty)
+                combined_values["volume"] = combined_values["volume"] + (product.product_id.volume * product.product_uom_qty)
+
+            packages.append(combinable[0].as_deliverymatch_packages(combined_values))
 
         return [i for i in ListHelper.flatten(packages) if i is not None]
 
