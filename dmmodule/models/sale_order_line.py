@@ -35,8 +35,8 @@ class SaleOrderLine(models.Model):
                 if not package.id:
                     continue
 
-                package_max = package.qty if not is_combined else package.get_max_volume()
-                package_min = package.min_qty if not is_combined else package.min_volume
+                package_max = package.qty if not is_combined else package.package_type_id.get_max_volume()
+                package_min = package.min_qty if not is_combined else package.package_type_id.min_volume
                 if remaining_quantity > 0 and remaining_quantity >= package_min and (remaining_quantity > package_max or remaining_quantity <= package_max):
                     package_type = package.package_type_id
                     amount_in_box = self._calculate_amount_in_box(remaining_quantity, package_max)

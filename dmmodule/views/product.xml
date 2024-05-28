@@ -25,8 +25,14 @@
                         <field name="dm_combinable_in_package" />
                     </group>
                 </page>
-            </notebook>
 
+                <page string="DeliveryMatch | Extra DG information" name="DeliveryMatch" attrs="{'invisible': [('dm_is_dangerous', '=', False)]}">
+                    <group string="">
+                        <field name="un_number"/>
+                        <field name="dg_packing_instruction" />
+                    </group>
+                </page>
+            </notebook>
         </field>
     </record>
 </odoo>

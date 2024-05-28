@@ -7,8 +7,6 @@
         <field name="inherit_id" ref="product.product_packaging_tree_view2"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='qty']" position="before">
-                <field name="min_volume"/>
-                <field name="max_volume"/>
                 <field name="min_qty"/>
             </xpath>
         </field>

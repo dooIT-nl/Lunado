@@ -112,7 +112,7 @@ class SaleOrder(models.Model):
 
             for product in combinable:
                 combined_values["weight"] = combined_values["weight"] + (product.product_template_id.weight * product.product_uom_qty)
-                combined_values["volume"] = combined_values["volume"] + (product.volume * product.product_uom_qty)
+                combined_values["volume"] = combined_values["volume"] + (product.product_template_id.volume * product.product_uom_qty)
 
             packages.append(combinable[0].as_deliverymatch_packages(combined_values))
 
@@ -237,7 +237,8 @@ class SaleOrder(models.Model):
                     country_origin=product_line.dm_country_origin,
                     value=product_line.list_price,
                     quantity=quantity,
-                    custom1=custom1
+                    custom1=custom1,
+                    dangerous_goods={"UN": product_line.un_number, "packingType": product_line.dg_packing_instruction}
                 )
 
                 products.add_product(product)

@@ -16,3 +16,4 @@ from . import stock_move
 from . import dm_label
 from . import stock_move_line
 from . import api_key
+from . import stock_package_type

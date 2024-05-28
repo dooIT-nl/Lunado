@@ -16,9 +16,12 @@ class Product(models.Model):
     dm_send_lot_code = fields.Boolean(string="WSL lotcode")
     dm_combinable_in_package = fields.Boolean(string="Combinable in packages")
 
+    un_number = fields.Char(string="UN Number")
+    dg_packing_instruction = fields.Char(string="Packaging instruction")
+
 
 class DmProduct:
-    def __init__(self, content, description, weight, length, width, height, warehouse_id, value, stock, quantity, sku=None, barcode=None, is_fragile=False, is_dangerous=False, hscode=None, country_origin=None, custom1=None):
+    def __init__(self, content, description, weight, length, width, height, warehouse_id, value, stock, quantity, sku=None, barcode=None, is_fragile=False, is_dangerous=False, hscode=None, country_origin=None, custom1=None, dangerous_goods=None):
         
         if not country_origin:
             country_origin = ""
@@ -50,6 +53,7 @@ class DmProduct:
         self.country_origin = country_origin
         self.quantity = quantity
         self.custom1 = custom1
+        self.dangerous_goods = dangerous_goods
 
         for attribute, value in vars().items():
             if not value and attribute == "warehouse_id":
@@ -121,6 +125,9 @@ class DmProducts:
                 "countryOfOrigin": product.country_origin,
                 "custom1": product.custom1
             }
+
+            if product.dangerous_goods is not None:
+                formatted_product["dangerousGoods"] = product.dangerous_goods
 
             if not Helper.is_empty(product.sku):
                 formatted_product['SKU'] = product.sku
