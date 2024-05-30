@@ -7,38 +7,38 @@ from werkzeug.exceptions import BadRequest
 
 
 class Callback(odoo.http.Controller):
-    @route('/deliverymatch/callback/<int:sale_id>', auth='api_key', website=True, type='json', methods=['POST'])
-    def handler(self, sale_id):
+    @route('/deliverymatch/callback/<int:delivery_order_number>', auth='api_key', website=True, type='json', methods=['POST'])
+    def handler(self, delivery_order_number):
         data = request.httprequest.data
         req = yaml.load(data, Loader=None)
 
-        stock_picking = request.env["stock.picking"].search([("id", "=", sale_id)])
+        stock_picking = request.env["stock.picking"].search([("delivery_order_number", "=", delivery_order_number)])
 
         if not stock_picking:
             raise NotFound("No such sale")
 
-        if ('status' not in req) or ('labels' not in req):
+        if ('status' not in req) or ('packages' not in req):
             raise BadRequest("Incorrect payload")
 
         if len(stock_picking.labels) == 0:
-            for index, label in enumerate(req["labels"]):
+            for index, package in enumerate(req["packages"]):
                 try:
                     stock_picking.write({"labels": [(0, 0, {
-                        "label_url": label["labelURL"],
-                        "barcode": label["barcode"],
-                        "tracking_url": label["trackingURL"] if "trackingURL" in label else "",
-                        "weight": stock_picking.packages[index].weight,
-                        "length": stock_picking.packages[index].length,
-                        "height": stock_picking.packages[index].height,
-                        "width": stock_picking.packages[index].width,
-                        "type": stock_picking.packages[index].type,
-                        "description": stock_picking.packages[index].description,
+                        "label_url": package["labelURL"],
+                        "barcode": package["barcode"],
+                        "tracking_url": package["trackingURL"] if "trackingURL" in package else "",
+                        "weight": package["weight"],
+                        "length": package["length"],
+                        "height": package["height"],
+                        "width": package["width"],
+                        "type": package["type"],
+                        "description": package["description"],
                     })]})
                 except IndexError:
                     stock_picking.write({"labels": [(0, 0, {
-                        "label_url": label["labelURL"],
-                        "barcode": label["barcode"],
-                        "tracking_url": label["trackingURL"] if "trackingURL" in label else "",
+                        "label_url": package["labelURL"],
+                        "barcode": package["barcode"],
+                        "tracking_url": package["trackingURL"] if "trackingURL" in package else "",
                     })]})
 
         stock_picking.dm_status = req['status']

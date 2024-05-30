@@ -60,7 +60,7 @@ class DmProduct:
                 self.warehouse_id = 1
                 # raise DeliveryMatchException("Warehouse ID missing while fetching products.")
 
-            if not value and attribute not in ["is_fragile", "is_dangerous", "hscode", "country_origin", "stock", "warehouse_id", "custom1", "barcode", "sku"]:
+            if not value and attribute not in ["is_fragile", "is_dangerous", "hscode", "country_origin", "stock", "warehouse_id", "custom1", "barcode", "sku", "dangerous_goods"]:
                 raise DeliveryMatchException(f"{attribute} is missing. In {content}.") 
 
 

@@ -334,7 +334,7 @@ class StockPicking(models.Model):
                     value=product_line.list_price,
                     quantity=quantity,
                     custom1=custom1,
-                    dangerous_goods={"UN": product_line.un_number, "packingType": product_line.dg_packing_instruction}
+                    dangerous_goods={"UN": product_line.un_number, "packingType": product_line.dg_packing_instruction} if product_line.dm_is_dangerous else None
                 )
 
                 products.add_product(product)
@@ -531,9 +531,21 @@ class StockPicking(models.Model):
             products = self.get_products_details()
 
             packages = list(map(lambda p: p.to_api_format(), self.packages)) if bool(self.config_attribute('calculate_packages')) else self.get_sales_order_lines_as_packages()
+
+            sender_name = None
+            if hasattr(self, 'x_studio_dropshipment'):
+                sender_name = self.partner_id.parent_id.name if self.x_studio_dropshipment else None
+
+            custom_fields = None
+            if hasattr(self, 'x_studio_url_pakbon'):
+                custom_fields = {"WesselingPakbon": self.x_studio_url_pakbon}
+
+
             booking_details = order_handler.book_shipment(
                 shipment, customer, products, self.is_delivery(),
-                packages=packages
+                packages=packages,
+                sender_name=sender_name,
+                custom_fields=custom_fields
             )
 
             for index, label in enumerate(booking_details.get("packages")):

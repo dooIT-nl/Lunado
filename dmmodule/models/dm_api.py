@@ -78,7 +78,7 @@ class DmApi:
         return request_url
 
     def reqeust_book_shipment(
-            self, customer: Customer, shipment: Shipment, products: DmProducts, packages = None
+            self, customer: Customer, shipment: Shipment, products: DmProducts, packages = None, sender_name=None, custom_fields=None
     ):
         try:
             self._logger.info("Posting book shipment")
@@ -136,8 +136,14 @@ class DmApi:
                 "weight": products.total_weight(),
             }
 
-            if(not Helper.is_empty(customer.address2)):
-                body['customer']['address']['address2'] = customer.address2
+            if not Helper.is_empty(customer.address2):
+                body['customer'] = {'address': {'address2': customer.address2}}
+
+            if sender_name is not None:
+                body["sender"] = {"address": {"companyName": sender_name}}
+
+            if custom_fields is not None:
+                body["customFields"] = custom_fields
       
             if packages:
                 body.update({"packages": {"package": packages}})
@@ -160,7 +166,8 @@ class DmApi:
             shipment: Shipment,
             products: DmProducts,
             format_shipping_options=True,
-            packages=None
+            packages=None,
+            sender_name=None
     ):
         try:
             odoo_order_number = shipment.odoo_order_display_name
@@ -220,6 +227,10 @@ class DmApi:
 
             if(not Helper.is_empty(customer.address2)):
                 body['customer']['address']['address2'] = customer.address2
+
+
+            if sender_name is not None:
+                body["sender"] = {"address": {"companyName": sender_name}}
 
             if packages:
                 body.update({"packages": {"package": packages}})

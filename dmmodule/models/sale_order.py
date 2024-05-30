@@ -238,7 +238,7 @@ class SaleOrder(models.Model):
                     value=product_line.list_price,
                     quantity=quantity,
                     custom1=custom1,
-                    dangerous_goods={"UN": product_line.un_number, "packingType": product_line.dg_packing_instruction}
+                    dangerous_goods={"UN": product_line.un_number, "packingType": product_line.dg_packing_instruction} if product_line.dm_is_dangerous else None
                 )
 
                 products.add_product(product)

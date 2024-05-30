@@ -34,12 +34,12 @@ class OrderHandler:
 
         self.api.set_channel(name)
 
-    def get_shipping_options(self, shipment: Shipment, customer: Customer, products: DmProducts, packages=None):
+    def get_shipping_options(self, shipment: Shipment, customer: Customer, products: DmProducts, packages=None, sender_name=None):
         try:
             self.set_channel_name(shipment_type=shipment.type, is_franco=customer.is_franco)
 
             self._logger.info("Fetching shipping options")
-            shipping_options = self.api.request_shipping_options(customer, shipment, products, packages=packages)
+            shipping_options = self.api.request_shipping_options(customer, shipment, products, packages=packages, sender_name=sender_name)
             return shipping_options
 
         except DeliveryMatchException as e:
@@ -69,12 +69,11 @@ class OrderHandler:
             self._logger.error(traceback.format_exc())
             raise Exception("An error occurred while fetching the shipping option by preference")
 
-    def book_shipment(self, shipment: Shipment, customer: Customer, products: DmProducts, is_delivery=False,
-                      packages=None):
+    def book_shipment(self, shipment: Shipment, customer: Customer, products: DmProducts, is_delivery=False, packages=None, sender_name=None, custom_fields=None):
         try:
             self._logger.info("Booking shipment")
             self.set_channel_name(shipment_type=shipment.type, is_franco=customer.is_franco)
-            booking_response: dict = self.api.reqeust_book_shipment(customer, shipment, products, packages=packages)
+            booking_response: dict = self.api.reqeust_book_shipment(customer, shipment, products, packages=packages, sender_name=sender_name, custom_fields=custom_fields)
             # returns a dictionary with the following structure: tracking_url, shipment_label, booked_timestamp
             return booking_response
 
