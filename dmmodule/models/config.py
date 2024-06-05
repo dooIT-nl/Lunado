@@ -34,13 +34,16 @@ class Config(models.TransientModel):
             ("earliest", "Earliest date"),
             (
                 "most_green",
-                "Greenest delivery (Only possible in accordance with Big Mile)",
+                "Greenest delivery (Only possible in accordance with BigMile)",
             ),
             ("nothing", "No auto selection"),
         ],
         required=True,
-        string="Auto select delivery option preference *",
+        string="Auto select delivery option preference",
     )
+
+    # BOOK ORDER VALIDATION
+    book_order_validation = fields.Boolean(string="Book order validation", default=False)
 
     def get_values(self):
         res = super(Config, self).get_values()
@@ -62,6 +65,8 @@ class Config(models.TransientModel):
             package_length=self.env["ir.config_parameter"].sudo().get_param("dmmodule.package_length", default=10),
             package_width=self.env["ir.config_parameter"].sudo().get_param("dmmodule.package_width", default=10),
             package_height=self.env["ir.config_parameter"].sudo().get_param("dmmodule.package_height", default=10),
+            book_order_validation=self.env["ir.config_parameter"].sudo().get_param("dmmodule.book_order_validation",default=False),
+
         )
         return res
 
@@ -83,6 +88,7 @@ class Config(models.TransientModel):
         self.env["ir.config_parameter"].sudo().set_param("dmmodule.package_length", self.package_length)
         self.env["ir.config_parameter"].sudo().set_param("dmmodule.package_width", self.package_width)
         self.env["ir.config_parameter"].sudo().set_param("dmmodule.package_height", self.package_height)
+        self.env["ir.config_parameter"].sudo().set_param("dmmodule.book_order_validation", self.book_order_validation)
 
         self.update_sale_orders()
         self.update_deliveries()

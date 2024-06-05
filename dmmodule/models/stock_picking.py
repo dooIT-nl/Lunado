@@ -1,16 +1,19 @@
 # stock.picking
-from odoo import api, fields, models, _
+import json
+import logging
+import traceback
+
+from odoo import api, fields, models
 from odoo.exceptions import UserError
-import requests, json, traceback, logging, base64
-from .helper import Helper
-from .shipment import Shipment
-from .product import DmProduct, DmProducts
+
 from .customer import Customer
 from .deliverymatch_exception import DeliveryMatchException
-from .order_handler import OrderHandler
-from .shipping_option import ShippingOption, ShippingOptions
+from .helper import Helper
 from .odoo_db import OdooDb
-from .shipment_type import ShipmentType
+from .order_handler import OrderHandler
+from .product import DmProduct, DmProducts
+from .shipment import Shipment
+from .shipping_option import ShippingOption
 from ..helpers.list_helper import ListHelper
 
 
@@ -58,15 +61,20 @@ class StockPicking(models.Model):
     tracking_urls = fields.Html(string="Tracking URL's", copy=False)
     delivery_order_number = fields.Char(string="Delivery order number", copy=False)
     get_carrier_from_sales_order = fields.Boolean(copy=False, default=False)
-    dm_is_inbound = fields.Boolean(string='Inbound', related='picking_type_id.dm_is_inbound', copy=False, default=False)
+    dm_is_inbound = fields.Boolean(string='Inbound', compute='_compute_is_inbound')
     show_product_hscode = fields.Boolean(string="show HS-CODE", copy=False, default=False)
-
+    dm_config_id = fields.Integer("DM Configuration ID", copy=False, default=None)
     def config_attribute(self, attribute, default=None):
         return (
             self.env["ir.config_parameter"]
             .sudo()
             .get_param(f"dmmodule.{attribute}", default=default)
         )
+
+    @api.model
+    def _compute_is_inbound(self):
+        for record in self:
+            record.dm_is_inbound = not self.is_delivery()
 
     @api.model
     def _compute_show_packages(self):
@@ -150,7 +158,7 @@ class StockPicking(models.Model):
         return super(StockPicking, self).write(values)
 
     def get_warehouse(self):
-        is_inbound: bool = bool(self.picking_type_id.dm_is_inbound)
+        is_inbound: bool = bool(self.picking_type_id.code != "outgoing")
 
         lot_stock_id = self.location_id.id
 
@@ -184,12 +192,7 @@ class StockPicking(models.Model):
         return {"warning": {"title": title, "message": message}}
 
     def is_delivery(self) -> bool:
-        is_inbound: bool = self.picking_type_id.dm_is_inbound
-
-        if is_inbound is True:
-            return False
-
-        return True
+        return self.picking_type_id.code == "outgoing"
 
     def get_purchase_order(self, attribute, search_value):
         purchase_order = self.env["purchase.order"].search([(attribute, "=", search_value)], limit=1)
@@ -239,7 +242,6 @@ class StockPicking(models.Model):
 
         # outbound
         if self.is_delivery():
-            shipment_type: ShipmentType = ShipmentType.DELIVERY_ORDER
             is_external_warehouse: bool = self.get_is_external_warehouse(location_id=self.location_id.id)
             if self.get_determine_delivery_date():
                 pickup_date = Helper.remove_time_from_datetime(self.scheduled_date)
@@ -247,17 +249,15 @@ class StockPicking(models.Model):
         # inbound
         if not self.is_delivery():
             pickup_date = Helper.remove_time_from_datetime(self.scheduled_date)
-            shipment_type: ShipmentType = ShipmentType.INBOUND_ORDER
             is_external_warehouse: bool = self.get_is_external_warehouse(location_id=self.location_dest_id.id)
 
         shipment = Shipment(
             odoo_order_display_name=self.delivery_order_number,
             incoterm=self.sale_id.incoterm.code if self.sale_id.incoterm.code else None,
-            type=shipment_type,
             odoo_order_id=self.id,
             id=self.dm_shipment_id,
             reference=self.sale_id.client_order_ref,
-            inbound=self.picking_type_id.dm_is_inbound,
+            inbound=(self.picking_type_id.code != "outgoing"),
             is_external_warehouse=is_external_warehouse,
             pickup_date=pickup_date
         )
@@ -287,7 +287,7 @@ class StockPicking(models.Model):
 
     def get_products_details(self) -> DmProducts:
         try:
-            is_inbound: bool = self.picking_type_id.dm_is_inbound
+            is_inbound: bool = self.picking_type_id.code != "outgoing"
             override_length: bool = self.override_product_length()
             products: DmProducts = DmProducts()
             custom1 = ""
@@ -298,9 +298,8 @@ class StockPicking(models.Model):
                 length = product_line.dm_length
                 dm_warehouse_id = self.get_warehouse().warehouse_options  # dm_warehouse_number
 
-                if (hasattr(ol, 'x_studio_hoeveelheid') == True and hasattr(ol,
-                                                                            'x_studio_lengte') == True and override_length == True):
-                    if (ol.x_studio_lengte > 0):
+                if (hasattr(ol, 'x_studio_hoeveelheid') == True and hasattr(ol, 'x_studio_lengte') == True and override_length == True):
+                    if ol.x_studio_lengte > 0:
                         length = ol.x_studio_lengte * 100
                         quantity = ol.x_studio_hoeveelheid  # Maatwerk Lunado Hoeveelheid
 
@@ -311,7 +310,7 @@ class StockPicking(models.Model):
                 if product_line.dm_send_lot_code == True and is_inbound == False:
                     custom1 = Helper.remove_letters_from_str(self.sale_id.display_name)
 
-                if (product_line.dm_send_lot_code == True and is_inbound == True):
+                if product_line.dm_send_lot_code == True and is_inbound == True:
                     if self.origin != "False" or self.origin != False:
                         purchase_order = self.get_purchase_order("name", self.origin)
                         custom1 = Helper.remove_letters_from_str(purchase_order.origin)
@@ -398,6 +397,11 @@ class StockPicking(models.Model):
     def show_shipping_options(self):
         try:
 
+            # IF SHIPMENT OPTION AUTO SELECT IS ACTIVATED
+            if self.get_delivery_option_preference() != "nothing":
+                self.set_shipping_option()
+                return
+
             order_handler = OrderHandler(
                 self.get_base_url(),
                 self.get_api_key(),
@@ -409,7 +413,7 @@ class StockPicking(models.Model):
             products = self.get_products_details()
             packages = self.get_sales_order_lines_as_packages()
 
-            shipping_options = order_handler.get_shipping_options(shipment, customer, products, packages=packages)
+            shipping_options = order_handler.get_shipping_options(shipment, customer, products, packages=packages, operation_type=self.picking_type_id.name)
 
             if bool(self.config_attribute("calculate_packages")):
                 self.packages.unlink()
@@ -457,10 +461,6 @@ class StockPicking(models.Model):
 
     def set_shipping_option(self):
         try:
-            shipping_preference = self.get_delivery_option_preference()
-
-            if shipping_preference == "nothing":
-                return
 
             order_handler = OrderHandler(
                 self.get_base_url(),
@@ -473,21 +473,20 @@ class StockPicking(models.Model):
             products = self.get_products_details()
             packages = self.get_sales_order_lines_as_packages()
 
-            shipping_option: ShippingOption = (
-                order_handler.get_shipping_option_by_preference(
-                    shipment, customer, products, shipping_preference, self.is_delivery(), packages=packages
-                )
+            shipping_option : ShippingOption = order_handler.get_shipping_option_by_preference(
+                shipment=shipment,
+                customer=customer,
+                products=products,
+                preference=self.get_delivery_option_preference(),
+                operation_type=self.picking_type_id.name,
+                packages=packages,
             )
 
-            stockpicking = self.env["stock.picking"].search(
-                [("id", "=", self._origin.id)]
-            )
+            stockpicking = self.env["stock.picking"].search([("id", "=", self._origin.id)])
             stockpicking.dm_shipment_id = shipping_option.shipment_id
             stockpicking.dm_carrier_name = shipping_option.carrier_name
             stockpicking.dm_service_level_name = shipping_option.carrier_name
-            stockpicking.dm_service_level_description = (
-                shipping_option.service_level_description
-            )
+            stockpicking.dm_service_level_description = (shipping_option.service_level_description)
             stockpicking.dm_delivery_date = shipping_option.delivery_date
             stockpicking.dm_pickup_date = shipping_option.date_pickup
 
@@ -496,9 +495,7 @@ class StockPicking(models.Model):
 
             stockpicking.dm_method_id = shipping_option.method_id
             stockpicking.dm_check_id = shipping_option.check_id
-            stockpicking.dm_shipment_url = Helper().view_shipment_url(
-                self.get_base_url(), shipping_option.shipment_id
-            )
+            stockpicking.dm_shipment_url = Helper().view_shipment_url(self.get_base_url(), shipping_option.shipment_id)
             stockpicking.delivery_option_selected = True
 
             self.message_post(
@@ -517,6 +514,11 @@ class StockPicking(models.Model):
 
     def book_delivery(self, status_to_hub=False):
         try:
+            validate_order = bool(self.config_attribute(attribute='book_order_validation', default=False))
+            if validate_order:
+                self.action_set_quantities_to_reservation()
+                if self._check_backorder():
+                    return self.button_validate()
 
             order_handler = OrderHandler(
                 self.get_base_url(),
@@ -525,7 +527,7 @@ class StockPicking(models.Model):
             )
 
             shipment = self.get_shipment_details()
-            if (status_to_hub): shipment.to_hub = status_to_hub
+            if status_to_hub: shipment.to_hub = status_to_hub
 
             customer = self.get_customer_details()
             products = self.get_products_details()
@@ -533,16 +535,17 @@ class StockPicking(models.Model):
             packages = list(map(lambda p: p.to_api_format(), self.packages)) if bool(self.config_attribute('calculate_packages')) else self.get_sales_order_lines_as_packages()
 
             sender_name = None
-            if hasattr(self, 'x_studio_dropshipment'):
-                sender_name = self.partner_id.parent_id.name if self.x_studio_dropshipment else None
+            if hasattr(self.sale_id, 'x_studio_dropshipment'):
+                sender_name = self.partner_id.parent_id.name if self.sale_id.x_studio_dropshipment else None
 
             custom_fields = None
-            if hasattr(self, 'x_studio_url_pakbon'):
-                custom_fields = {"WesselingPakbon": self.x_studio_url_pakbon}
+            if hasattr(self.sale_id, 'x_studio_url_pakbon'):
+                custom_fields = {"WesselingPakbon": self.sale_id.x_studio_url_pakbon}
 
 
             booking_details = order_handler.book_shipment(
-                shipment, customer, products, self.is_delivery(),
+                shipment, customer, products, is_delivery=self.is_delivery(),
+                operation_type=self.picking_type_id.name,
                 packages=packages,
                 sender_name=sender_name,
                 custom_fields=custom_fields
@@ -575,15 +578,14 @@ class StockPicking(models.Model):
             stock_picking_order.shipment_label_attachment = booking_details.get("shipment_label")
 
             if status_to_hub:
-                self.message_post(
-                    body=f"Order booked to HUB in DeliveryMatch on: {booked_timestamp}"
-                )
+                self.message_post(body=f"Order booked to HUB in DeliveryMatch on: {booked_timestamp}")
             else:
+                self.message_post(body=f"Order booked to carrier in DeliveryMatch on: {booked_timestamp}")
 
-                self.message_post(
-                    body=f"Order booked to carrier in DeliveryMatch on: {booked_timestamp}"
-                )
             self.dm_shipment_booked = True
+
+            if validate_order:
+                self.button_validate()
 
         except DeliveryMatchException as e:
             if status_to_hub:
@@ -640,7 +642,7 @@ class StockPicking(models.Model):
         body = {
             "client": {
                 "id": self.get_client_id(),
-                "channel": order_handler.set_channel_name(shipment.type, customer.is_franco),
+                "channel": order_handler.set_channel_name(self.picking_type_id.name, customer.is_franco),
                 "action": "select",
             },
             "shipment": {
@@ -703,6 +705,7 @@ class StockPicking(models.Model):
 
         getNewShipment = order_handler.api.get_shipment(shipment_id)
 
+        self.dm_carrier_name = getNewShipment.get('carrier').get('name')
         self.dm_service_level_name = getNewShipment.get('serviceLevel').get('name')
         self.dm_service_level_description = getNewShipment.get('serviceLevel').get('description')
         self.dm_delivery_date = getNewShipment.get('shipmentMethod').get('dateDelivery')

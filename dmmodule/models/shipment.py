@@ -1,6 +1,5 @@
 from .deliverymatch_exception import DeliveryMatchException
 import logging, traceback
-from .shipment_type import ShipmentType
 from .helper import Helper
 
 _logger = logging.getLogger("DeliveryMatch - Shipment")
@@ -12,7 +11,6 @@ class Shipment:
             self,
             odoo_order_display_name,
             incoterm,
-            type: ShipmentType,
             odoo_order_id=None,
             id=None,
             status="new",
@@ -31,7 +29,6 @@ class Shipment:
         try:
             self.odoo_order_display_name = odoo_order_display_name
             self.incoterm = incoterm
-            self.type = type
             self.odoo_order_id = odoo_order_id
             self.id = id
             self.status = status

@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="stock.view_picking_form" />
         <field name="arch" type="xml">
             <xpath expr="." position="inside">
-                <link rel="stylesheet" href="dmmodule/static/src/css/deliverymatch.css"/>
+                <link rel="stylesheet" href="/dmmodule/static/src/css/deliverymatch.css"/>
             </xpath> 
 
             <field name="partner_id" position="after">

@@ -168,5 +168,6 @@ class Helper:
         date_string = date_time_object.strftime('%Y-%m-%d')
         return date_string
 
+    @staticmethod
     def is_empty(value) -> bool:
-        return (value == None or value == "" or value == False or value == 0 or value == "0" or value =="False")
+        return value is None or value == "" or value == False or value == 0 or value == "0" or value == "False"

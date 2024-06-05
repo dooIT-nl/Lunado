@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="." position="inside">
-                <link rel="stylesheet" href="dmmodule/static/src/css/deliverymatch.css"/>
+                <link rel="stylesheet" href="/dmmodule/static/src/css/deliverymatch.css"/>
             </xpath>
 
             <xpath expr="//field[@name='tax_totals']" position="after">

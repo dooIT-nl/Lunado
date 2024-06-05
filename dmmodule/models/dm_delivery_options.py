@@ -67,7 +67,7 @@ class DmDeliveryOptions(models.Model):
         client_id = delivery_order.get_client_id()
 
         dm_api = DmApi(base_url, api_key, client_id)
-        dm_api.updateShipmentMethod(selected_delivery_option.shipmentId, odoo_order_id, selected_delivery_option.methodId, selected_delivery_option.deliveryDate)
+        dm_api.update_shipment_method(selected_delivery_option.shipmentId, odoo_order_id, selected_delivery_option.methodId, selected_delivery_option.deliveryDate)
 
         # remove NOT SELECTED delivery options
         self.remove_delivery_options(odoo_order_id)
@@ -116,7 +116,7 @@ class DmDeliveryOptions(models.Model):
         client_id = update_sale_order.get_client_id()
 
         dm_api = DmApi(base_url, api_key, client_id)
-        dm_api.updateShipmentMethod(selected_delivery_option.shipmentId, odooOrderId, selected_delivery_option.methodId, selected_delivery_option.deliveryDate)
+        dm_api.update_shipment_method(selected_delivery_option.shipmentId, odooOrderId, selected_delivery_option.methodId, selected_delivery_option.deliveryDate)
 
         # remove NOT SELECTED delivery options
         self.remove_delivery_options(odooOrderId)

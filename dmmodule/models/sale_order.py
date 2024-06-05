@@ -1,9 +1,5 @@
-import json
-from functools import reduce
-
-from odoo import api, fields, models, _, exceptions
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-import requests
 import traceback
 import logging
 from .deliverymatch_exception import DeliveryMatchException
@@ -14,14 +10,10 @@ from .odoo_db import OdooDb
 from .shipping_option import ShippingOption
 from .order_handler import OrderHandler
 from .shipment import Shipment
-from .dm_api import DmApi
-import datetime
-from .shipment_type import ShipmentType
 from ..helpers.list_helper import ListHelper
 
 
 class SaleOrder(models.Model):
-    # name="dm.sale.order"
     _logger = logging.getLogger("DeliveryMatch - SaleOrder")
     _inherit = "sale.order"
     # dm_shipment_url = "https://engine-test.deliverymatch.eu/shipment/view/"
@@ -171,16 +163,15 @@ class SaleOrder(models.Model):
     def get_shipment_details(self):
         shipment_id = self.dm_shipment_id
 
-        if (Helper.is_empty(shipment_id)):
+        if Helper.is_empty(shipment_id):
             shipment_id = False
 
         status: str = "new"
-        if (self.config_sale_order_as_draft()): status = "DRA"
+        if self.config_sale_order_as_draft(): status = "DRA"
 
         shipment = Shipment(
             odoo_order_display_name=self.display_name,
             incoterm=self.incoterm.code if self.incoterm.code else None,
-            type=ShipmentType.SALES_ORDER,
             odoo_order_id=self.id,
             id=shipment_id,
             reference=self.client_order_ref,
@@ -263,14 +254,14 @@ class SaleOrder(models.Model):
             products = self.get_products_details()
             packages = self.get_sales_order_lines_as_packages()
 
-            booking_details = order_handler.book_shipment(shipment, customer, products, packages=packages)
+            booking_details = order_handler.book_shipment(shipment, customer, products, operation_type="saleorder", packages=packages)
             booked_timestamp = booking_details.get('booked_timestamp')
 
             sale_order = self.env["sale.order"].search([("id", "=", self.id)])
             sale_order.tracking_urls = booking_details.get("tracking_url")
             sale_order.shipment_label_attachment = booking_details.get("shipment_label")
 
-            if (status_to_hub):
+            if status_to_hub:
                 self.message_post(body=f"Order booked to HUB in DeliveryMatch on: {booked_timestamp}")
             else:
                 self.message_post(body=f"Order booked to carrier in DeliveryMatch on: {booked_timestamp}")
@@ -278,7 +269,7 @@ class SaleOrder(models.Model):
             sale_order.dm_shipment_booked = True
 
         except DeliveryMatchException as e:
-            if (status_to_hub):
+            if status_to_hub:
                 raise DeliveryMatchException(e)
             else:
                 return self.show_popup(str(e))
@@ -301,6 +292,12 @@ class SaleOrder(models.Model):
 
     def show_shipping_options(self):
         try:
+
+            # IF SHIPMENT OPTION AUTO SELECT IS ACTIVATED
+            if self.get_delivery_option_preference() != "nothing":
+                self.set_shipping_option()
+                return
+
             order_handler = OrderHandler(
                 self.get_base_url(),
                 self.get_api_key(),
@@ -314,7 +311,7 @@ class SaleOrder(models.Model):
 
             self._logger.info("packages=%s", packages)
 
-            shipping_options: ShippingOption = order_handler.get_shipping_options(shipment, customer, products, packages=packages)
+            shipping_options: ShippingOption = order_handler.get_shipping_options(shipment, customer, products, operation_type='saleorder', packages=packages)
 
             self.packages.unlink()
             for package in packages:
@@ -336,7 +333,7 @@ class SaleOrder(models.Model):
 
             self.dm_shipment_id = new_shipment_id
 
-            if (shipping_options[0].method_id == None):
+            if shipping_options[0].method_id == None:
                 raise DeliveryMatchException(
                     "During the selection of shipping options, it was discovered that there were no carriers currently available.")
 
@@ -362,11 +359,6 @@ class SaleOrder(models.Model):
     def set_shipping_option(self):
         try:
 
-            shipping_preference = self.get_delivery_option_preference()
-
-            if shipping_preference == "nothing":
-                return
-
             order_handler = OrderHandler(
                 self.get_base_url(),
                 self.get_api_key(),
@@ -378,10 +370,15 @@ class SaleOrder(models.Model):
             products = self.get_products_details()
             packages = self.get_sales_order_lines_as_packages()
 
-            shipping_option: ShippingOption = order_handler.get_shipping_option_by_preference(shipment, customer,
-                                                                                              products,
-                                                                                              shipping_preference,
-                                                                                              packages=packages)
+
+            shipping_option : ShippingOption= order_handler.get_shipping_option_by_preference(
+                shipment=shipment,
+                customer=customer,
+                products=products,
+                preference=self.get_delivery_option_preference(),
+                operation_type="saleorder",
+                packages=packages,
+            )
 
             saleorder = self.env["sale.order"].search([("id", "=", self._origin.id)])
             saleorder.dm_shipment_id = shipping_option.shipment_id
@@ -398,8 +395,8 @@ class SaleOrder(models.Model):
             saleorder.dm_checkId = shipping_option.check_id
             saleorder.shipmentURL = Helper().view_shipment_url(self.get_base_url(), shipping_option.shipment_id)
             saleorder.delivery_option_selected = True
-            self.message_post(subject="DeliveryMatch auto-selection",
-                              body=f"{self.get_delivery_option_preference()} shipping option selected.")
+
+            self.message_post(subject="DeliveryMatch auto-selection", body=f"{self.get_delivery_option_preference()} shipping option selected.")
 
             return
 

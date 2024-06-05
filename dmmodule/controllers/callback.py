@@ -41,6 +41,10 @@ class Callback(odoo.http.Controller):
                         "tracking_url": package["trackingURL"] if "trackingURL" in package else "",
                     })]})
 
+            stock_picking.action_set_quantities_to_reservation()
+            if not stock_picking._check_backorder():
+                stock_picking.button_validate()
+
         stock_picking.dm_status = req['status']
 
         return {"status": "success"}

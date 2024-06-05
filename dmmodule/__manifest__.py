@@ -8,7 +8,7 @@
     'description': 'DeliveryMatch shipping integration',
     'category': 'services',
     'website': 'https://deliverymatch.eu/en',
-    'depends': ['sale', 'product', 'stock', 'base'],
+    'depends': ['sale', 'product', 'stock', 'base', 'purchase'],
     'images': ['static/description/banner.jpg', 'static/description/services.jpg'],
     'data': [
         "security/ir.model.access.csv",

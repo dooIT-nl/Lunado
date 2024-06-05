@@ -4,7 +4,6 @@ from .deliverymatch_exception import DeliveryMatchException
 from .customer import Customer
 from .product import DmProducts
 from .shipment import Shipment
-from .shipment_type import ShipmentType
 from .shipping_option import ShippingOption, ShippingOptions
 from .helper import Helper
 
@@ -26,9 +25,7 @@ class DmApi:
     def set_channel(self, channel):
         self.channel = channel
 
-    def api_request(
-            self, data: dict, url, method="GET", headers=None, params=None, return_raw=False
-    ):
+    def api_request(self, data: dict, url, method="GET", headers=None, params=None, return_raw=False):
         try:
             if not headers:
                 headers = self.headers
@@ -49,15 +46,12 @@ class DmApi:
 
         except json.JSONDecodeError as e:
             self._logger.error("The API response is not JSON. JSONDecodeError:", e)
-            self._logger.error(f"DeliveryMatch API response: {str(response.text)}")
 
-            raise DeliveryMatchException(
-                f"Invalid API response from DeliveryMatch server: {str(response.text)}"
-            )
+            raise DeliveryMatchException(f"Invalid API response from DeliveryMatch server")
         except Exception as e:
             self._logger.error(e)
             self._logger.error(traceback.format_exc())
-            self._logger.info(f"DeliveryMatch API response: {response.text}")
+            self._logger.info(f"DeliveryMatch API response")
             raise Exception("something went wrong in api request")
 
     def set_request_url(self, shipment_id, get_shipment_response=None) -> str:
@@ -90,9 +84,6 @@ class DmApi:
 
             if Helper.is_empty(shipment_id) is not True:
                 self.is_shipment_booked(id=shipment_id, shipment=get_shipment_response, throw_on_booked=True)
-
-            if shipment.type is ShipmentType.INBOUND_ORDER:
-                shipment.action = 'book'
 
             body = {
                 "client": {
@@ -225,7 +216,7 @@ class DmApi:
                 "weight": products.total_weight(),
             }
 
-            if(not Helper.is_empty(customer.address2)):
+            if not Helper.is_empty(customer.address2):
                 body['customer']['address']['address2'] = customer.address2
 
 
@@ -277,7 +268,8 @@ class DmApi:
                 f"Invalid API response from DeliveryMatch: {response.text}"
             )
 
-    def format_shipping_options(self, response):
+    @staticmethod
+    def format_shipping_options(response):
         shipment_id = response["shipmentID"]
         shipment_methods: dict = response["shipmentMethods"]["all"]
 
@@ -371,10 +363,10 @@ class DmApi:
                 "An error occurred while retrieving the tracking URL and label from DeliveryMatch"
             )
 
-    def get_shipping_option_by_preference(
-            self, response, preference: str
-    ) -> ShippingOption:
+    def get_shipping_option_by_preference(self, response, preference: str) -> ShippingOption:
         try:
+            delivery_preference = None
+
             if preference == "lowest":
                 delivery_preference = "lowestPrice"
             elif preference == "earliest":
@@ -382,26 +374,17 @@ class DmApi:
             elif preference == "most_green":
                 delivery_preference = "greenest"
 
-            if (
-                    delivery_preference not in response["shipmentMethods"]
-                    and preference == "most_green"
-            ):
-                raise DeliveryMatchException(
-                    "To ensure that you receive the most environmentally-friendly delivery option, please specify this preference with Big Mile. In this case, please select another shipping preference."
-                )
+            if delivery_preference == "greenest" and delivery_preference not in response["shipmentMethods"] and preference == "most_green":
+                raise DeliveryMatchException("To ensure that you receive the most environmentally-friendly delivery option, please specify this preference with BigMile. In this case, please select another shipping preference.")
 
             if delivery_preference not in response["shipmentMethods"]:
-                raise DeliveryMatchException(
-                    f"No shipping option found for preference {preference}"
-                )
+                raise DeliveryMatchException(f"No shipping option found for preference {preference}")
 
             shipment_id = response["shipmentID"]
             shipment_method: dict = response["shipmentMethods"][delivery_preference]
 
             if "carrier" not in shipment_method:
-                raise DeliveryMatchException(
-                    f"During the selection of a shipping option, it was discovered that there were no carriers currently available."
-                )
+                raise DeliveryMatchException(f"During the selection of a shipping option, it was discovered that there were no carriers currently available.")
 
             delivery_date = shipment_method.get("dateDelivery")
             if not delivery_date:
@@ -413,9 +396,7 @@ class DmApi:
                 check_id=shipment_method.get("checkID"),
                 carrier_name=shipment_method.get("carrier").get("name"),
                 service_level_name=shipment_method.get("serviceLevel").get("name"),
-                service_level_description=shipment_method.get("serviceLevel").get(
-                    "description"
-                ),
+                service_level_description=shipment_method.get("serviceLevel").get("description"),
                 delivery_date=delivery_date,
                 date_pickup=shipment_method.get("datePickup"),
                 buy_price=shipment_method.get("buy_price"),
@@ -471,13 +452,13 @@ class DmApi:
     def validate_booking_response(self, response, shipment_to_hub=False):
         try:
             self._logger.info("Validating booking response...")
-            if(response.status_code != 200):
+            if response.status_code != 200:
                 raise DeliveryMatchException(
                     f"Invalid API response from DeliveryMatch server: {response.text}"
                 )
 
             response_obj = json.loads(response.text)
-            if("status" not in response_obj or response_obj["status"] != "booked"):
+            if "status" not in response_obj or response_obj["status"] != "booked":
                 raise DeliveryMatchException(
                     f"Invalid API response from DeliveryMatch server: {response.text}"
                 )
@@ -521,15 +502,13 @@ class DmApi:
 
         return True
 
-    def updateShipmentMethod(
-            self, shipmentId: int, orderNumber: int, methodId: str, deliveryDate: str
-    ):
+    def update_shipment_method(self, shipment_id: int, order_number: int, method_id: str, delivery_date: str):
         self._logger.info("Updating shipment method...")
         url = f"{self.base_url}/updateShipmentMethod"
         body = json.dumps(
             {
-                "shipment": {"id": shipmentId, "orderNumber": orderNumber},
-                "shipmentMethod": {"id": methodId, "date": deliveryDate},
+                "shipment": {"id": shipment_id, "orderNumber": order_number},
+                "shipmentMethod": {"id": method_id, "date": delivery_date},
             }
         )
 

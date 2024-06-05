@@ -44,14 +44,6 @@
                                         <field name="client_id"/>
                                     </div>
 
-                                    <div class="form-group mt-4">
-                                        <label class="col-form-label"
-                                               for="delivery_option_preference"></label>
-                                        <div class="text-muted">Detail information of the AUTO
-                                            shipment options</div>
-                                        <field name="delivery_option_preference"/>
-                                    </div>
-
                                 </div>
                             </div>
                         </div>
@@ -61,6 +53,14 @@
                     <h2>General settings</h2>
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 col-lg-6 o_setting_box">
+
+                            <div class="o_setting_right_pane">
+                                <div class="form-group mt-3">
+                                    <label class="col-form-label" for="delivery_option_preference"></label>
+                                    <div class="text-muted">Detail information of the AUTO shipment options</div>
+                                    <field name="delivery_option_preference"/>
+                                </div>
+                            </div>
 
                             <!--Define external warehouse-->
                             <div class="o_setting_right_pane">
@@ -76,6 +76,8 @@
                                     />
                                 </div>
                             </div>
+
+                            <br/>
 
                             <!-- Override length Take length from orderline -->
                             <div class="o_setting_left_pane">
@@ -189,6 +191,17 @@
                             <div class="o_setting_right_pane">
                                 <label for="show_hscode_delivery_detailed_operations"/>
                                 <div class="text-muted">Displays product HS-CODEs in detailed operations</div>
+                            </div>
+                        </div>
+
+                        <!-- BOOK ORDER VALIDATION  -->
+                        <div class="form-group mt-3">
+                            <div class="o_setting_left_pane">
+                                <field name="book_order_validation"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="book_order_validation"/>
+                                <div class="text-muted">Validates the order before booking.</div>
                             </div>
                         </div>
                     </div>
