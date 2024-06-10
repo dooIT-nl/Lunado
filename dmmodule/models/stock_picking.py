@@ -6,6 +6,7 @@ import traceback
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
+from .dm_package import DmPackage
 from .customer import Customer
 from .deliverymatch_exception import DeliveryMatchException
 from .helper import Helper
@@ -64,6 +65,7 @@ class StockPicking(models.Model):
     dm_is_inbound = fields.Boolean(string='Inbound', compute='_compute_is_inbound')
     show_product_hscode = fields.Boolean(string="show HS-CODE", copy=False, default=False)
     dm_config_id = fields.Integer("DM Configuration ID", copy=False, default=None)
+
     def config_attribute(self, attribute, default=None):
         return (
             self.env["ir.config_parameter"]
@@ -413,7 +415,7 @@ class StockPicking(models.Model):
             products = self.get_products_details()
             packages = self.get_sales_order_lines_as_packages()
 
-            shipping_options = order_handler.get_shipping_options(shipment, customer, products, packages=packages, operation_type=self.picking_type_id.name)
+            shipping_options = order_handler.get_shipping_options(shipment, customer, products, packages=packages, operation_type=self.picking_type_id.name, sender_name=self.get_sender_name_on_dropshipment())
 
             if bool(self.config_attribute("calculate_packages")):
                 self.packages.unlink()
@@ -437,8 +439,7 @@ class StockPicking(models.Model):
             self.dm_shipment_id = new_shipment_id
 
             if (shipping_options[0].method_id == None):
-                raise DeliveryMatchException(
-                    "During the selection of shipping options, it was discovered that there were no carriers currently available.")
+                raise DeliveryMatchException("During the selection of shipping options, it was discovered that there were no carriers currently available.")
 
             view_id = self.env.ref("dmmodule.delivery_options_tree_delivery_level").id
             return {
@@ -480,12 +481,25 @@ class StockPicking(models.Model):
                 preference=self.get_delivery_option_preference(),
                 operation_type=self.picking_type_id.name,
                 packages=packages,
+                sender_name=self.get_sender_name_on_dropshipment()
             )
+
+            if bool(self.config_attribute("calculate_packages")):
+                self.packages.unlink()
+                for package in packages:
+                    self.write({"packages": [(0, 0, {
+                        "height": package['height'],
+                        "length": package['length'],
+                        "width": package['width'],
+                        "weight": package['weight'],
+                        "description": package["description"],
+                        "type": package["type"],
+                    })]})
 
             stockpicking = self.env["stock.picking"].search([("id", "=", self._origin.id)])
             stockpicking.dm_shipment_id = shipping_option.shipment_id
             stockpicking.dm_carrier_name = shipping_option.carrier_name
-            stockpicking.dm_service_level_name = shipping_option.carrier_name
+            stockpicking.dm_service_level_name = shipping_option.service_level_name
             stockpicking.dm_service_level_description = (shipping_option.service_level_description)
             stockpicking.dm_delivery_date = shipping_option.delivery_date
             stockpicking.dm_pickup_date = shipping_option.date_pickup
@@ -497,6 +511,7 @@ class StockPicking(models.Model):
             stockpicking.dm_check_id = shipping_option.check_id
             stockpicking.dm_shipment_url = Helper().view_shipment_url(self.get_base_url(), shipping_option.shipment_id)
             stockpicking.delivery_option_selected = True
+            stockpicking.dm_config_id = shipping_option.config_id
 
             self.message_post(
                 subject="DeliveryMatch auto-selection",
@@ -515,7 +530,7 @@ class StockPicking(models.Model):
     def book_delivery(self, status_to_hub=False):
         try:
             validate_order = bool(self.config_attribute(attribute='book_order_validation', default=False))
-            if validate_order:
+            if validate_order and self.dm_is_external_warehouse == False:
                 self.action_set_quantities_to_reservation()
                 if self._check_backorder():
                     return self.button_validate()
@@ -534,10 +549,6 @@ class StockPicking(models.Model):
 
             packages = list(map(lambda p: p.to_api_format(), self.packages)) if bool(self.config_attribute('calculate_packages')) else self.get_sales_order_lines_as_packages()
 
-            sender_name = None
-            if hasattr(self.sale_id, 'x_studio_dropshipment'):
-                sender_name = self.partner_id.parent_id.name if self.sale_id.x_studio_dropshipment else None
-
             custom_fields = None
             if hasattr(self.sale_id, 'x_studio_url_pakbon'):
                 custom_fields = {"WesselingPakbon": self.sale_id.x_studio_url_pakbon}
@@ -547,7 +558,7 @@ class StockPicking(models.Model):
                 shipment, customer, products, is_delivery=self.is_delivery(),
                 operation_type=self.picking_type_id.name,
                 packages=packages,
-                sender_name=sender_name,
+                sender_name=self.get_sender_name_on_dropshipment(),
                 custom_fields=custom_fields
             )
 
@@ -606,9 +617,9 @@ class StockPicking(models.Model):
         except Exception as e:
             error_message = traceback.format_exc()
             self._logger.error(error_message)
-            # raise UserError("An error occured while booking delivery to HUB")
             raise UserError("An error occured while booking delivery to HUB")
 
+    # INHERIT CARRIER AND SERVICE_LEVEL FROM SALES ORDER
     def set_carrier_from_sale_order(self):
         order_handler = OrderHandler(
             self.get_base_url(),
@@ -622,8 +633,7 @@ class StockPicking(models.Model):
         packages = self.get_sales_order_lines_as_packages()
         get_shipment_response = order_handler.api.get_shipment(id=shipment.id)
 
-        request_url = order_handler.api.set_request_url(shipment_id=shipment.id,
-                                                        get_shipment_response=get_shipment_response)
+        request_url = order_handler.api.set_request_url(shipment_id=shipment.id,get_shipment_response=get_shipment_response)
         if Helper.is_empty(shipment.id) is not True:
             order_handler.api.is_shipment_booked(id=shipment.id, shipment=get_shipment_response, throw_on_booked=True)
 
@@ -682,10 +692,15 @@ class StockPicking(models.Model):
         }
 
         if packages:
+            packages = DmPackage.convert_size_to_cm(packages)
             body.update({"packages": {"package": packages}})
 
         if not Helper.is_empty(shipment.pickup_date):
             body['shipment']["firstPickupDate"] = shipment.pickup_date
+
+        sender_name = self.get_sender_name_on_dropshipment()
+        if sender_name is not None and "updateShipment" in request_url:
+            body["sender"] = {"address": {"companyName": sender_name}}
 
         response = order_handler.api.api_request(
             data=body,
@@ -712,6 +727,15 @@ class StockPicking(models.Model):
         self.dm_pickup_date = getNewShipment.get('shipmentMethod').get('datePickup')
         self.dm_buy_price = getNewShipment.get('shipmentMethod').get('buy_price')
         self.dm_sell_price = getNewShipment.get('shipmentMethod').get('sell_price')
+        self.dm_config_id = getNewShipment.get('shipmentMethod').get('configurationID')
         self.dm_shipment_id = shipment_id
         self.delivery_option_selected = True
         self.dm_shipment_url = Helper().view_shipment_url(self.get_base_url(), shipment_id)
+
+
+    def get_sender_name_on_dropshipment(self):
+        sender_name = None
+        if hasattr(self.sale_id, 'x_studio_dropshipment'):
+            sender_name = self.partner_id.parent_id.name if self.sale_id.x_studio_dropshipment else None
+
+        return sender_name

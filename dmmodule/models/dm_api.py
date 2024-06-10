@@ -1,5 +1,7 @@
 import traceback
 import requests, json, logging
+
+from .dm_package import DmPackage
 from .deliverymatch_exception import DeliveryMatchException
 from .customer import Customer
 from .product import DmProducts
@@ -130,13 +132,14 @@ class DmApi:
             if not Helper.is_empty(customer.address2):
                 body['customer'] = {'address': {'address2': customer.address2}}
 
-            if sender_name is not None:
+            if sender_name is not None and "updateShipment" in request_url:
                 body["sender"] = {"address": {"companyName": sender_name}}
 
             if custom_fields is not None:
                 body["customFields"] = custom_fields
       
             if packages:
+                packages = DmPackage.convert_size_to_cm(packages)
                 body.update({"packages": {"package": packages}})
 
             response = self.api_request(data=body, method="POST", url=request_url, return_raw=True)
@@ -219,11 +222,11 @@ class DmApi:
             if not Helper.is_empty(customer.address2):
                 body['customer']['address']['address2'] = customer.address2
 
-
-            if sender_name is not None:
+            if sender_name is not None and "updateShipment" in request_url:
                 body["sender"] = {"address": {"companyName": sender_name}}
 
             if packages:
+                packages = DmPackage.convert_size_to_cm(packages)
                 body.update({"packages": {"package": packages}})
 
             response = self.api_request(data=body, method="POST", url=request_url)
@@ -275,10 +278,7 @@ class DmApi:
 
         shipping_options: ShippingOptions = ShippingOptions()
 
-        if (
-                "all" not in response["shipmentMethods"]
-                or len(response["shipmentMethods"]["all"]) == 0
-        ):
+        if ("all" not in response["shipmentMethods"] or len(response["shipmentMethods"]["all"]) == 0):
             empty_shipping_option: ShippingOption = ShippingOption(
                 shipment_id, None, None, None, None, None, None, None, None, None
             )
@@ -306,8 +306,8 @@ class DmApi:
                     buy_price=method.get("buy_price"),
                     sell_price=method.get("price"),
                     carrier_id=method.get("carrier").get("id"),
-                    service_level_id=method.get("serviceLevel").get("id")
-
+                    service_level_id=method.get("serviceLevel").get("id"),
+                    config_id=method.get("configurationID")
                 )
 
                 shipping_options.add_shipping_option(shipping_option)
@@ -401,6 +401,7 @@ class DmApi:
                 date_pickup=shipment_method.get("datePickup"),
                 buy_price=shipment_method.get("buy_price"),
                 sell_price=shipment_method.get("price"),
+                config_id=shipment_method.get("configurationID")
             )
 
             return shipping_option

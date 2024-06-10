@@ -24,9 +24,9 @@ class Config(models.TransientModel):
     #PACKAGE Description, Type, Length, Width & Height
     package_description = fields.Char(string="Package description", default="Default")
     package_type = fields.Char(string="Package type", default="Default")
-    package_length = fields.Integer(string="Package length", default=10)
-    package_width = fields.Integer(string="Package width", default=10)
-    package_height = fields.Integer(string="Package height", default=10)
+    package_length = fields.Integer(string="Package length", default=100)
+    package_width = fields.Integer(string="Package width", default=100)
+    package_height = fields.Integer(string="Package height", default=100)
 
     delivery_option_preference = fields.Selection(
         [

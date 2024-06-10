@@ -39,12 +39,12 @@ class OrderHandler:
             self._logger.error(traceback.format_exc())
             raise Exception("An error occurred while fetching the shipping options")
 
-    def get_shipping_option_by_preference(self, shipment: Shipment, customer: Customer, products: DmProducts, preference, operation_type, packages=None):
+    def get_shipping_option_by_preference(self, shipment: Shipment, customer: Customer, products: DmProducts, preference, operation_type, packages=None, sender_name=None):
         try:
             self._logger.info("Fetching shipping option by preference")
             self.set_channel_name(operation_type=operation_type, is_franco=customer.is_franco)
 
-            shipping_options = self.api.request_shipping_options(customer, shipment, products, False, packages=packages)
+            shipping_options = self.api.request_shipping_options(customer, shipment, products, format_shipping_options=False, packages=packages, sender_name=sender_name)
             shipping_option = self.api.get_shipping_option_by_preference(shipping_options, preference)
             self.api.update_shipment_method(shipping_option.shipment_id, shipment.odoo_order_display_name,
                                             shipping_option.method_id, shipping_option.delivery_date)

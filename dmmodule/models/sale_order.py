@@ -47,6 +47,7 @@ class SaleOrder(models.Model):
     dm_carrier_id = fields.Integer(string="Carrier ID", default=None, copy=False)
     service_level_id = fields.Integer(string="Service Level ID", default=None, copy=False)
     extend_carrier_to_delivery = fields.Boolean(string="Extend carrier and service level to delivery", copy=False)
+    dm_config_id = fields.Integer("DM Configuration ID", copy=False, default=None)
 
     # TODO: temp vars for save xml removal
     hide_hub_btn = fields.Boolean(default=False, copy=False)
@@ -241,54 +242,6 @@ class SaleOrder(models.Model):
             self._logger.error(traceback.format_exc())
             raise Exception(e)
 
-    def book_sale_order(self, status_to_hub=False):
-        try:
-            order_handler = OrderHandler(
-                self.get_base_url(),
-                self.get_api_key(),
-                self.get_client_id()
-            )
-
-            shipment = self.get_shipment_details()
-            customer = self.get_customer_details()
-            products = self.get_products_details()
-            packages = self.get_sales_order_lines_as_packages()
-
-            booking_details = order_handler.book_shipment(shipment, customer, products, operation_type="saleorder", packages=packages)
-            booked_timestamp = booking_details.get('booked_timestamp')
-
-            sale_order = self.env["sale.order"].search([("id", "=", self.id)])
-            sale_order.tracking_urls = booking_details.get("tracking_url")
-            sale_order.shipment_label_attachment = booking_details.get("shipment_label")
-
-            if status_to_hub:
-                self.message_post(body=f"Order booked to HUB in DeliveryMatch on: {booked_timestamp}")
-            else:
-                self.message_post(body=f"Order booked to carrier in DeliveryMatch on: {booked_timestamp}")
-
-            sale_order.dm_shipment_booked = True
-
-        except DeliveryMatchException as e:
-            if status_to_hub:
-                raise DeliveryMatchException(e)
-            else:
-                return self.show_popup(str(e))
-
-        except Exception as e:
-            error_message = traceback.format_exc()
-            self._logger.error(error_message)
-            raise UserError(e)
-
-    def book_sale_order_to_hub(self):
-        try:
-            self.book_sale_order(status_to_hub=True)
-        except DeliveryMatchException as e:
-            return self.show_popup(str(e))
-
-        except Exception as e:
-            error_message = traceback.format_exc()
-            self._logger.error(error_message)
-            raise UserError(e)
 
     def show_shipping_options(self):
         try:
@@ -334,8 +287,7 @@ class SaleOrder(models.Model):
             self.dm_shipment_id = new_shipment_id
 
             if shipping_options[0].method_id == None:
-                raise DeliveryMatchException(
-                    "During the selection of shipping options, it was discovered that there were no carriers currently available.")
+                raise DeliveryMatchException("During the selection of shipping options, it was discovered that there were no carriers currently available.")
 
             view_id = self.env.ref("dmmodule.delivery_options_tree").id
             return {
@@ -380,10 +332,22 @@ class SaleOrder(models.Model):
                 packages=packages,
             )
 
+            if bool(self.config_attribute("calculate_packages")):
+                self.packages.unlink()
+                for package in packages:
+                    self.write({"packages": [(0, 0, {
+                        "height": package['height'],
+                        "length": package['length'],
+                        "width": package['width'],
+                        "weight": package['weight'],
+                        "description": package["description"],
+                        "type": package["type"],
+                    })]})
+
             saleorder = self.env["sale.order"].search([("id", "=", self._origin.id)])
             saleorder.dm_shipment_id = shipping_option.shipment_id
             saleorder.dm_carrierName = shipping_option.carrier_name
-            saleorder.dm_serviceLevelName = shipping_option.carrier_name
+            saleorder.dm_serviceLevelName = shipping_option.service_level_name
             saleorder.dm_serviceLevelDescription = shipping_option.service_level_description
             saleorder.dm_deliveryDate = shipping_option.delivery_date
             saleorder.dm_pickup_date = shipping_option.date_pickup
@@ -395,6 +359,7 @@ class SaleOrder(models.Model):
             saleorder.dm_checkId = shipping_option.check_id
             saleorder.shipmentURL = Helper().view_shipment_url(self.get_base_url(), shipping_option.shipment_id)
             saleorder.delivery_option_selected = True
+            saleorder.dm_config_id = shipping_option.config_id
 
             self.message_post(subject="DeliveryMatch auto-selection", body=f"{self.get_delivery_option_preference()} shipping option selected.")
 

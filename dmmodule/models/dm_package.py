@@ -30,4 +30,12 @@ class DmPackage(models.Model):
             "weight": self.weight
         }
 
+    @staticmethod
+    def convert_size_to_cm(packages):
+        for package in packages:
+            package['height'] = package['height'] / 10
+            package['width'] = package['width'] / 10
+            package['length'] = package['length'] / 10
+
+        return packages
 

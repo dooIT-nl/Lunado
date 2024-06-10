@@ -30,7 +30,8 @@ class OdooDb:
                         "methodId": so.method_id,
                         "checkId": so.check_id,
                         "dm_carrier_id": so.carrier_id,
-                        "service_level_id": so.service_level_id
+                        "service_level_id": so.service_level_id,
+                        "config_id": so.config_id,
                     }
                 )
             self._logger.info("Insertion process finished successfully")

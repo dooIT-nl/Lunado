@@ -47,6 +47,7 @@
                         <field name="dm_carrier_id" invisible="1"/>
                         <field name="service_level_id" invisible="1"/>
                         <field name="extend_carrier_to_delivery" invisible="1"/>
+                        <field name="dm_config_id" readonly="1" invisible="0"/>
                     </group>
 
                     <group string="Calculated Packages" attrs="{'invisible': [('show_packages', '=', False)]}">

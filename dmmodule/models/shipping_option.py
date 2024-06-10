@@ -1,5 +1,5 @@
 class ShippingOption:
-    def __init__(self, shipment_id, method_id, check_id, carrier_name, service_level_name, service_level_description, delivery_date, date_pickup, buy_price, sell_price, carrier_id=None, service_level_id=None):
+    def __init__(self, shipment_id, method_id, check_id, carrier_name, service_level_name, service_level_description, delivery_date, date_pickup, buy_price, sell_price, carrier_id=None, service_level_id=None, config_id=None):
         self.shipment_id = shipment_id
         self.method_id = method_id
         self.check_id = check_id
@@ -12,7 +12,7 @@ class ShippingOption:
         self.sell_price = sell_price
         self.carrier_id = carrier_id
         self.service_level_id = service_level_id
-
+        self.config_id = config_id
 
 class ShippingOptions:
     def __init__(self):

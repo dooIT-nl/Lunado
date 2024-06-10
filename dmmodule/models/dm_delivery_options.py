@@ -22,6 +22,7 @@ class DmDeliveryOptions(models.Model):
     checkId = fields.Char(string="Check ID")
     dm_carrier_id = fields.Integer(string="Carrier ID")
     service_level_id = fields.Integer(string="Service Level ID")
+    config_id = fields.Integer(string="Config ID", default=None)
 
     def config_attribute(self, attribute, default=None):
         return (
@@ -60,6 +61,7 @@ class DmDeliveryOptions(models.Model):
         delivery_order.dm_method_id = selected_delivery_option.methodId
         delivery_order.dm_check_id = selected_delivery_option.checkId
         delivery_order.delivery_option_selected = True
+        delivery_order.dm_config_id = selected_delivery_option.config_id
 
         # POST shipmentmethod to deliverymatch
         base_url = delivery_order.get_base_url()
@@ -108,6 +110,7 @@ class DmDeliveryOptions(models.Model):
         update_sale_order.delivery_option_selected = True
         update_sale_order.dm_carrier_id = selected_delivery_option.dm_carrier_id
         update_sale_order.service_level_id = selected_delivery_option.service_level_id
+        update_sale_order.dm_config_id = selected_delivery_option.config_id
 
 
         # POST shipmentmethod to deliverymatch
