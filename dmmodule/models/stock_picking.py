@@ -637,17 +637,7 @@ class StockPicking(models.Model):
         if Helper.is_empty(shipment.id) is not True:
             order_handler.api.is_shipment_booked(id=shipment.id, shipment=get_shipment_response, throw_on_booked=True)
 
-        if bool(self.config_attribute("calculate_packages")):
-            self.packages.unlink()
-            for package in packages:
-                self.write({"packages": [(0, 0, {
-                    "height": package['height'],
-                    "length": package['length'],
-                    "width": package['width'],
-                    "weight": package['weight'],
-                    "description": package["description"],
-                    "type": package["type"],
-                })]})
+
 
         body = {
             "client": {
@@ -712,6 +702,18 @@ class StockPicking(models.Model):
         if response.status_code != 200:
             self.show_popup({response.text})
             return
+
+        if bool(self.config_attribute("calculate_packages")):
+            self.packages.unlink()
+            for package in packages:
+                self.write({"packages": [(0, 0, {
+                    "height": package['height'],
+                    "length": package['length'],
+                    "width": package['width'],
+                    "weight": package['weight'],
+                    "description": package["description"],
+                    "type": package["type"],
+                })]})
 
         shipment_id = json.loads(response.text).get('shipmentID')
 
