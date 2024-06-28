@@ -20,7 +20,7 @@ class StockMove(models.Model):
         packages = []
         attempts = 0
 
-        while remaining_quantity > 0 and attempts <= 20:
+        while remaining_quantity > 0 and attempts <= 50:
             for package in packaging:
                 if not package.id:
                     continue
@@ -45,7 +45,7 @@ class StockMove(models.Model):
                         "length": package_type.packaging_length,
                         "weight": total_package_weight,
                     })
-                    continue
+                    break # breaks the packages for loop so that the loop restarts from the package with the highest qty
 
             attempts += 1
 

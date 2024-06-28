@@ -530,7 +530,9 @@ class StockPicking(models.Model):
     def book_delivery(self, status_to_hub=False):
         try:
             validate_order = bool(self.config_attribute(attribute='book_order_validation', default=False))
-            if validate_order and self.dm_is_external_warehouse == False:
+            is_not_inbound = self.picking_type_id.code != "incoming"
+
+            if validate_order and self.dm_is_external_warehouse == False and is_not_inbound:
                 self.action_set_quantities_to_reservation()
                 if self._check_backorder():
                     return self.button_validate()
@@ -595,7 +597,7 @@ class StockPicking(models.Model):
 
             self.dm_shipment_booked = True
 
-            if validate_order:
+            if validate_order and is_not_inbound:
                 self.button_validate()
 
         except DeliveryMatchException as e:
@@ -655,8 +657,7 @@ class StockPicking(models.Model):
                 "inbound": shipment.inbound,
                 "incoterm": shipment.incoterm,
                 "note": customer.note,
-                'carrier': self.sale_id.dm_carrier_id,
-                'service': self.sale_id.service_level_id
+                "config": self.sale_id.dm_config_id
             },
             "customer": {
                 "id": customer.id,
@@ -741,3 +742,15 @@ class StockPicking(models.Model):
             sender_name = self.partner_id.parent_id.name if self.sale_id.x_studio_dropshipment else None
 
         return sender_name
+
+    def show_existing_packages(self):
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Add existing package type",
+            "res_model": "stock.package.type",
+            "view_type": "tree",
+            "view_mode": "tree",
+            "view_id": self.env.ref("dmmodule.add_existing_packages").id, # view_id
+            "target": "new",
+            "context": {"stock_picking_id": self.id},
+        }

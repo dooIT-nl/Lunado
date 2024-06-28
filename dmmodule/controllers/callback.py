@@ -46,5 +46,6 @@ class Callback(odoo.http.Controller):
                 stock_picking.button_validate()
 
         stock_picking.dm_status = req['status']
+        stock_picking.tracking_urls = req['labelURL'] if "labelURL" in req else "",
 
         return {"status": "success"}

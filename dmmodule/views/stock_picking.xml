@@ -56,8 +56,9 @@
                         </div>
 
 
-                    <group string="Calculated Packages" attrs="{'invisible': ['|', ('dm_shipment_booked', '=', True), ('show_packages', '=', False)]}">
-                        <field name="packages" string="" context="{'tree_view_ref' : 'dmmodule.package_table_tree'}" />
+                    <group string="Calculated Packages" class="d-flex flex-column w-100" attrs="{'invisible': ['|', ('dm_shipment_booked', '=', True), ('show_packages', '=', False)]}">
+                        <field name="packages" class="w-100" string="" context="{'tree_view_ref' : 'dmmodule.package_table_tree'}" />
+                        <button name="show_existing_packages" string="Add existing package type" type="object" class="oe_highlight"></button>
                     </group>
 
                     <group string="Labels" attrs="{'invisible': ['|', ('dm_shipment_booked', '=', False), ('show_packages', '=', False)]}">

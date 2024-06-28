@@ -40,4 +40,22 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="add_existing_packages">
+        <field name="name">dm.add.packages</field>
+        <field name="model">stock.package.type</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" export_xlsx="false" delete="false">
+                <header>
+                    <button name="attach_package_to_delivery" string="Add" type="object" />
+                </header>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="height" string="height (mm)"/>
+                <field name="width" string="width (mm)"/>
+                <field name="packaging_length" string="length (mm)"/>
+                <field name="max_weight"/>
+                <field name="barcode" optional="hide"/>
+            </tree>
+        </field>
+    </record>
 </odoo>
