@@ -335,7 +335,8 @@ class StockPicking(models.Model):
                     value=product_line.list_price,
                     quantity=quantity,
                     custom1=custom1,
-                    dangerous_goods={"UN": product_line.un_number, "packingType": product_line.dg_packing_instruction} if product_line.dm_is_dangerous else None
+                    dangerous_goods={"UN": product_line.un_number, "packingType": product_line.dg_packing_instruction} if product_line.dm_is_dangerous else None,
+                    lithium_battery_weight=product_line.dm_lithium_battery_weight
                 )
 
                 products.add_product(product)
@@ -531,8 +532,9 @@ class StockPicking(models.Model):
         try:
             validate_order = bool(self.config_attribute(attribute='book_order_validation', default=False))
             is_not_inbound = self.picking_type_id.code != "incoming"
+            is_not_external_warehouse = self.dm_is_external_warehouse != True
 
-            if validate_order and self.dm_is_external_warehouse == False and is_not_inbound:
+            if validate_order and is_not_external_warehouse and is_not_inbound:
                 self.action_set_quantities_to_reservation()
                 if self._check_backorder():
                     return self.button_validate()
@@ -597,7 +599,7 @@ class StockPicking(models.Model):
 
             self.dm_shipment_booked = True
 
-            if validate_order and is_not_inbound:
+            if validate_order and is_not_external_warehouse and is_not_inbound:
                 self.button_validate()
 
         except DeliveryMatchException as e:
@@ -619,7 +621,7 @@ class StockPicking(models.Model):
         except Exception as e:
             error_message = traceback.format_exc()
             self._logger.error(error_message)
-            raise UserError("An error occured while booking delivery to HUB")
+            raise UserError(e)
 
     # INHERIT CARRIER AND SERVICE_LEVEL FROM SALES ORDER
     def set_carrier_from_sale_order(self):

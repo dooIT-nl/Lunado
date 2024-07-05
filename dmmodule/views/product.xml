@@ -30,6 +30,7 @@
                     <group string="">
                         <field name="un_number"/>
                         <field name="dg_packing_instruction" />
+                        <field name="dm_lithium_battery_weight" />
                     </group>
                 </page>
             </notebook>

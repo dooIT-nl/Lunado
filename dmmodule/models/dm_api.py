@@ -142,6 +142,10 @@ class DmApi:
                 packages = DmPackage.convert_size_to_cm(packages)
                 body.update({"packages": {"package": packages}})
 
+            total_lithium_battery_weight = products.total_lithium_battery_weight()
+            if products.total_lithium_battery_weight() > 0:
+                body['customFields'] = {"Lithium battery weight": total_lithium_battery_weight}
+
             response = self.api_request(data=body, method="POST", url=request_url, return_raw=True)
             
             self.validate_booking_response(response, shipment.to_hub)
@@ -228,6 +232,10 @@ class DmApi:
             if packages:
                 packages = DmPackage.convert_size_to_cm(packages)
                 body.update({"packages": {"package": packages}})
+
+            total_lithium_battery_weight = products.total_lithium_battery_weight()
+            if products.total_lithium_battery_weight() > 0:
+                body['customFields'] = {"Lithium battery weight": total_lithium_battery_weight}
 
             response = self.api_request(data=body, method="POST", url=request_url)
             self.validate_shipment_options_response(response)

@@ -15,13 +15,14 @@ class Product(models.Model):
     dm_is_dangerous = fields.Boolean(string="Dangerous")
     dm_send_lot_code = fields.Boolean(string="WSL lotcode")
     dm_combinable_in_package = fields.Boolean(string="Combinable in packages")
+    dm_lithium_battery_weight = fields.Float(string="Lithium battery weight (KG)", default=None)
 
     un_number = fields.Char(string="UN Number")
     dg_packing_instruction = fields.Char(string="Packaging instruction")
 
 
 class DmProduct:
-    def __init__(self, content, description, weight, length, width, height, warehouse_id, value, stock, quantity, sku=None, barcode=None, is_fragile=False, is_dangerous=False, hscode=None, country_origin=None, custom1=None, dangerous_goods=None):
+    def __init__(self, content, description, weight, length, width, height, warehouse_id, value, stock, quantity, sku=None, barcode=None, is_fragile=False, is_dangerous=False, hscode=None, country_origin=None, custom1=None, dangerous_goods=None, lithium_battery_weight=None):
         
         if not country_origin:
             country_origin = ""
@@ -54,13 +55,14 @@ class DmProduct:
         self.quantity = quantity
         self.custom1 = custom1
         self.dangerous_goods = dangerous_goods
+        self.lithium_battery_weight = lithium_battery_weight
 
         for attribute, value in vars().items():
             if not value and attribute == "warehouse_id":
                 self.warehouse_id = 1
                 # raise DeliveryMatchException("Warehouse ID missing while fetching products.")
 
-            if not value and attribute not in ["is_fragile", "is_dangerous", "hscode", "country_origin", "stock", "warehouse_id", "custom1", "barcode", "sku", "dangerous_goods"]:
+            if not value and attribute not in ["is_fragile", "is_dangerous", "hscode", "country_origin", "stock", "warehouse_id", "custom1", "barcode", "sku", "dangerous_goods", "lithium_battery_weight"]:
                 raise DeliveryMatchException(f"{attribute} is missing. In {content}.") 
 
 
@@ -105,6 +107,14 @@ class DmProducts:
             total_weight += product.weight * product.quantity
 
         return total_weight
+
+    def total_lithium_battery_weight(self):
+        total = 0
+        for product in self.products:
+            if product.is_dangerous:
+                total += product.lithium_battery_weight * product.quantity
+
+        return total
 
     def get_api_format(self, return_tuple=True):
         formatted_products = []

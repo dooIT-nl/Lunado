@@ -192,8 +192,6 @@ class SaleOrder(models.Model):
 
             products_list = list(map(lambda line: line.as_deliverymatch_product(), self.order_line))
 
-
-
             for ol in self.order_line:
                 product_line = ol.product_template_id
 
@@ -230,7 +228,8 @@ class SaleOrder(models.Model):
                     value=product_line.list_price,
                     quantity=quantity,
                     custom1=custom1,
-                    dangerous_goods={"UN": product_line.un_number, "packingType": product_line.dg_packing_instruction} if product_line.dm_is_dangerous else None
+                    dangerous_goods={"UN": product_line.un_number, "packingType": product_line.dg_packing_instruction} if product_line.dm_is_dangerous else None,
+                    lithium_battery_weight= product_line.dm_lithium_battery_weight
                 )
 
                 products.add_product(product)
