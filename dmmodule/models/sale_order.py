@@ -95,9 +95,11 @@ class SaleOrder(models.Model):
             lambda x: x.product_template_id.dm_combinable_in_package == False, all_order_lines
         )
 
+        if len(set(combinable)) == 1: order_lines = combinable
+
         packages = list(map(lambda line: line.as_deliverymatch_packages(), order_lines))
 
-        if len(combinable) > 0:
+        if len(combinable) > 1:
             combined_values = {
                 "weight": 0,
                 "volume": 0

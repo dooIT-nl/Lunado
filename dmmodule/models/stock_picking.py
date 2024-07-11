@@ -374,9 +374,11 @@ class StockPicking(models.Model):
         move_ids, combinable = ListHelper.partition(
             lambda x: x.product_tmpl_id.dm_combinable_in_package == False, all_move_ids)
 
+        if len(set(combinable)) == 1: move_ids = combinable
+
         packages = list(map(lambda m: m.as_deliverymatch_packages(), move_ids))
 
-        if len(combinable) > 0:
+        if len(combinable) > 1:
             combined_values = {
                 "weight": 0,
                 "volume": 0
@@ -534,7 +536,7 @@ class StockPicking(models.Model):
             is_not_inbound = self.picking_type_id.code != "incoming"
             is_not_external_warehouse = self.dm_is_external_warehouse != True
 
-            if validate_order and is_not_external_warehouse and is_not_inbound:
+            if validate_order and is_not_external_warehouse and is_not_inbound and not status_to_hub:
                 self.action_set_quantities_to_reservation()
                 if self._check_backorder():
                     return self.button_validate()
@@ -599,7 +601,7 @@ class StockPicking(models.Model):
 
             self.dm_shipment_booked = True
 
-            if validate_order and is_not_external_warehouse and is_not_inbound:
+            if validate_order and is_not_external_warehouse and is_not_inbound and not status_to_hub:
                 self.button_validate()
 
         except DeliveryMatchException as e:
