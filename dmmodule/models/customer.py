@@ -3,7 +3,7 @@ from odoo.tools import html2plaintext
 
 class Customer:
     
-    def __init__(self,id, name, company_name, address1, address2, street, postcode, city, country, phone_number, email, note="", is_company=False, is_franco=False, state=""):
+    def __init__(self,id, name, company_name, address1, address2, street, postcode, city, country, phone_number, email, note="", is_company=False, is_franco=False):
         self.id = id
         self.name = name
         self.company_name = company_name
@@ -17,7 +17,6 @@ class Customer:
         self.email = email
         self.note = html2plaintext(note)
         self.is_franco = is_franco
-        self.state = state
         
         for attribute, value in vars().items():
             if(attribute == "company_name" and is_company == True):

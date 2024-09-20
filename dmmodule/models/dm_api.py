@@ -115,7 +115,6 @@ class DmApi:
                         "postcode": customer.postcode,
                         "city": customer.city,
                         "country": customer.country,
-                        "state": customer.state
                     },
                     "contact": {
                         "phoneNumber": customer.phone_number,
@@ -209,7 +208,6 @@ class DmApi:
                         "postcode": customer.postcode,
                         "city": customer.city,
                         "country": customer.country,
-                        "state": customer.state
                     },
                     "contact": {
                         "phoneNumber": customer.phone_number,
@@ -261,6 +259,7 @@ class DmApi:
             data={
                 "client": {
                     "id": self.client_id,
+                    "channel": self.channel,
                     "action": "save",
                 },
                 'shipment': {
