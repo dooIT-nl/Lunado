@@ -132,6 +132,10 @@ class SaleOrder(models.Model):
     def config_sale_order_as_draft(self):
         return bool(self.config_attribute("sale_order_as_draft"))
 
+    # MAATWERK LUNADO
+    def get_is_dropshipment(self) -> bool:
+        return bool(getattr(self, 'x_studio_dropshipment', False))
+
     def get_customer_details(self) -> Customer:
         try:
             self._logger.info("fetching customer details...")
@@ -151,7 +155,8 @@ class SaleOrder(models.Model):
                 odoo_customer.phone,
                 odoo_customer.email,
                 is_company=odoo_customer.is_company,
-                is_franco=is_franco
+                is_franco=is_franco,
+                state=odoo_customer.state_id.code
             )
             return customer
         except DeliveryMatchException as e:
@@ -255,7 +260,8 @@ class SaleOrder(models.Model):
             order_handler = OrderHandler(
                 self.get_base_url(),
                 self.get_api_key(),
-                self.get_client_id()
+                self.get_client_id(),
+                self.get_is_dropshipment()
             )
 
             shipment = self.get_shipment_details()
@@ -315,7 +321,8 @@ class SaleOrder(models.Model):
             order_handler = OrderHandler(
                 self.get_base_url(),
                 self.get_api_key(),
-                self.get_client_id()
+                self.get_client_id(),
+                self.get_is_dropshipment()
             )
 
             shipment = self.get_shipment_details()

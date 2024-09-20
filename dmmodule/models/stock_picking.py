@@ -107,6 +107,9 @@ class StockPicking(models.Model):
     def get_shipment_action_print(self):
         return bool(self.config_attribute("shipment_action_print", default=False))
 
+    def get_sale_order_is_dropshipment(self):
+        return bool(getattr(self.sale_id, 'x_studio_dropshipment', False))
+
     # retrieves from DB if warehouse is external
     def get_is_external_warehouse(self, location_id: int) -> bool:
         db_location = self.env['stock.location'].search([('id', '=', location_id)], limit=1)
@@ -219,6 +222,7 @@ class StockPicking(models.Model):
                 odoo_customer.email,
                 is_company=odoo_customer.is_company,
                 is_franco=is_franco,
+                state=odoo_customer.state_id.code
             )
             return customer
         except DeliveryMatchException as e:
@@ -410,7 +414,8 @@ class StockPicking(models.Model):
             order_handler = OrderHandler(
                 self.get_base_url(),
                 self.get_api_key(),
-                self.get_client_id()
+                self.get_client_id(),
+                self.get_sale_order_is_dropshipment()
             )
 
             shipment = self.get_shipment_details()
@@ -469,7 +474,8 @@ class StockPicking(models.Model):
             order_handler = OrderHandler(
                 self.get_base_url(),
                 self.get_api_key(),
-                self.get_client_id()
+                self.get_client_id(),
+                self.get_sale_order_is_dropshipment()
             )
 
             shipment = self.get_shipment_details()
@@ -533,18 +539,24 @@ class StockPicking(models.Model):
     def book_delivery(self, status_to_hub=False):
         try:
             validate_order = bool(self.config_attribute(attribute='book_order_validation', default=False))
-            is_not_inbound = self.picking_type_id.code != "incoming"
-            is_not_external_warehouse = self.dm_is_external_warehouse != True
+            is_inbound = self.picking_type_id.code == "incoming"
+            trigger_validation = validate_order == True and is_inbound == False and status_to_hub == False
 
-            if validate_order and is_not_external_warehouse and is_not_inbound and not status_to_hub:
+            self._logger.info(f"Validate order conditions: validate_order: {validate_order}, is_inbound: {is_inbound}, status_to_hub: {status_to_hub}")
+
+            if trigger_validation:
+                self._logger.info(f"Order validation TRIGGERD")
                 self.action_set_quantities_to_reservation()
                 if self._check_backorder():
                     return self.button_validate()
+            else:
+                self._logger.info("Order validation NOT TRIGGERD")
 
             order_handler = OrderHandler(
                 self.get_base_url(),
                 self.get_api_key(),
-                self.get_client_id()
+                self.get_client_id(),
+                self.get_sale_order_is_dropshipment()
             )
 
             shipment = self.get_shipment_details()
@@ -601,8 +613,13 @@ class StockPicking(models.Model):
 
             self.dm_shipment_booked = True
 
-            if validate_order and is_not_external_warehouse and is_not_inbound and not status_to_hub:
+            self._logger.info(f"[POST BOOKING] Validate order conditions validate_order: {validate_order}, is_inbound: {is_inbound}, status_to_hub: {status_to_hub}")
+            if trigger_validation:
+                self._logger.info(f"[POST BOOKING] Order validation TRIGGERD")
                 self.button_validate()
+            else:
+                self._logger.info(f"[POST BOOKING] Order validation NOT TRIGGERD")
+
 
         except DeliveryMatchException as e:
             if status_to_hub:
@@ -630,7 +647,8 @@ class StockPicking(models.Model):
         order_handler = OrderHandler(
             self.get_base_url(),
             self.get_api_key(),
-            self.get_client_id()
+            self.get_client_id(),
+            self.get_sale_order_is_dropshipment()
         )
 
         shipment = self.get_shipment_details()
@@ -643,12 +661,11 @@ class StockPicking(models.Model):
         if Helper.is_empty(shipment.id) is not True:
             order_handler.api.is_shipment_booked(id=shipment.id, shipment=get_shipment_response, throw_on_booked=True)
 
-
-
+        order_handler.set_channel_name(self.picking_type_id.name, customer.is_franco),
         body = {
             "client": {
                 "id": self.get_client_id(),
-                "channel": order_handler.set_channel_name(self.picking_type_id.name, customer.is_franco),
+                "channel": order_handler.api.channel,
                 "action": "select",
             },
             "shipment": {

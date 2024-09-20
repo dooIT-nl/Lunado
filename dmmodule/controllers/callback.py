@@ -4,6 +4,7 @@ import odoo
 import yaml
 from odoo.http import route, request, NotFound
 from werkzeug.exceptions import BadRequest
+from ..models import helper
 
 
 class Callback(odoo.http.Controller):
@@ -54,7 +55,9 @@ class Callback(odoo.http.Controller):
             stock_picking.button_validate()
 
         stock_picking.dm_status = req['status']
-        stock_picking.shipment_label_attachment = req['labelURL'] if "labelURL" in req else ""
+
+        if "labelURL" in req:
+            stock_picking.shipment_label_attachment = helper.Helper().convert_label(req["labelURL"])
 
         return {"status": "success"}
 
