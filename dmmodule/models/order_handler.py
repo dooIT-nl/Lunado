@@ -13,13 +13,17 @@ from odoo.tools import html2plaintext
 
 class OrderHandler:
 
-    def __init__(self, base_url, api_key, client_id):
+    def __init__(self, base_url, api_key, client_id, is_dropshipment : bool = False):
         self.api = DmApi(base_url, api_key, client_id)
         self._logger = logging.getLogger("DeliveryMatch -- OrderHandler")
+        self.is_dropshipment = is_dropshipment
 
     def set_channel_name(self, operation_type, is_franco: bool = False):
         if is_franco:
             operation_type = f'{operation_type} - FRANCO'
+
+        if self.is_dropshipment:
+            operation_type = f'{operation_type} - Neutraal'
 
         self.api.set_channel(operation_type)
 

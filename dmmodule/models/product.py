@@ -10,7 +10,7 @@ class Product(models.Model):
     dm_height = fields.Integer(string='Height (CM)', required=True, default=10)
     dm_sku = fields.Char(string="SKU", required=False)
     dm_hscode = fields.Char(string="HSCODE", required=False)
-    dm_country_origin = fields.Char(string="Country of Origin", required=False)
+    dm_country_origin = fields.Char(string="DM Country of Origin", required=False)
     dm_is_fragile = fields.Boolean(string="Fragile")
     dm_is_dangerous = fields.Boolean(string="Dangerous")
     dm_send_lot_code = fields.Boolean(string="WSL lotcode")
