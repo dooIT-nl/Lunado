@@ -66,7 +66,7 @@ class SaleOrder(models.Model):
         for record in self:
             record.total_shipment_price = record.amount_total + self.dm_price
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         res = super(SaleOrder, self).create(vals)
         res.extend_carrier_to_delivery = res.inherit_carrier_from_sales_order()
@@ -90,12 +90,15 @@ class SaleOrder(models.Model):
             return []
         
         all_order_lines = self.order_line
+        items, fragile_items = ListHelper.partition(lambda x: x.product_template_id.dm_is_fragile == False, all_order_lines)
+        order_lines, combinable = ListHelper.partition(lambda x: x.product_template_id.dm_combinable_in_package == False, items)
+        fragile_non_combi_products, fragile_combi_products= ListHelper.partition(lambda x: x.product_template_id.dm_combinable_in_package == False, fragile_items)
 
-        order_lines, combinable = ListHelper.partition(
-            lambda x: x.product_template_id.dm_combinable_in_package == False, all_order_lines
-        )
+        if len(set(combinable)) == 1:
+            order_lines = combinable
 
-        if len(set(combinable)) == 1: order_lines = combinable
+        if len(set(fragile_combi_products)) == 1:
+            fragile_non_combi_products = fragile_combi_products
 
         packages = list(map(lambda line: line.as_deliverymatch_packages(), order_lines))
 
@@ -110,6 +113,38 @@ class SaleOrder(models.Model):
                 combined_values["volume"] = combined_values["volume"] + (product.product_template_id.volume * product.product_uom_qty)
 
             packages.append(combinable[0].as_deliverymatch_packages(combined_values))
+
+        # FOR FRAGILE COMBINABLE PRODUCTS
+        if len(fragile_combi_products) > 1:
+
+            total_fragile_combi_products = {"weight": 0, "volume": 0}
+
+            for product in fragile_combi_products:
+                volume = product.product_template_id.get_dm_volume(convert_to_m3=True)
+
+                total_fragile_combi_products["weight"] += product.product_template_id.weight * product.product_uom_qty
+                total_fragile_combi_products["volume"] += (volume * product.product_uom_qty)
+
+            calculated_combined_fragile_packages = fragile_combi_products[0].as_deliverymatch_packages(combined_fragile_products=total_fragile_combi_products)
+
+            max_length = Helper().get_fragile_highest_length(rows=fragile_combi_products)
+            if max_length != 0:
+                for package in calculated_combined_fragile_packages:
+                    package['length'] = max_length
+
+            packages.append(calculated_combined_fragile_packages)
+
+
+        if len(fragile_non_combi_products) >= 1:
+            calculated_fragile_packages = list(map(lambda line: line.as_deliverymatch_packages(), fragile_non_combi_products))
+            max_length = Helper().get_fragile_highest_length(fragile_non_combi_products)
+
+            for package_types in calculated_fragile_packages:
+                if max_length != 0:
+                    for package in package_types:
+                        package["length"] = max_length
+
+                packages.append(package_types)
 
         return [i for i in ListHelper.flatten(packages) if i is not None]
 
@@ -282,6 +317,7 @@ class SaleOrder(models.Model):
                     "weight": package['weight'],
                     "description": package["description"],
                     "type": package["type"],
+                    "is_fragile_package": package["is_fragile_package"],
                 })]})
 
             odoo_db = OdooDb(self)

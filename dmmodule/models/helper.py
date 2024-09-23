@@ -171,3 +171,20 @@ class Helper:
     @staticmethod
     def is_empty(value) -> bool:
         return value is None or value == "" or value == False or value == 0 or value == "0" or value == "False"
+
+    def get_fragile_highest_length(self, rows):
+        max_length = 0
+        
+        for item in rows:
+            custom_length = getattr(item, "x_studio_length", 0)
+            if not item.product_id.dm_is_fragile:
+                continue
+
+            if (max_length < custom_length):
+                max_length = custom_length
+
+        max_length = max_length * 1000
+
+        return max_length #length in mm
+
+

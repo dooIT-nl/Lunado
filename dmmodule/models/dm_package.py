@@ -16,6 +16,7 @@ class DmPackage(models.Model):
 
     description = fields.Char(string="Description", required=True)
     type = fields.Char(string="Type", required=True)
+    is_fragile_package = fields.Boolean(string="Is fragile package")
 
     sale_order_id = fields.Many2one("sale.order", "Sale Order ID")
     stock_picking_id = fields.Many2one("stock.picking", "Stock Picking Id")

@@ -11,6 +11,7 @@
                 <field name="width" />
                 <field name="length" />
                 <field name="weight" />
+                <field name="is_fragile_package" />
             </tree>
         </field>
     </record>

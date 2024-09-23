@@ -16,17 +16,38 @@ class SaleOrderLine(models.Model):
             "weight": template.weight
         }
 
-    def as_deliverymatch_packages(self, combined_products = None):
+    def as_deliverymatch_packages(self, combined_products = None, combined_fragile_products = None):
         product = self.product_id
         packaging = self.env["product.packaging"].search([("product_id", "=", product.id)], order="qty desc")
 
         if not packaging:
-            self._logger.info("no packaging")
             return None
 
-
         is_combined = combined_products is not None
-        remaining_quantity = self.product_uom_qty if not is_combined else combined_products['volume']
+        is_combined_fragile = combined_fragile_products is not None
+        is_fragile_product = product.dm_is_fragile
+        is_fragile_package = is_combined_fragile or is_fragile_product
+
+        volume_in_m3 = 0 if not is_fragile_product else self.product_template_id.get_dm_volume(convert_to_m3=True)
+        product_quantity = self.product_uom_qty
+
+        if is_fragile_product:
+            total_fragile_product_volume_in_m3 = volume_in_m3 * product_quantity
+            total_fragile_product_weight = product.weight * product_quantity
+
+        if is_combined_fragile:
+            total_fragile_product_volume_in_m3 = combined_fragile_products.get('volume')
+            total_fragile_product_weight = combined_fragile_products.get('weight')
+
+        if not is_combined and not is_fragile_package:
+            remaining_quantity = self.product_uom_qty
+
+        if is_combined and not is_fragile_package:
+            remaining_quantity = combined_products['volume']
+
+        if is_fragile_package and not is_combined:
+            remaining_quantity = total_fragile_product_volume_in_m3
+
         packages = []
         attempts = 0
 
@@ -35,8 +56,9 @@ class SaleOrderLine(models.Model):
                 if not package.id:
                     continue
 
-                package_max = package.qty if not is_combined else package.package_type_id.get_max_volume()
-                package_min = package.min_qty if not is_combined else package.package_type_id.min_volume
+                package_min = package.min_qty if not is_combined and not is_fragile_package else package.package_type_id.min_volume
+                package_max = package.qty if not is_combined and not is_fragile_package else package.package_type_id.get_max_volume()
+
                 if remaining_quantity > 0 and remaining_quantity >= package_min and (remaining_quantity > package_max or remaining_quantity <= package_max):
                     package_type = package.package_type_id
                     amount_in_box = self._calculate_amount_in_box(remaining_quantity, package_max)
@@ -47,6 +69,10 @@ class SaleOrderLine(models.Model):
                         percentage_in_box = amount_in_box / combined_products['volume']
                         total_package_weight = percentage_in_box * combined_products['weight']
 
+                    if is_fragile_package:
+                        percentage_in_box = amount_in_box / total_fragile_product_volume_in_m3
+                        total_package_weight = percentage_in_box * total_fragile_product_weight
+
                     packages.append({
                         "type": package_type.barcode if package_type.barcode else package.name,
                         "description": package_type.name,
@@ -54,6 +80,7 @@ class SaleOrderLine(models.Model):
                         "width": package_type.width,
                         "length": package_type.packaging_length,
                         "weight": total_package_weight,
+                        "is_fragile_package": is_fragile_package
                     })
                     break  # breaks the packages for loop so that the loop restarts from the package with the highest qty
 
