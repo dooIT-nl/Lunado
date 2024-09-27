@@ -132,20 +132,25 @@ class StockPicking(models.Model):
             self.delivery_order_number = self.get_source_document_field()
 
     @api.model_create_multi
-    def create(self, vals):
-        res = super(StockPicking, self).create(vals)
+    def create(self, val_list):
+        res = super(StockPicking, self).create(val_list)
 
-        if 'location_id' not in vals and self.is_delivery():
-            vals['location_id'] = self.location_id
+        if not isinstance(val_list, list):
+            val_list = [val_list]  # Ensure single record is handled as a list
 
-        if 'location_dest_id' not in vals and self.is_delivery() == False:
-            vals['location_dest_id'] = self.location_dest_id
+        for vals in val_list:
+            if 'location_id' not in vals and self.is_delivery():
+                vals['location_id'] = self.location_id
 
-        for k, v in vals.copy().items():
-            if (k == 'location_id' or k == 'location_dest_id'):
-                res.dm_is_external_warehouse = res.get_is_external_warehouse(v)
+            if 'location_dest_id' not in vals and self.is_delivery() == False:
+                vals['location_dest_id'] = self.location_dest_id
 
-        res.get_carrier_from_sales_order = res.inherit_carrier_from_sales_order()
+            for k, v in vals.copy().items():
+                if (k == 'location_id' or k == 'location_dest_id'):
+                    res.dm_is_external_warehouse = res.get_is_external_warehouse(v)
+
+            res.get_carrier_from_sales_order = res.inherit_carrier_from_sales_order()
+
         return res
 
     def write(self, values):

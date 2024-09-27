@@ -18,9 +18,6 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
     # dm_shipment_url = "https://engine-test.deliverymatch.eu/shipment/view/"
 
-    # Inherited fields
-    incoterm = fields.Many2one(required=False)
-
     # custom fields
     dm_carrierName = fields.Char(string="Carrier Name", copy=False)
     dm_serviceLevelName = fields.Char(string="Service Level Name", copy=False)
