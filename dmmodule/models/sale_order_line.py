@@ -6,7 +6,6 @@ class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
     _logger = logging.getLogger("DeliveryMatch - SaleOrderLine")
 
-
     def as_deliverymatch_product(self):
         template = self.product_template_id
 
@@ -18,6 +17,7 @@ class SaleOrderLine(models.Model):
 
     def as_deliverymatch_packages(self, combined_products = None, combined_fragile_products = None):
         product = self.product_id
+        product_template = self.product_template_id
         packaging = self.env["product.packaging"].search([("product_id", "=", product.id)], order="qty desc")
 
         if not packaging:
@@ -28,11 +28,10 @@ class SaleOrderLine(models.Model):
         is_fragile_product = product.dm_is_fragile
         is_fragile_package = is_combined_fragile or is_fragile_product
 
-        volume_in_m3 = 0 if not is_fragile_product else self.product_template_id.get_dm_volume(convert_to_m3=True)
         product_quantity = self.product_uom_qty
 
         if is_fragile_product:
-            total_fragile_product_volume_in_m3 = volume_in_m3 * product_quantity
+            total_fragile_product_volume_in_m3 = product_template.get_area_in_m2(convert_to_m2=True) * product_quantity
             total_fragile_product_weight = product.weight * product_quantity
 
         if is_combined_fragile:
@@ -56,8 +55,17 @@ class SaleOrderLine(models.Model):
                 if not package.id:
                     continue
 
-                package_min = package.min_qty if not is_combined and not is_fragile_package else package.package_type_id.min_volume
-                package_max = package.qty if not is_combined and not is_fragile_package else package.package_type_id.get_max_volume()
+                if not is_combined and not is_fragile_package:
+                    package_min = package.min_qty
+                    package_max = package.qty
+
+                if is_combined:
+                    package_min = package.package_type_id.min_volume
+                    package_max = package.package_type_id.get_max_volume()
+
+                if is_fragile_package:
+                    package_min = package.package_type_id.min_m2
+                    package_max = package.package_type_id.get_max_m2()
 
                 if remaining_quantity > 0 and remaining_quantity >= package_min and (remaining_quantity > package_max or remaining_quantity <= package_max):
                     package_type = package.package_type_id

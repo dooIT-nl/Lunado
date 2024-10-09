@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'DeliveryMatch shipping integration',
-    'version': '16.0.2.1.7',
+    'version': '16.0.2.1.8',
     'license': 'LGPL-3',
     'author': 'Deliverymatch Development Team',
     'summary': 'Deliverymatch',

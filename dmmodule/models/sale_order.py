@@ -117,11 +117,12 @@ class SaleOrder(models.Model):
             total_fragile_combi_products = {"weight": 0, "volume": 0}
 
             for product in fragile_combi_products:
-                volume = product.product_template_id.get_dm_volume(convert_to_m3=True)
+                square = product.product_template_id.get_area_in_m2(convert_to_m2=True) # only takes the width and height from the product metrics
 
                 total_fragile_combi_products["weight"] += product.product_template_id.weight * product.product_uom_qty
-                total_fragile_combi_products["volume"] += (volume * product.product_uom_qty)
+                total_fragile_combi_products["volume"] += (square * product.product_uom_qty)
 
+            # Package calculation stays the same only difference is min and max package volume is now vierkante meter
             calculated_combined_fragile_packages = fragile_combi_products[0].as_deliverymatch_packages(combined_fragile_products=total_fragile_combi_products)
 
             max_length = Helper().get_fragile_highest_length(rows=fragile_combi_products)

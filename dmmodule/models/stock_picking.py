@@ -413,7 +413,7 @@ class StockPicking(models.Model):
 
             for product in fragile_combi_items:
                 combined_fragile_values["weight"] += product.product_tmpl_id.weight * product.product_uom_qty
-                combined_fragile_values["volume"] += (product.product_tmpl_id.get_dm_volume(convert_to_m3=True) * product.product_uom_qty)
+                combined_fragile_values["volume"] += (product.product_tmpl_id.get_area_in_m2(convert_to_m2=True) * product.product_uom_qty)
 
             calculated_combined_fragile_packages = fragile_combi_items[0].as_deliverymatch_packages(combined_fragile_products=combined_fragile_values)
             max_length = Helper().get_fragile_highest_length(rows=sale_order_fragile_combi_items)

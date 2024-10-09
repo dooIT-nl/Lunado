@@ -22,11 +22,20 @@ class Product(models.Model):
 
     # default in cm3
     def get_dm_volume(self, convert_to_m3:bool = False) -> float:
-        volume = self.dm_length * self.dm_width * self.dm_height
+        volume = self.dm_length * self.dm_width * self.dm_height # metrics in CM
 
         if convert_to_m3: volume = volume / 1_000_000
 
         return volume
+
+    #  default in cm2
+    def get_area_in_m2(self, convert_to_m2: bool = False) -> float:
+        area = self.dm_width * self.dm_height # metrics in CM
+
+        if convert_to_m2:
+            area = area / 10_000
+
+        return area
 
 class DmProduct:
     def __init__(self, content, description, weight, length, width, height, warehouse_id, value, stock, quantity, sku=None, barcode=None, is_fragile=False, is_dangerous=False, hscode=None, country_origin=None, custom1=None, dangerous_goods=None, lithium_battery_weight=None):

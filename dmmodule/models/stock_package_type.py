@@ -7,6 +7,11 @@ class StockPackageType(models.Model):
 
     min_volume = fields.Float(string="Minimum Volume", digits='Volume')
     max_volume = fields.Float(compute="_compute_max_volume", string="Maximum Volume", digits='Volume')
+    min_m2 = fields.Float(string="Minimum M2")
+    max_m2 = fields.Float(compute="_compute_max_m2", string="Maximum M2")
+
+    def get_max_m2(self):
+        return (self.height * self.width) / 1_000_000
 
     def get_max_volume(self):
         return (self.height * self.width * self.packaging_length) / 1_000_000_000
@@ -30,3 +35,8 @@ class StockPackageType(models.Model):
     def _compute_max_volume(self):
         for record in self:
             record.max_volume = record.get_max_volume()
+
+    @api.model
+    def _compute_max_m2(self):
+        for record in self:
+            record.max_m2 = record.get_max_m2()

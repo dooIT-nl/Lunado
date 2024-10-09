@@ -6,7 +6,7 @@
             <field name="inherit_id" ref="stock.stock_package_type_form"/>
         <field name="arch" type="xml">
             <xpath expr="//label[@for='max_weight']" position="before">
-                    <label for="min_volume"/>
+                <label for="min_volume"/>
                     <div class="o_row" name="min_volume">
                         <field name="min_volume"/>
                         <span><p>m³</p></span>
@@ -15,6 +15,17 @@
                     <div class="o_row" name="max_volume">
                         <field name="max_volume"/>
                         <span><p>m³</p></span>
+                    </div>
+
+                <label for="min_m2"/>
+                    <div class="o_row" name="min_m2">
+                        <field name="min_m2"/>
+                        <span><p>㎡</p></span>
+                    </div>
+                <label for="max_m2"/>
+                    <div class="o_row" name="max_m2">
+                        <field name="max_m2"/>
+                        <span><p>㎡</p></span>
                     </div>
             </xpath>
         </field>
