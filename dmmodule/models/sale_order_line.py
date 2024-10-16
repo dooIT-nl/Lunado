@@ -28,18 +28,18 @@ class SaleOrderLine(models.Model):
         is_fragile_product = product.dm_is_fragile
         is_fragile_package = is_combined_fragile or is_fragile_product
 
-        product_quantity = self.product_uom_qty
+        product_quantity = self.set_product_quantity(is_fragile=is_fragile_package)
 
         if is_fragile_product:
             total_fragile_product_volume_in_m3 = product_template.get_area_in_m2(convert_to_m2=True) * product_quantity
             total_fragile_product_weight = product.weight * product_quantity
 
         if is_combined_fragile:
-            total_fragile_product_volume_in_m3 = combined_fragile_products.get('volume')
+            total_fragile_product_volume_in_m3 = combined_fragile_products.get('volume') # quantity calculated in sale_order.py in method get_sales_order_lines_as_packages
             total_fragile_product_weight = combined_fragile_products.get('weight')
 
         if not is_combined and not is_fragile_package:
-            remaining_quantity = self.product_uom_qty
+            remaining_quantity = product_quantity
 
         if is_combined and not is_fragile_package:
             remaining_quantity = combined_products['volume']
@@ -70,7 +70,7 @@ class SaleOrderLine(models.Model):
                 if remaining_quantity > 0 and remaining_quantity >= package_min and (remaining_quantity > package_max or remaining_quantity <= package_max):
                     package_type = package.package_type_id
                     amount_in_box = self._calculate_amount_in_box(remaining_quantity, package_max)
-                    remaining_quantity = remaining_quantity - amount_in_box
+                    remaining_quantity = round(remaining_quantity - amount_in_box, 8) # Rounding to 8 decimals to avoid tiny floating-point precision errors like 6.938893903907228e-18.
                     total_package_weight = amount_in_box * self.product_template_id.weight
 
                     if is_combined:
@@ -102,3 +102,12 @@ class SaleOrderLine(models.Model):
             return max_package_qty
 
         return remaining_quantity
+
+    def set_product_quantity(self, is_fragile:bool = False) -> float or int:
+        quantity: float or int = self.product_uom_qty
+
+        # MAATWERK LUNADO
+        lunado_custom_qty:float or int = getattr(self, 'x_studio_qty', 0)
+        if is_fragile and lunado_custom_qty != 0: quantity = lunado_custom_qty
+
+        return quantity

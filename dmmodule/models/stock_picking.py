@@ -409,23 +409,68 @@ class StockPicking(models.Model):
         # FOR FRAGILE COMBINABLE PRODUCTS
         if len(fragile_combi_items) > 1:
 
-            combined_fragile_values = {"weight": 0, "volume": 0}
+            # Fragile combineables splitten op basis van package_type
+            # loopen door de combi totals met als key package_type en dan appenden aan de packages
+            splitted = {}
+            for row in fragile_combi_items:
+                fragile_product_tmpl = row.product_tmpl_id
+                package_type = self.env["product.packaging"].search([("product_id", "=", row.product_id.id)],order="qty desc", limit=1)
+                product_quantity = row.product_uom_qty
 
-            for product in fragile_combi_items:
-                combined_fragile_values["weight"] += product.product_tmpl_id.weight * product.product_uom_qty
-                combined_fragile_values["volume"] += (product.product_tmpl_id.get_area_in_m2(convert_to_m2=True) * product.product_uom_qty)
+                if not package_type: continue
 
-            calculated_combined_fragile_packages = fragile_combi_items[0].as_deliverymatch_packages(combined_fragile_products=combined_fragile_values)
-            max_length = Helper().get_fragile_highest_length(rows=sale_order_fragile_combi_items)
-            if max_length != 0:
-                for package in calculated_combined_fragile_packages:
-                    package['length'] = max_length
+                sale_order_lines = self.sale_id.order_line.filtered(lambda line: line.product_template_id and line.product_template_id.id == fragile_product_tmpl.id)
+                custom_quantity = 0
+                for sale_order_line in sale_order_lines:
+                    if sale_order_line and getattr(sale_order_line, "x_studio_qty", 0) > 0:
+                        custom_quantity += sale_order_line.x_studio_qty
 
-            packages.append(calculated_combined_fragile_packages)
+                if custom_quantity > 0: product_quantity = custom_quantity
+
+                square = fragile_product_tmpl.get_area_in_m2(convert_to_m2=True)  # only takes the width and height from the product metrics
+                weight = fragile_product_tmpl.weight * product_quantity
+                volume = square * product_quantity
+                package_id = package_type.package_type_id.id
+
+                if package_id in splitted:
+                    splitted[package_id]["metrics"]["weight"] += weight
+                    splitted[package_id]["metrics"]["volume"] += volume
+                    continue
+
+                if package_id not in splitted:
+                    splitted[package_id] = {"metrics": None, "move_id": None}
+                    splitted[package_id]["metrics"] = {"weight": weight, "volume": volume}
+                    splitted[package_id]["move_id"] = row
+
+            for package_id, splitted_row in splitted.items():
+                # Package calculation stays the same only difference is min and max package volume is now vierkante meter
+                calculated_combined_fragile_packages = splitted_row["move_id"].as_deliverymatch_packages(combined_fragile_products=splitted_row["metrics"])
+
+                max_length = Helper().get_fragile_highest_length(rows=fragile_combi_items)
+                if max_length != 0:
+                    for package in calculated_combined_fragile_packages:
+                        package['length'] = max_length
+
+                packages.append(calculated_combined_fragile_packages)
 
         # FOR FRAGILE NON COMBINABLE PRODUCTS
         if len(fragile_non_combi_items) >= 1:
-            calculated_fragile_packages = list(map(lambda line: line.as_deliverymatch_packages(), fragile_non_combi_items))
+            unique_fragile_non_combi_lines = [] # selects distinct product_ids in move_lines to prevent double package calculation
+
+            for non_combi_item_line in fragile_non_combi_items:
+                product_id = non_combi_item_line.product_tmpl_id.id
+                if len(unique_fragile_non_combi_lines) == 0:
+                    unique_fragile_non_combi_lines.append(non_combi_item_line)
+                    continue
+
+                for i in unique_fragile_non_combi_lines:
+                    u_product = getattr(i, "product_tmpl_id", None)
+                    if u_product != None and product_id == u_product.id:
+                        continue
+
+                    unique_fragile_non_combi_lines.append(non_combi_item_line)
+
+            calculated_fragile_packages = list(map(lambda line: line.as_deliverymatch_packages(related_sale_order_lines=self.sale_id.order_line.filtered(lambda orderline: orderline.product_template_id and orderline.product_template_id.id == line.product_tmpl_id.id)), unique_fragile_non_combi_lines))
             max_length = Helper().get_fragile_highest_length(rows=sale_order_fragile_non_combi_items)
 
             for package_types in calculated_fragile_packages:

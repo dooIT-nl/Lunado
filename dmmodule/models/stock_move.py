@@ -8,7 +8,7 @@ class StockMove(models.Model):
     _inherit = "stock.move"
     _logger = logging.getLogger("stock.move")
 
-    def as_deliverymatch_packages(self, combined_products = None, combined_fragile_products = None):
+    def as_deliverymatch_packages(self, combined_products = None, combined_fragile_products = None, related_sale_order_lines = None):
         product = self.product_id
         product_template = self.product_tmpl_id
         packaging = self.env["product.packaging"].search([("product_id", "=", product.id)], order="qty desc")
@@ -21,7 +21,7 @@ class StockMove(models.Model):
         is_fragile_product = product.dm_is_fragile
         is_fragile_package = is_combined_fragile or is_fragile_product
 
-        product_quantity = self.product_uom_qty
+        product_quantity = self.set_product_quantity(is_fragile=is_fragile_package, sale_order_lines=related_sale_order_lines)
 
         if is_fragile_product:
             total_fragile_product_volume_in_m3 = product_template.get_area_in_m2(convert_to_m2=True) * product_quantity
@@ -32,7 +32,7 @@ class StockMove(models.Model):
             total_fragile_product_weight = combined_fragile_products.get('weight')
 
         if not is_combined and not is_fragile_package:
-            remaining_quantity = self.product_uom_qty
+            remaining_quantity = product_quantity
 
         if is_combined and not is_fragile_package:
             remaining_quantity = combined_products['volume']
@@ -63,7 +63,7 @@ class StockMove(models.Model):
                 if remaining_quantity > 0 and remaining_quantity >= package_min and (remaining_quantity > package_max or remaining_quantity <= package_max):
                     package_type = package.package_type_id
                     amount_in_box = self._calculate_amount_in_box(remaining_quantity, package_max)
-                    remaining_quantity = remaining_quantity - amount_in_box
+                    remaining_quantity = round(remaining_quantity - amount_in_box, 8) # Rounding to 8 decimals to avoid tiny floating-point precision errors like 6.938893903907228e-18.
                     total_package_weight = amount_in_box * self.product_tmpl_id.weight
 
                     if is_combined:
@@ -95,3 +95,17 @@ class StockMove(models.Model):
             return max_package_qty
 
         return remaining_quantity
+
+
+    def set_product_quantity(self, is_fragile:bool = False, sale_order_lines = None) -> float or int:
+        quantity: float or int = self.product_uom_qty
+
+        if(sale_order_lines and is_fragile):
+            custom_quantity = 0
+            for sale_order_line in sale_order_lines:
+                if sale_order_line and getattr(sale_order_line, "x_studio_qty", 0) > 0:
+                    custom_quantity += sale_order_line.x_studio_qty
+
+            if custom_quantity > 0: quantity = custom_quantity
+
+        return quantity

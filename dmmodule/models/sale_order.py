@@ -109,28 +109,47 @@ class SaleOrder(models.Model):
                 combined_values["weight"] = combined_values["weight"] + (product.product_template_id.weight * product.product_uom_qty)
                 combined_values["volume"] = combined_values["volume"] + (product.product_template_id.volume * product.product_uom_qty)
 
-            packages.append(combinable[0].as_deliverymatch_packages(combined_values))
+            packages.append(combinable[0].as_deliverymatch_packages(combined_products=combined_values))
 
         # FOR FRAGILE COMBINABLE PRODUCTS
         if len(fragile_combi_products) > 1:
+            # Fragile combineables splitten op basis van package_type
+            # loopen door de combi totals met als key package_type en dan appenden aan de packages
+            splitted = {}
+            for row in fragile_combi_products:
+                fragile_product_tmpl = row.product_template_id
+                package_type = self.env["product.packaging"].search([("product_id", "=", row.product_id.id)], order="qty desc", limit=1)
 
-            total_fragile_combi_products = {"weight": 0, "volume": 0}
+                if not package_type: continue
 
-            for product in fragile_combi_products:
-                square = product.product_template_id.get_area_in_m2(convert_to_m2=True) # only takes the width and height from the product metrics
+                product_quantity = row.product_uom_qty if getattr(row, "x_studio_qty", 0) == 0 else row.x_studio_qty
+                square = fragile_product_tmpl.get_area_in_m2(convert_to_m2=True) # only takes the width and height from the product metrics
 
-                total_fragile_combi_products["weight"] += product.product_template_id.weight * product.product_uom_qty
-                total_fragile_combi_products["volume"] += (square * product.product_uom_qty)
+                weight = fragile_product_tmpl.weight * product_quantity
+                volume =  square * product_quantity
+                package_id = package_type.package_type_id.id
 
-            # Package calculation stays the same only difference is min and max package volume is now vierkante meter
-            calculated_combined_fragile_packages = fragile_combi_products[0].as_deliverymatch_packages(combined_fragile_products=total_fragile_combi_products)
+                if package_id in splitted:
+                    splitted[package_id]["metrics"]["weight"] +=  weight
+                    splitted[package_id]["metrics"]["volume"] +=  volume
+                    continue
 
-            max_length = Helper().get_fragile_highest_length(rows=fragile_combi_products)
-            if max_length != 0:
-                for package in calculated_combined_fragile_packages:
-                    package['length'] = max_length
+                if package_id not in splitted:
+                    splitted[package_id] = {"metrics": None, "move_id": None}
+                    splitted[package_id]["metrics"] = {"weight": weight, "volume": volume}
+                    splitted[package_id]["move_id"] = row
 
-            packages.append(calculated_combined_fragile_packages)
+            for package_id, splitted_row in splitted.items():
+                # Package calculation stays the same only difference is min and max package volume is now vierkante meter
+                calculated_combined_fragile_packages = splitted_row["move_id"].as_deliverymatch_packages(combined_fragile_products=splitted_row["metrics"])
+
+                max_length = Helper().get_fragile_highest_length(rows=fragile_combi_products)
+
+                if max_length != 0:
+                    for package in calculated_combined_fragile_packages:
+                        package['length'] = max_length
+
+                packages.append(calculated_combined_fragile_packages)
 
 
         if len(fragile_non_combi_products) >= 1:
