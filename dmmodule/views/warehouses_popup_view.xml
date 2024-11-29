@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_warehouse_list" model="ir.ui.view">
+        <field name="name">Warehouse List Custom</field>
+        <field name="model">stock.warehouse</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" export_xlsx="false" delete="false">
+                <field name="name" />
+                <field name="code" />
+                <field name="warehouse_options" />
+                <field name="dm_external_warehouse" string="External Warehouse in DeliveryMatch"/>
+                <header>
+                    <button name="set_as_external_warehouse" string="Set as External Warehouse for DeliveryMatch" type="object" />
+                </header>
+            </tree>
+        </field>
+    </record>
+</odoo>
