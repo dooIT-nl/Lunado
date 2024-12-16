@@ -103,8 +103,8 @@ class StockMove(models.Model):
         if(sale_order_lines and is_fragile):
             custom_quantity = 0
             for sale_order_line in sale_order_lines:
-                if sale_order_line and getattr(sale_order_line, "x_studio_qty", 0) > 0:
-                    custom_quantity += sale_order_line.x_studio_qty
+                if sale_order_line and getattr(sale_order_line, "product_uom_qty", 0) > 0:
+                    custom_quantity += getattr(sale_order_line, "product_uom_qty", 0)
 
             if custom_quantity > 0: quantity = custom_quantity
 
