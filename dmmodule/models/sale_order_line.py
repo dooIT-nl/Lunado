@@ -5,7 +5,8 @@ from odoo import fields, models
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
     _logger = logging.getLogger("DeliveryMatch - SaleOrderLine")
-    # LUNADO MAATWERK CUSTOM FIELDS: x_studio_qty, x_studio_length
+    # x_studio_length = fields.Integer(string="Lengte")
+    # x_studio_qty = fields.Integer(string="X qty")
 
     def as_deliverymatch_product(self):
         template = self.product_template_id
@@ -108,7 +109,7 @@ class SaleOrderLine(models.Model):
         quantity: float or int = self.product_uom_qty
 
         # MAATWERK LUNADO
-        lunado_custom_qty:float or int = getattr(self, 'product_uom_qty', 0)
+        lunado_custom_qty:float or int = getattr(self, 'x_studio_qty', 0)
         if is_fragile and lunado_custom_qty != 0: quantity = lunado_custom_qty
 
         return quantity

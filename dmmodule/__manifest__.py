@@ -2,7 +2,7 @@
 {
     'name': 'DeliveryMatch shipping integration',
     'module_type': 'official',
-    'version': '17.0.1.0.2',
+    'version': '17.0',
     'license': 'LGPL-3',
     'author': 'Deliverymatch Development Team',
     'summary': 'Deliverymatch',
