@@ -23,7 +23,7 @@ class Customer:
             if(attribute == "company_name" and is_company == True):
                     self.company_name = self.name
             
-            if not value and attribute not in ["address2", "is_company", "note", "company_name", "is_franco", "state"]:
+            if not value and attribute not in ["address2", "is_company", "note", "company_name", "is_franco", "state", "phone_number", "email"]:
                 
                     # raise DeliveryMatchException(f"Please ensure that the customer name and company name are provided")
 

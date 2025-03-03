@@ -140,6 +140,7 @@ class DmApi:
                 body["customFields"] = custom_fields
       
             if packages:
+                packages = DmPackage.round_weights(packages)
                 body.update({"packages": {"package": packages}})
 
             total_lithium_battery_weight = products.total_lithium_battery_weight()
@@ -232,6 +233,7 @@ class DmApi:
 
             if packages:
                 packages = DmPackage.convert_size_to_cm(packages)
+                packages = DmPackage.round_weights(packages)
                 body.update({"packages": {"package": packages}})
 
             total_lithium_battery_weight = products.total_lithium_battery_weight()

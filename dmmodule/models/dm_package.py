@@ -40,3 +40,10 @@ class DmPackage(models.Model):
 
         return packages
 
+    @staticmethod
+    def round_weights(packages, precision=2):
+        for package in packages:
+            package['weight'] = round(package['weight'], precision)
+
+        return packages
+

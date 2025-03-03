@@ -438,7 +438,7 @@ class SaleOrder(models.Model):
         view_id = self.env.ref("dmmodule.view_popup_wizard_form").id
         return {
             "type": "ir.actions.act_window",
-            "name": "DeliveryMatch - Warning",
+            "name": "DeliveryMatch - Error",
             "view_mode": "form",
             "res_model": "popup_wizard",
             "views": [(view_id, "form")],

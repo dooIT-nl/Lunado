@@ -2,7 +2,7 @@
 {
     'name': 'DeliveryMatch shipping integration',
     'module_type': 'official',
-    'version': '17.0.1.0.2',
+    'version': '17.0.1.0.3',
     'license': 'LGPL-3',
     'author': 'Deliverymatch Development Team',
     'summary': 'Deliverymatch',
@@ -17,6 +17,7 @@
         "views/deliver_options_view.xml",
         "views/sale_order.xml",
         "views/product.xml",
+        "views/product_product.xml",
         "views/stock_picking.xml",
         "views/deliverymatch_config.xml",
         "views/stock_warehouse.xml",

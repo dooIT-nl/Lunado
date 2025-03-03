@@ -188,7 +188,7 @@ class StockPicking(models.Model):
         view_id = self._origin.env.ref("dmmodule.view_popup_wizard_form").id
         return {
             "type": "ir.actions.act_window",
-            "name": "DeliveryMatch - Warning",
+            "name": "DeliveryMatch - Error",
             "view_mode": "form",
             "res_model": "popup_wizard",
             "views": [(view_id, "form")],
@@ -446,7 +446,7 @@ class StockPicking(models.Model):
                 # Package calculation stays the same only difference is min and max package volume is now vierkante meter
                 calculated_combined_fragile_packages = splitted_row["move_id"].as_deliverymatch_packages(combined_fragile_products=splitted_row["metrics"])
 
-                max_length = Helper().get_fragile_highest_length(rows=fragile_combi_items)
+                max_length = Helper().get_fragile_highest_length(rows=sale_order_fragile_combi_items)
                 if max_length != 0:
                     for package in calculated_combined_fragile_packages:
                         package['length'] = max_length
@@ -509,7 +509,14 @@ class StockPicking(models.Model):
             products = self.get_products_details()
             packages = self.get_sales_order_lines_as_packages()
 
-            shipping_options = order_handler.get_shipping_options(shipment, customer, products, packages=packages, operation_type=self.picking_type_id.name, sender_name=self.get_sender_name_on_dropshipment())
+            shipping_options = order_handler.get_shipping_options(
+                shipment=shipment,
+                customer=customer,
+                products=products,
+                packages=packages,
+                operation_type=self.picking_type_id.name,
+                sender_name=self.get_sender_name_on_dropshipment()
+            )
 
             if bool(self.config_attribute("calculate_packages")):
                 self.packages.unlink()
@@ -795,6 +802,7 @@ class StockPicking(models.Model):
 
         if packages:
             packages = DmPackage.convert_size_to_cm(packages)
+            packages = DmPackage.round_weights(packages)
             body.update({"packages": {"package": packages}})
 
         if not Helper.is_empty(shipment.pickup_date):

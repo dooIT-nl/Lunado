@@ -2,6 +2,7 @@ from odoo import fields, models
 from .deliverymatch_exception import DeliveryMatchException
 from .helper import Helper
 
+# PRODUCT.TEMPLATE
 class Product(models.Model):
     _inherit = "product.template"
 
