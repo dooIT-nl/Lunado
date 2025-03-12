@@ -472,6 +472,8 @@ class StockPicking(models.Model):
 
             calculated_fragile_packages = list(map(lambda line: line.as_deliverymatch_packages(related_sale_order_lines=self.sale_id.order_line.filtered(lambda orderline: orderline.product_template_id and orderline.product_template_id.id == line.product_tmpl_id.id)), unique_fragile_non_combi_lines))
             max_length = Helper().get_fragile_highest_length(rows=sale_order_fragile_non_combi_items)
+            if(len(fragile_combi_items) == 1 and len(fragile_non_combi_items) == 1):
+                max_length = Helper().get_fragile_highest_length(rows=sale_order_fragile_combi_items)
 
             for package_types in calculated_fragile_packages:
                 if max_length != 0:
