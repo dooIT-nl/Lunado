@@ -45,6 +45,7 @@ class SaleOrder(models.Model):
     service_level_id = fields.Integer(string="Service Level ID", default=None, copy=False)
     extend_carrier_to_delivery = fields.Boolean(string="Extend carrier and service level to delivery", copy=False)
     dm_config_id = fields.Integer("DM Configuration ID", copy=False, default=None)
+    is_fragile_order = fields.Boolean(string="Fragile Order", default=False, copy=False)
 
     # TODO: temp vars for save xml removal
     hide_hub_btn = fields.Boolean(default=False, copy=False)
@@ -83,6 +84,7 @@ class SaleOrder(models.Model):
         )
 
     def get_sales_order_lines_as_packages(self):
+        self.is_fragile_order = False
         if not bool(self.config_attribute("calculate_packages")):
             return []
         
@@ -90,6 +92,8 @@ class SaleOrder(models.Model):
         items, fragile_items = ListHelper.partition(lambda x: x.product_template_id.dm_is_fragile == False, all_order_lines)
         order_lines, combinable = ListHelper.partition(lambda x: x.product_template_id.dm_combinable_in_package == False, items)
         fragile_non_combi_products, fragile_combi_products= ListHelper.partition(lambda x: x.product_template_id.dm_combinable_in_package == False, fragile_items)
+
+        self.is_fragile_order = len(fragile_items) > 0
 
         if len(set(combinable)) == 1:
             order_lines = combinable
@@ -125,7 +129,8 @@ class SaleOrder(models.Model):
                 product_quantity = row.product_uom_qty if getattr(row, "x_studio_qty", 0) == 0 else row.x_studio_qty
                 square = fragile_product_tmpl.get_area_in_m2(convert_to_m2=True) # only takes the width and height from the product metrics
 
-                weight = fragile_product_tmpl.weight * product_quantity
+                # NOTE: Added on this issue: #13919. x_studio_qty wordt niet gebruikt voor weight calculation
+                weight = fragile_product_tmpl.weight * row.product_uom_qty
                 volume =  square * product_quantity
                 package_id = package_type.package_type_id.id
 
@@ -260,10 +265,11 @@ class SaleOrder(models.Model):
                 quantity = ol.product_uom_qty
                 length = product_line.dm_length
 
-                if hasattr(ol, 'x_studio_qty') and hasattr(ol, 'x_studio_length') and override_length:
-                    if ol.x_studio_length > 0:
-                        length = ol.x_studio_length * 100
-                        quantity = ol.x_studio_qty  # Maatwerk Lunado Hoeveelheid
+                if getattr(ol, "x_studio_length", 0) > 0 and override_length:
+                    length = ol.x_studio_length * 100
+
+                if self.is_fragile_order and getattr(ol, "x_studio_qty", 0) > 0:
+                    quantity = ol.x_studio_qty # Maatwerk Lunado Hoeveelheid
 
                 custom1 = None
                 if product_line.dm_send_lot_code:
@@ -318,8 +324,8 @@ class SaleOrder(models.Model):
 
             shipment = self.get_shipment_details()
             customer = self.get_customer_details()
-            products = self.get_products_details()
             packages = self.get_sales_order_lines_as_packages()
+            products = self.get_products_details()
 
             self._logger.info("packages=%s", packages)
 
@@ -380,8 +386,8 @@ class SaleOrder(models.Model):
 
             shipment = self.get_shipment_details()
             customer = self.get_customer_details()
-            products = self.get_products_details()
             packages = self.get_sales_order_lines_as_packages()
+            products = self.get_products_details()
 
 
             shipping_option : ShippingOption= order_handler.get_shipping_option_by_preference(

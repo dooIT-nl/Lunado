@@ -65,6 +65,7 @@ class StockPicking(models.Model):
     dm_is_inbound = fields.Boolean(string='Inbound', compute='_compute_is_inbound')
     show_product_hscode = fields.Boolean(string="show HS-CODE", copy=False, default=False)
     dm_config_id = fields.Integer("DM Configuration ID", copy=False, default=None)
+    is_fragile_order = fields.Boolean(string="Fragile Order", default=False, copy=False)
 
     def config_attribute(self, attribute, default=None):
         return (
@@ -302,19 +303,30 @@ class StockPicking(models.Model):
             override_length: bool = self.override_product_length()
             products: DmProducts = DmProducts()
             custom1 = ""
+            custom_sale_order_lines = self.get_formatted_sale_order_lines()
 
             for ol in self._origin.move_ids_without_package:
                 product_line = ol.product_id
+                product_template_id = product_line.product_tmpl_id.id
                 quantity = ol.product_uom_qty
                 length = product_line.dm_length
                 dm_warehouse_id = self.get_warehouse().warehouse_options  # dm_warehouse_number
 
-                if (hasattr(ol, 'x_studio_hoeveelheid') == True and hasattr(ol, 'x_studio_lengte') == True and override_length == True):
-                    if ol.x_studio_lengte > 0:
-                        length = ol.x_studio_lengte * 100
-                        quantity = ol.x_studio_hoeveelheid  # Maatwerk Lunado Hoeveelheid
-
                 if (product_line.detailed_type != "product" or ol.product_uom_qty <= 0): continue
+
+                for row in custom_sale_order_lines:
+                    sale_order_line = row.get("order_line")
+                    sale_order_line_product = sale_order_line.product_template_id
+                    x_studio_qty = getattr(sale_order_line, "x_studio_qty", 0)
+
+                    if row.get("processed") is True: continue
+                    if sale_order_line_product.id != product_template_id: continue
+
+                    if self.is_fragile_order is True and x_studio_qty > 0:
+                        self._logger.info(f'triggerd')
+                        quantity = x_studio_qty  # Maatwerk Lunado Hoeveelheid vanuit Sale Order
+                        row['processed'] = True
+                        break
 
                 in_stock: bool = (ol.product_qty < quantity)
 
@@ -362,6 +374,7 @@ class StockPicking(models.Model):
             raise Exception("Error occured while fetching product details")
 
     def get_sales_order_lines_as_packages(self):
+        self.is_fragile_order = False
         if not bool(self.config_attribute("calculate_packages")):
 
             if Helper.is_empty(self.dm_label_amount): return []
@@ -383,6 +396,8 @@ class StockPicking(models.Model):
         items, fragile_items = ListHelper.partition(lambda x: x.product_tmpl_id.dm_is_fragile == False, all_move_ids)
         move_ids, combinable = ListHelper.partition(lambda x: x.product_tmpl_id.dm_combinable_in_package == False, items)
         fragile_non_combi_items, fragile_combi_items = ListHelper.partition(lambda x: x.product_tmpl_id.dm_combinable_in_package == False, fragile_items)
+
+        self.is_fragile_order = len(fragile_items) > 0
 
         # SALE ORDER LINES
         sale_order_lines = self.sale_id.order_line
@@ -419,13 +434,14 @@ class StockPicking(models.Model):
 
                 if not package_type: continue
 
-                sale_order_lines = self.sale_id.order_line.filtered(lambda line: line.product_template_id and line.product_template_id.id == fragile_product_tmpl.id)
-                custom_quantity = 0
-                for sale_order_line in sale_order_lines:
-                    if sale_order_line and getattr(sale_order_line, "x_studio_qty", 0) > 0:
-                        custom_quantity += sale_order_line.x_studio_qty
-
-                if custom_quantity > 0: product_quantity = custom_quantity
+                # NOTE: Removed on this issue: #13919. x_studio_qty wordt niet gebruikt voor weight calculation
+                # sale_order_lines = self.sale_id.order_line.filtered(lambda line: line.product_template_id and line.product_template_id.id == fragile_product_tmpl.id)
+                # custom_quantity = 0 # ORDER LINE HOEVEELHEID
+                # for sale_order_line in sale_order_lines:
+                #     if sale_order_line and getattr(sale_order_line, "x_studio_qty", 0) > 0:
+                #         custom_quantity += sale_order_line.x_studio_qty
+                #
+                # if custom_quantity > 0: product_quantity = custom_quantity
 
                 square = fragile_product_tmpl.get_area_in_m2(convert_to_m2=True)  # only takes the width and height from the product metrics
                 weight = fragile_product_tmpl.weight * product_quantity
@@ -508,8 +524,8 @@ class StockPicking(models.Model):
 
             shipment = self.get_shipment_details()
             customer = self.get_customer_details()
-            products = self.get_products_details()
             packages = self.get_sales_order_lines_as_packages()
+            products = self.get_products_details()
 
             shipping_options = order_handler.get_shipping_options(
                 shipment=shipment,
@@ -576,8 +592,9 @@ class StockPicking(models.Model):
 
             shipment = self.get_shipment_details()
             customer = self.get_customer_details()
-            products = self.get_products_details()
             packages = self.get_sales_order_lines_as_packages()
+            products = self.get_products_details()
+
 
             shipping_option : ShippingOption = order_handler.get_shipping_option_by_preference(
                 shipment=shipment,
@@ -661,9 +678,8 @@ class StockPicking(models.Model):
             if status_to_hub: shipment.to_hub = status_to_hub
 
             customer = self.get_customer_details()
-            products = self.get_products_details()
-
             packages = list(map(lambda p: p.to_api_format(), self.packages)) if bool(self.config_attribute('calculate_packages')) else self.get_sales_order_lines_as_packages()
+            products = self.get_products_details()
 
             custom_fields = None
             if hasattr(self.sale_id, 'x_studio_url_pakbon'):
@@ -751,8 +767,8 @@ class StockPicking(models.Model):
 
         shipment = self.get_shipment_details()
         customer = self.get_customer_details()
-        products = self.get_products_details()
         packages = self.get_sales_order_lines_as_packages()
+        products = self.get_products_details()
 
         get_shipment_response = order_handler.api.get_shipment(id=shipment.id)
 
@@ -843,7 +859,9 @@ class StockPicking(models.Model):
         if self.config_attribute('determine_delivery_date', False):
             order_handler.api.save_pickup_date(shipment_id, Helper.remove_time_from_datetime(self.scheduled_date))
 
-        getNewShipment = order_handler.api.get_shipment(shipment_id)
+        getNewShipment = order_handler.api.get_shipment(id=shipment_id)
+        if getNewShipment is None or not getNewShipment:
+            raise UserError(f"Shipment with shipment_id {shipment_id} not found while attempting to fetch existing shipment.")
 
         self.dm_carrier_name = getNewShipment.get('carrier', {}).get('name')
         self.dm_service_level_name = getNewShipment.get('serviceLevel', {}).get('name')
@@ -879,3 +897,17 @@ class StockPicking(models.Model):
             "target": "new",
             "context": {"stock_picking_id": self.id},
         }
+
+    def get_formatted_sale_order_lines(self):
+        if self.is_fragile_order is False: return []
+
+        sale_order_lines = self.sale_id.order_line
+        custom_sale_order_lines = []
+        for line in sale_order_lines:
+            product_line = line.product_template_id
+            if product_line.detailed_type != "product" or line.product_uom_qty <= 0:
+                continue
+
+            custom_sale_order_lines.append({"order_line": line, "processed": False})
+
+        return custom_sale_order_lines

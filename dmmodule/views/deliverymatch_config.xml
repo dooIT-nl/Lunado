@@ -21,11 +21,11 @@
                                         <label class="col-form-label" for="base_url">Base url for DeliveryMatch</label>
                                         <div class="text-muted">This can be found in the DeliveryMatch interface for <strong
                                                     style="font-weight: bold !important;">Example:
-                                                https://api.engine.delmatch.eu/v1</strong>
+                                                https://engine.deliverymatch.eu/api/v1</strong>
                                         </div>
                                         <style>input::placeholder {color: #71639e;}</style>
                                         <field name="base_url"
-                                               placeholder="Example: https://api.engine.delmatch.eu/v1"/>
+                                               placeholder="Example: https://engine.deliverymatch.eu/api/v1"/>
                                     </div>
 
 
