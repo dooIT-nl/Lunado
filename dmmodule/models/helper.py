@@ -169,7 +169,7 @@ class Helper:
         return date_string
 
     @staticmethod
-    def is_empty(value) -> bool:
+    def is_empty(value="") -> bool:
         return value is None or value == "" or value == False or value == 0 or value == "0" or value == "False"
 
     def get_fragile_highest_length(self, rows):

@@ -305,11 +305,16 @@ class StockPicking(models.Model):
             custom1 = ""
             custom_sale_order_lines = self.get_formatted_sale_order_lines()
 
-            for ol in self._origin.move_ids_without_package:
+            for ol in self._origin.move_ids_without_package : # move_ids_without_package => Related model = stock.move => Has attribute sale_line_id
                 product_line = ol.product_id
                 product_template_id = product_line.product_tmpl_id.id
                 quantity = ol.product_uom_qty
-                length = product_line.dm_length
+
+                length = product_line.product_tmpl_id.dm_length
+                custom_length = getattr(ol.sale_line_id, "x_studio_length", 0)
+                if override_length and custom_length > 0:
+                    length = custom_length * 100
+
                 dm_warehouse_id = self.get_warehouse().warehouse_options  # dm_warehouse_number
 
                 if (product_line.detailed_type != "product" or ol.product_uom_qty <= 0): continue
@@ -323,7 +328,6 @@ class StockPicking(models.Model):
                     if sale_order_line_product.id != product_template_id: continue
 
                     if self.is_fragile_order is True and x_studio_qty > 0:
-                        self._logger.info(f'triggerd')
                         quantity = x_studio_qty  # Maatwerk Lunado Hoeveelheid vanuit Sale Order
                         row['processed'] = True
                         break
@@ -392,6 +396,7 @@ class StockPicking(models.Model):
 
             return packages
 
+        # SPLIT MOVE IDS INTO 6 GROUPS: items, fragile_items, move_ids (non-combi-items), combinable (combi-items), fragile_non_combi_items, fragile_combi_items
         all_move_ids = self.move_ids
         items, fragile_items = ListHelper.partition(lambda x: x.product_tmpl_id.dm_is_fragile == False, all_move_ids)
         move_ids, combinable = ListHelper.partition(lambda x: x.product_tmpl_id.dm_combinable_in_package == False, items)
@@ -400,12 +405,14 @@ class StockPicking(models.Model):
         self.is_fragile_order = len(fragile_items) > 0
 
         # SALE ORDER LINES
+        # SPLIT SALE ORDER LINES INTO 4 GROUPS: sale_order_items (non-combi-items), sale_order_fragile_items, sale_order_fragile_non_combi_items, sale_order_fragile_combi_items
         sale_order_lines = self.sale_id.order_line
         sale_order_items, sale_order_fragile_items = ListHelper.partition(lambda x: x.product_template_id.dm_is_fragile == False, sale_order_lines)
         sale_order_fragile_non_combi_items, sale_order_fragile_combi_items = ListHelper.partition(lambda x: x.product_template_id.dm_combinable_in_package == False, sale_order_fragile_items)
 
         if len(set(combinable)) == 1: move_ids = combinable
         if len(set(fragile_combi_items)) == 1: fragile_non_combi_items = fragile_combi_items
+        if len(set(sale_order_fragile_combi_items)) == 1: sale_order_fragile_non_combi_items = sale_order_fragile_combi_items
 
         packages = list(map(lambda m: m.as_deliverymatch_packages(), move_ids))
 
@@ -427,25 +434,18 @@ class StockPicking(models.Model):
             # Fragile combineables splitten op basis van package_type
             # loopen door de combi totals met als key package_type en dan appenden aan de packages
             splitted = {}
-            for row in fragile_combi_items:
+            related_sale_order_lines = self.format_related_sale_order_lines(sale_order_lines=sale_order_fragile_combi_items)
+
+            for row in fragile_combi_items: #move_ids : Transfer
                 fragile_product_tmpl = row.product_tmpl_id
                 package_type = self.env["product.packaging"].search([("product_id", "=", row.product_id.id)],order="qty desc", limit=1)
                 product_quantity = row.product_uom_qty
 
                 if not package_type: continue
 
-                # NOTE: Removed on this issue: #13919. x_studio_qty wordt niet gebruikt voor weight calculation
-                # sale_order_lines = self.sale_id.order_line.filtered(lambda line: line.product_template_id and line.product_template_id.id == fragile_product_tmpl.id)
-                # custom_quantity = 0 # ORDER LINE HOEVEELHEID
-                # for sale_order_line in sale_order_lines:
-                #     if sale_order_line and getattr(sale_order_line, "x_studio_qty", 0) > 0:
-                #         custom_quantity += sale_order_line.x_studio_qty
-                #
-                # if custom_quantity > 0: product_quantity = custom_quantity
-
                 square = fragile_product_tmpl.get_area_in_m2(convert_to_m2=True)  # only takes the width and height from the product metrics
                 weight = fragile_product_tmpl.weight * product_quantity
-                volume = square * product_quantity
+                volume = square * self.get_related_sale_order_line_quantity(related_sale_order_lines = related_sale_order_lines, current_fragile_product_template_id = fragile_product_tmpl.id) # SALE ORDER LINE => HOEVEELHEID
                 package_id = package_type.package_type_id.id
 
                 if package_id in splitted:
@@ -473,20 +473,14 @@ class StockPicking(models.Model):
         if len(fragile_non_combi_items) >= 1:
             unique_fragile_non_combi_lines = [] # selects distinct product_ids in move_lines to prevent double package calculation
 
-            for non_combi_item_line in fragile_non_combi_items:
-                product_id = non_combi_item_line.product_tmpl_id.id
-                if len(unique_fragile_non_combi_lines) == 0:
-                    unique_fragile_non_combi_lines.append(non_combi_item_line)
-                    continue
+            unique_fragile_non_combi_lines = self.distinct_product_template_ids(fragile_non_combi_items=fragile_non_combi_items) # selects distinct product_ids in move_lines to prevent double package calculation
+            calculated_fragile_packages = []
+            related_sale_order_lines = self.format_related_sale_order_lines(sale_order_lines=sale_order_fragile_non_combi_items)
 
-                for i in unique_fragile_non_combi_lines:
-                    u_product = getattr(i, "product_tmpl_id", None)
-                    if u_product != None and product_id == u_product.id:
-                        continue
+            for unique_fragile_non_combi_line in unique_fragile_non_combi_lines:
+                current_packages = unique_fragile_non_combi_line.as_deliverymatch_packages(related_sale_order_lines=related_sale_order_lines)
+                calculated_fragile_packages.append(current_packages)
 
-                    unique_fragile_non_combi_lines.append(non_combi_item_line)
-
-            calculated_fragile_packages = list(map(lambda line: line.as_deliverymatch_packages(related_sale_order_lines=self.sale_id.order_line.filtered(lambda orderline: orderline.product_template_id and orderline.product_template_id.id == line.product_tmpl_id.id)), unique_fragile_non_combi_lines))
             max_length = Helper().get_fragile_highest_length(rows=sale_order_fragile_non_combi_items)
             if(len(fragile_combi_items) == 1 and len(fragile_non_combi_items) == 1):
                 max_length = Helper().get_fragile_highest_length(rows=sale_order_fragile_combi_items)
@@ -911,3 +905,52 @@ class StockPicking(models.Model):
             custom_sale_order_lines.append({"order_line": line, "processed": False})
 
         return custom_sale_order_lines
+
+    @staticmethod
+    def format_related_sale_order_lines(sale_order_lines = []):
+        related_sale_order_lines = []
+
+        for sale_order_line in sale_order_lines:
+            related_sale_order_lines.append({
+                "processed": False,
+                "data": sale_order_line,
+                "product_template_id": sale_order_line.product_template_id.id,
+                "x_studio_qty": getattr(sale_order_line, "x_studio_qty", 0)
+            })
+
+        return related_sale_order_lines
+
+    @staticmethod
+    def get_related_sale_order_line_quantity(related_sale_order_lines = [], current_fragile_product_template_id = None):
+        result = 0;
+        for order_line in related_sale_order_lines:
+
+            if order_line.get("processed"):
+                continue
+
+            if current_fragile_product_template_id == order_line.get("product_template_id"):
+                result = order_line.get("x_studio_qty")
+                order_line["processed"] = True
+                break
+
+        return result
+
+    @staticmethod
+    def distinct_product_template_ids(fragile_non_combi_items = []):
+        unique_fragile_non_combi_lines = []
+
+        for non_combi_item_line in fragile_non_combi_items:
+            product_id = non_combi_item_line.product_tmpl_id.id
+
+            if len(unique_fragile_non_combi_lines) == 0:
+                unique_fragile_non_combi_lines.append(non_combi_item_line)
+                continue
+
+            for i in unique_fragile_non_combi_lines:
+                u_product = getattr(i, "product_tmpl_id", None)
+                if u_product != None and product_id == u_product.id:
+                    continue
+
+                unique_fragile_non_combi_lines.append(non_combi_item_line)
+
+        return unique_fragile_non_combi_lines

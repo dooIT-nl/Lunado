@@ -21,18 +21,19 @@ class StockMove(models.Model):
         is_fragile_product = product.dm_is_fragile
         is_fragile_package = is_combined_fragile or is_fragile_product
 
-        product_quantity = self.set_product_quantity(is_fragile=is_fragile_package, sale_order_lines=related_sale_order_lines)
+        order_line_quantity = self.product_uom_qty
+        custom_quantity = self._get_custom_quantity(related_sale_order_lines)
 
         if is_fragile_product:
-            total_fragile_product_volume_in_m3 = product_template.get_area_in_m2(convert_to_m2=True) * product_quantity
-            total_fragile_product_weight = product.weight * product_quantity
+            total_fragile_product_volume_in_m3 = product_template.get_area_in_m2(convert_to_m2=True) * custom_quantity
+            total_fragile_product_weight = product.weight * order_line_quantity
 
         if is_combined_fragile:
             total_fragile_product_volume_in_m3 = combined_fragile_products.get('volume')
             total_fragile_product_weight = combined_fragile_products.get('weight')
 
         if not is_combined and not is_fragile_package:
-            remaining_quantity = product_quantity
+            remaining_quantity = order_line_quantity
 
         if is_combined and not is_fragile_package:
             remaining_quantity = combined_products['volume']
@@ -96,16 +97,18 @@ class StockMove(models.Model):
 
         return remaining_quantity
 
+    def _get_custom_quantity(self, sale_order_lines = []):
+        custom_quantity = getattr(self.sale_line_id, "x_studio_qty", 0)
 
-    def set_product_quantity(self, is_fragile:bool = False, sale_order_lines = None) -> float or int:
-        quantity: float or int = self.product_uom_qty
+        if custom_quantity == 0 and sale_order_lines != None and len(sale_order_lines) > 0:
+            for order_line in sale_order_lines:
+                if order_line.get("processed"):
+                    continue
 
-        if(sale_order_lines and is_fragile):
-            custom_quantity = 0
-            for sale_order_line in sale_order_lines:
-                if sale_order_line and getattr(sale_order_line, "product_uom_qty", 0) > 0:
-                    custom_quantity += getattr(sale_order_line, "product_uom_qty", 0)
+                if self.product_tmpl_id.id == order_line.get("product_template_id"):
+                    custom_quantity = order_line.get("x_studio_qty")
+                    order_line["processed"] = True
+                    break
 
-            if custom_quantity > 0: quantity = custom_quantity
 
-        return quantity
+        return custom_quantity

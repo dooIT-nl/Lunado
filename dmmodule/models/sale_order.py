@@ -126,12 +126,11 @@ class SaleOrder(models.Model):
 
                 if not package_type: continue
 
-                product_quantity = row.product_uom_qty if getattr(row, "x_studio_qty", 0) == 0 else row.x_studio_qty
                 square = fragile_product_tmpl.get_area_in_m2(convert_to_m2=True) # only takes the width and height from the product metrics
 
                 # NOTE: Added on this issue: #13919. x_studio_qty wordt niet gebruikt voor weight calculation
                 weight = fragile_product_tmpl.weight * row.product_uom_qty
-                volume =  square * product_quantity
+                volume =  square * getattr(row, "x_studio_qty", 0)
                 package_id = package_type.package_type_id.id
 
                 if package_id in splitted:
@@ -236,7 +235,7 @@ class SaleOrder(models.Model):
 
         shipment = Shipment(
             odoo_order_display_name=self.display_name,
-            incoterm=getattr(self.incoterm, 'code', None),
+            incoterm=getattr(self.incoterm, 'code', ""),
             odoo_order_id=self.id,
             id=shipment_id,
             reference=self.client_order_ref,

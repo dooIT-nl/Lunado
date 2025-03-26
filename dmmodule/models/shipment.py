@@ -28,7 +28,7 @@ class Shipment:
     ):
         try:
             self.odoo_order_display_name = odoo_order_display_name
-            self.incoterm = incoterm
+            self.incoterm = incoterm if not Helper.is_empty(incoterm) else ''
             self.odoo_order_id = odoo_order_id
             self.id = id
             self.status = status
@@ -48,7 +48,6 @@ class Shipment:
                 if attribute in ["odoo_order_number"] and not value:
                     raise DeliveryMatchException("Could not fetch shipment Odoo order number. Please try again.")
 
-                # TODO check if this is the right way to do it
                 if inbound is True:
                     self.incoterm = ""
 

@@ -29,18 +29,19 @@ class SaleOrderLine(models.Model):
         is_fragile_product = product.dm_is_fragile
         is_fragile_package = is_combined_fragile or is_fragile_product
 
-        product_quantity = self.set_product_quantity(is_fragile=is_fragile_package)
+        order_line_quantity = self.product_uom_qty
+        custom_quantity = getattr(self, 'x_studio_qty', 0) # Lunado Custom Field: Hoeveelheid
 
         if is_fragile_product:
-            total_fragile_product_volume_in_m3 = product_template.get_area_in_m2(convert_to_m2=True) * product_quantity
-            total_fragile_product_weight = product.weight * product_quantity
+            total_fragile_product_volume_in_m3 = product_template.get_area_in_m2(convert_to_m2=True) * custom_quantity # Custom field: Hoeveelheid
+            total_fragile_product_weight = product.weight * order_line_quantity
 
         if is_combined_fragile:
             total_fragile_product_volume_in_m3 = combined_fragile_products.get('volume') # quantity calculated in sale_order.py in method get_sales_order_lines_as_packages
             total_fragile_product_weight = combined_fragile_products.get('weight')
 
         if not is_combined and not is_fragile_package:
-            remaining_quantity = product_quantity
+            remaining_quantity = order_line_quantity
 
         if is_combined and not is_fragile_package:
             remaining_quantity = combined_products['volume']
@@ -103,12 +104,3 @@ class SaleOrderLine(models.Model):
             return max_package_qty
 
         return remaining_quantity
-
-    def set_product_quantity(self, is_fragile:bool = False) -> float or int:
-        quantity: float or int = self.product_uom_qty
-
-        # MAATWERK LUNADO
-        lunado_custom_qty:float or int = getattr(self, 'product_uom_qty', 0)
-        if is_fragile and lunado_custom_qty != 0: quantity = lunado_custom_qty
-
-        return quantity
