@@ -171,13 +171,13 @@ class SaleOrder(models.Model):
 
 
     def get_api_key(self):
-        return self.config_attribute("deliverymatch_config_api_key")
+        return self.config_attribute("api_key")
 
     def get_client_id(self):
-        return self.config_attribute("deliverymatch_config_client_id")
+        return self.config_attribute("client_id")
 
     def get_base_url(self):
-        return self.config_attribute("deliverymatch_config_base_url")
+        return self.config_attribute("base_url")
 
     def get_delivery_option_preference(self):
         return self.config_attribute("delivery_option_preference")

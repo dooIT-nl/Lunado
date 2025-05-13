@@ -18,26 +18,29 @@
                                     </p>
 
                                     <div class="form-group">
-                                        <label class="col-form-label" for="deliverymatch_config_base_url">Base url for DeliveryMatch</label>
+                                        <label class="col-form-label" for="base_url">Base url for DeliveryMatch</label>
                                         <div class="text-muted">This can be found in the DeliveryMatch interface for <strong
                                                     style="font-weight: bold !important;">Example:
                                                 https://engine.deliverymatch.eu/api/v1</strong>
                                         </div>
                                         <style>input::placeholder {color: #71639e;}</style>
-                                        <field name="deliverymatch_config_base_url" placeholder="Example: https://engine.deliverymatch.eu/api/v1"/>
+                                        <field name="base_url"
+                                               placeholder="Example: https://engine.deliverymatch.eu/api/v1"/>
                                     </div>
 
 
                                     <div class="form-group mt-4">
-                                        <label class="col-form-label" for="deliverymatch_config_api_key"></label>
+                                        <label class="col-form-label" for="api_key"></label>
                                         <div class="text-muted">Your API key can be found in the DeliveryMatch interface under the settings 'API Keys' menu</div>
-                                        <field name="deliverymatch_config_api_key" password="True"/>
+                                        <field name="api_key" password="True"/>
                                     </div>
 
                                     <div class="form-group mt-4">
-                                        <label class="col-form-label" for="deliverymatch_config_client_id"></label>
-                                        <div class="text-muted">Your client ID can be found in the DeliveryMatch interface under the settings 'API Keys' menu</div>
-                                        <field name="deliverymatch_config_client_id"/>
+                                        <label class="col-form-label" for="client_id"></label>
+                                        <div class="text-muted">Your client ID can be found in the
+                                            DeliveryMatch interface under the settings 'API Keys'
+                                            menu</div>
+                                        <field name="client_id"/>
                                     </div>
 
                                 </div>

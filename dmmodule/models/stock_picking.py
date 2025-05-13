@@ -85,13 +85,13 @@ class StockPicking(models.Model):
             record.show_packages = self.config_attribute("calculate_packages")
 
     def get_api_key(self):
-        return self.config_attribute("deliverymatch_config_api_key")
+        return self.config_attribute("api_key")
 
     def get_client_id(self):
-        return self.config_attribute("deliverymatch_config_client_id")
+        return self.config_attribute("client_id")
 
     def get_base_url(self):
-        return self.config_attribute("deliverymatch_config_base_url")
+        return self.config_attribute("base_url")
 
     def get_delivery_option_preference(self):
         return self.config_attribute("delivery_option_preference", "nothing")
@@ -713,20 +713,16 @@ class StockPicking(models.Model):
             stock_picking_order = self.env["stock.picking"].search([("id", "=", self.id)])
             stock_picking_order.tracking_urls = booking_details.get("tracking_url")
             stock_picking_order.shipment_label_attachment = booking_details.get("shipment_label")
-            has_labels = Helper.is_empty(stock_picking_order.shipment_label_attachment) == False
 
-            self.dm_shipment_booked = has_labels
+            if status_to_hub:
+                self.message_post(body=f"Order booked to HUB in DeliveryMatch on: {booked_timestamp}")
+            else:
+                self.message_post(body=f"Order booked to carrier in DeliveryMatch on: {booked_timestamp}")
 
-            booking_type = "CARRIER" if status_to_hub == False else "HUB"
-
-            request_post = f"Booking request to {booking_type} send to DeliveryMatch"
-            self.message_post(body=request_post)
-
-            if has_labels:
-                self.message_post(body=f"Order booked to {booking_type} in DeliveryMatch on: {booked_timestamp}")
+            self.dm_shipment_booked = True
 
             self._logger.info(f"[POST BOOKING] Validate order conditions validate_order: {validate_order}, is_inbound: {is_inbound}, status_to_hub: {status_to_hub}")
-            if trigger_validation and has_labels:
+            if trigger_validation:
                 self._logger.info(f"[POST BOOKING] Order validation TRIGGERD")
                 self.button_validate()
             else:
@@ -756,133 +752,125 @@ class StockPicking(models.Model):
 
     # INHERIT CARRIER AND SERVICE_LEVEL FROM SALES ORDER
     def set_carrier_from_sale_order(self):
+        order_handler = OrderHandler(
+            self.get_base_url(),
+            self.get_api_key(),
+            self.get_client_id(),
+            self.get_sale_order_is_dropshipment()
+        )
 
-        try:
-            order_handler = OrderHandler(
-                self.get_base_url(),
-                self.get_api_key(),
-                self.get_client_id(),
-                self.get_sale_order_is_dropshipment()
-            )
+        shipment = self.get_shipment_details()
+        customer = self.get_customer_details()
+        packages = self.get_sales_order_lines_as_packages()
+        products = self.get_products_details()
 
-            shipment = self.get_shipment_details()
-            customer = self.get_customer_details()
-            packages = self.get_sales_order_lines_as_packages()
-            products = self.get_products_details()
+        get_shipment_response = order_handler.api.get_shipment(id=shipment.id)
 
-            get_shipment_response = order_handler.api.get_shipment(id=shipment.id)
+        request_url = order_handler.api.set_request_url(shipment_id=shipment.id,get_shipment_response=get_shipment_response)
+        if Helper.is_empty(shipment.id) is not True:
+            order_handler.api.is_shipment_booked(id=shipment.id, shipment=get_shipment_response, throw_on_booked=True)
 
-            request_url = order_handler.api.set_request_url(shipment_id=shipment.id,get_shipment_response=get_shipment_response)
-            if Helper.is_empty(shipment.id) is not True:
-                order_handler.api.is_shipment_booked(id=shipment.id, shipment=get_shipment_response, throw_on_booked=True)
-
-            order_handler.set_channel_name(self.picking_type_id.name, customer.is_franco),
-            body = {
-                "client": {
-                    "id": self.get_client_id(),
-                    "channel": order_handler.api.channel,
-                    "action": "select",
+        order_handler.set_channel_name(self.picking_type_id.name, customer.is_franco),
+        body = {
+            "client": {
+                "id": self.get_client_id(),
+                "channel": order_handler.api.channel,
+                "action": "select",
+            },
+            "shipment": {
+                "id": shipment.id,
+                "status": shipment.status,
+                "orderNumber": shipment.odoo_order_display_name,
+                "reference": shipment.reference,
+                "language": shipment.language,
+                "currency": shipment.currency,
+                "inbound": shipment.inbound,
+                "incoterm": shipment.incoterm,
+                "note": customer.note,
+                "config": self.sale_id.dm_config_id
+            },
+            "customer": {
+                "id": customer.id,
+                "address": {
+                    "name": customer.name,
+                    "companyName": customer.company_name,
+                    "address1": customer.address1,
+                    "street": customer.street,
+                    "postcode": customer.postcode,
+                    "city": customer.city,
+                    "country": customer.country,
                 },
-                "shipment": {
-                    "id": shipment.id,
-                    "status": shipment.status,
-                    "orderNumber": shipment.odoo_order_display_name,
-                    "reference": shipment.reference,
-                    "language": shipment.language,
-                    "currency": shipment.currency,
-                    "inbound": shipment.inbound,
-                    "incoterm": shipment.incoterm,
-                    "note": customer.note,
-                    "config": self.sale_id.dm_config_id
+                "contact": {
+                    "phoneNumber": customer.phone_number,
+                    "email": customer.email,
                 },
-                "customer": {
-                    "id": customer.id,
-                    "address": {
-                        "name": customer.name,
-                        "companyName": customer.company_name,
-                        "address1": customer.address1,
-                        "street": customer.street,
-                        "postcode": customer.postcode,
-                        "city": customer.city,
-                        "country": customer.country,
-                    },
-                    "contact": {
-                        "phoneNumber": customer.phone_number,
-                        "email": customer.email,
-                    },
-                },
-                "quote": {"product": products.get_api_format()},
-                "fragileGoods": products.has_fragile_products(),
-                "dangerousGoods": products.has_dangerous_products(),
-                "priceIncl": products.total_price_incuding_vat(),
-                "weight": products.total_weight(),
-            }
+            },
+            "quote": {"product": products.get_api_format()},
+            "fragileGoods": products.has_fragile_products(),
+            "dangerousGoods": products.has_dangerous_products(),
+            "priceIncl": products.total_price_incuding_vat(),
+            "weight": products.total_weight(),
+        }
 
-            if packages:
-                packages = DmPackage.convert_size_to_cm(packages)
-                packages = DmPackage.round_weights(packages)
-                body.update({"packages": {"package": packages}})
+        if packages:
+            packages = DmPackage.convert_size_to_cm(packages)
+            packages = DmPackage.round_weights(packages)
+            body.update({"packages": {"package": packages}})
 
-            if not Helper.is_empty(shipment.pickup_date):
-                body['shipment']["firstPickupDate"] = shipment.pickup_date
+        if not Helper.is_empty(shipment.pickup_date):
+            body['shipment']["firstPickupDate"] = shipment.pickup_date
 
-            sender_name = self.get_sender_name_on_dropshipment()
-            if sender_name is not None and "updateShipment" in request_url:
-                body["sender"] = {"address": {"companyName": sender_name}}
+        sender_name = self.get_sender_name_on_dropshipment()
+        if sender_name is not None and "updateShipment" in request_url:
+            body["sender"] = {"address": {"companyName": sender_name}}
 
-            response = order_handler.api.api_request(
-                data=body,
-                url=request_url,
-                method="POST",
-                return_raw=True
-            )
+        response = order_handler.api.api_request(
+            data=body,
+            url=request_url,
+            method="POST",
+            return_raw=True
+        )
 
-            if response.status_code != 200:
-                self.show_popup({response.text})
-                return
+        if response.status_code != 200:
+            self.show_popup({response.text})
+            return
 
-            if bool(self.config_attribute("calculate_packages")):
-                self.packages.unlink()
-                for package in packages:
-                    self.write({"packages": [(0, 0, {
-                        "height": package['height'],
-                        "length": package['length'],
-                        "width": package['width'],
-                        "weight": package['weight'],
-                        "description": package["description"],
-                        "type": package["type"],
-                        "is_fragile_package": package["is_fragile_package"],
-                    })]})
+        if bool(self.config_attribute("calculate_packages")):
+            self.packages.unlink()
+            for package in packages:
+                self.write({"packages": [(0, 0, {
+                    "height": package['height'],
+                    "length": package['length'],
+                    "width": package['width'],
+                    "weight": package['weight'],
+                    "description": package["description"],
+                    "type": package["type"],
+                    "is_fragile_package": package["is_fragile_package"],
+                })]})
 
-            shipment_id = json.loads(response.text).get('shipmentID')
+        shipment_id = json.loads(response.text).get('shipmentID')
 
-            if self.config_attribute('determine_delivery_date', False):
-                order_handler.api.save_pickup_date(shipment_id, Helper.remove_time_from_datetime(self.scheduled_date))
+        if self.config_attribute('determine_delivery_date', False):
+            order_handler.api.save_pickup_date(shipment_id, Helper.remove_time_from_datetime(self.scheduled_date))
 
-            getNewShipment = order_handler.api.get_shipment(id=shipment_id)
-            if getNewShipment is None or not getNewShipment:
-                raise UserError(f"Shipment with shipment_id {shipment_id} not found while attempting to fetch existing shipment.")
+        getNewShipment = order_handler.api.get_shipment(id=shipment_id)
+        if getNewShipment is None or not getNewShipment:
+            raise UserError(f"Shipment with shipment_id {shipment_id} not found while attempting to fetch existing shipment.")
 
-            self.dm_carrier_name = getNewShipment.get('carrier', {}).get('name')
-            self.dm_service_level_name = getNewShipment.get('serviceLevel', {}).get('name')
-            self.dm_service_level_description = getNewShipment.get('serviceLevel', {}).get('description')
-            self.dm_delivery_date = getNewShipment.get('shipmentMethod', {}).get('dateDelivery')
-            self.dm_pickup_date = getNewShipment.get('shipmentMethod', {}).get('datePickup')
-            self.dm_buy_price = getNewShipment.get('shipmentMethod', {}).get('buy_price')
-            self.dm_sell_price = getNewShipment.get('shipmentMethod', {}).get('sell_price')
-            self.dm_config_id = getNewShipment.get('shipmentMethod' , {}).get('configurationID')
-            self.dm_shipment_id = shipment_id
-            self.delivery_option_selected = True if all(key in getNewShipment for key in ['carrier', 'serviceLevel', 'shipmentMethod']) else False
-            self.dm_shipment_url = Helper().view_shipment_url(self.get_base_url(), shipment_id)
+        self.dm_carrier_name = getNewShipment.get('carrier', {}).get('name')
+        self.dm_service_level_name = getNewShipment.get('serviceLevel', {}).get('name')
+        self.dm_service_level_description = getNewShipment.get('serviceLevel', {}).get('description')
+        self.dm_delivery_date = getNewShipment.get('shipmentMethod', {}).get('dateDelivery')
+        self.dm_pickup_date = getNewShipment.get('shipmentMethod', {}).get('datePickup')
+        self.dm_buy_price = getNewShipment.get('shipmentMethod', {}).get('buy_price')
+        self.dm_sell_price = getNewShipment.get('shipmentMethod', {}).get('sell_price')
+        self.dm_config_id = getNewShipment.get('shipmentMethod' , {}).get('configurationID')
+        self.dm_shipment_id = shipment_id
+        self.delivery_option_selected = True if all(key in getNewShipment for key in ['carrier', 'serviceLevel', 'shipmentMethod']) else False
+        self.dm_shipment_url = Helper().view_shipment_url(self.get_base_url(), shipment_id)
 
-            if not self.delivery_option_selected: raise UserError("The selected shipping option from the sales order is unavailable")
-
-        except DeliveryMatchException as e:
-            return self.show_popup(str(e))
-        except Exception as e:
-            error_message = traceback.format_exc()
-            self._logger.error(error_message)
-            raise UserError(e)
+        if not self.delivery_option_selected:
+            raise UserError("The selected shipping option from the sales order is unavailable")
 
 
     def get_sender_name_on_dropshipment(self):

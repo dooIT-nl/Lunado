@@ -3,9 +3,9 @@ from odoo import models, fields
 class Config(models.TransientModel):
     _inherit = "res.config.settings"
 
-    deliverymatch_config_base_url = fields.Char(string="DeliveryMatch base URL *", required=True)
-    deliverymatch_config_api_key = fields.Char(string="API Key *", required=True)
-    deliverymatch_config_client_id = fields.Char(string="Client ID *", required=True)
+    base_url = fields.Char(string="DeliveryMatch base URL *", required=True)
+    api_key = fields.Char(string="API Key *", required=True)
+    client_id = fields.Char(string="Client ID *", required=True)
     override_length = fields.Boolean(string="Take product-length from order line", default=False)
 
     sale_order_as_draft = fields.Boolean(string="Insert ALL SHIPMENTS with status 'DRAFT'.", default=False)
@@ -50,10 +50,10 @@ class Config(models.TransientModel):
         res['override_length'] = self.env["ir.config_parameter"].sudo().get_param("dmmodule.override_length", default=False)
 
         res.update(
-            deliverymatch_config_api_key=self.env["ir.config_parameter"].sudo().get_param("dmmodule.deliverymatch_config_api_key", default=None),
+            api_key=self.env["ir.config_parameter"].sudo().get_param("dmmodule.api_key", default=None),
             delivery_option_preference=self.env["ir.config_parameter"].sudo().get_param("dmmodule.delivery_option_preference", default="lowest"),
-            deliverymatch_config_client_id=self.env["ir.config_parameter"].sudo().get_param("dmmodule.deliverymatch_config_client_id", default=None),
-            deliverymatch_config_base_url=self.env["ir.config_parameter"].sudo().get_param("dmmodule.deliverymatch_config_base_url", default=None),
+            client_id=self.env["ir.config_parameter"].sudo().get_param("dmmodule.client_id", default=None),
+            base_url=self.env["ir.config_parameter"].sudo().get_param("dmmodule.base_url", default=None),
             sale_order_as_draft=self.env["ir.config_parameter"].sudo().get_param("dmmodule.sale_order_as_draft", default=False),
             determine_delivery_date=self.env["ir.config_parameter"].sudo().get_param("dmmodule.determine_delivery_date", default=False),
             calculate_packages=self.env["ir.config_parameter"].sudo().get_param("dmmodule.calculate_packages", default=False),
@@ -72,10 +72,10 @@ class Config(models.TransientModel):
 
     def set_values(self):
         super(Config, self).set_values()
-        self.env["ir.config_parameter"].sudo().set_param("dmmodule.deliverymatch_config_api_key", self.deliverymatch_config_api_key)
+        self.env["ir.config_parameter"].sudo().set_param("dmmodule.api_key", self.api_key)
         self.env["ir.config_parameter"].sudo().set_param("dmmodule.delivery_option_preference", self.delivery_option_preference)
-        self.env["ir.config_parameter"].sudo().set_param("dmmodule.deliverymatch_config_client_id", self.deliverymatch_config_client_id)
-        self.env["ir.config_parameter"].sudo().set_param("dmmodule.deliverymatch_config_base_url", self.deliverymatch_config_base_url)
+        self.env["ir.config_parameter"].sudo().set_param("dmmodule.client_id", self.client_id)
+        self.env["ir.config_parameter"].sudo().set_param("dmmodule.base_url", self.base_url)
         self.env["ir.config_parameter"].sudo().set_param("dmmodule.override_length", self.override_length)
         self.env["ir.config_parameter"].sudo().set_param("dmmodule.sale_order_as_draft", self.sale_order_as_draft)
         self.env["ir.config_parameter"].sudo().set_param("dmmodule.determine_delivery_date", self.determine_delivery_date)
