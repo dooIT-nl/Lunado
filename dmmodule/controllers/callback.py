@@ -50,12 +50,14 @@ class Callback(odoo.http.Controller):
         for line in stock_move:
             line.write({"quantity_done": line.product_uom_qty})
 
-        if not stock_picking._check_backorder():
+        has_labels = "labelURL" in req
+
+        if not stock_picking._check_backorder() and has_labels:
             stock_picking.button_validate()
 
         stock_picking.dm_status = req['status']
 
-        if "labelURL" in req:
+        if has_labels:
             stock_picking.shipment_label_attachment = helper.Helper().convert_label(req["labelURL"])
 
         return {"status": "success"}

@@ -47,7 +47,7 @@
                                     name="book_delivery_to_hub"
                                     string="Send order to warehouse"
                                     type="object"
-                                    invisible="dm_is_external_warehouse == False"
+                                    invisible="dm_is_external_warehouse == False or products_availability_state != 'available'"
                                 />
                             </div>
 

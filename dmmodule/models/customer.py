@@ -29,9 +29,3 @@ class Customer:
 
                     
                 raise DeliveryMatchException(f"Please make sure to provide a value for the customer '{attribute}'.")
-    
-
-            
-        
-
-
