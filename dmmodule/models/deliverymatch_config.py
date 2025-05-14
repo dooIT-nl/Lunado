@@ -3,9 +3,9 @@ from odoo import models, fields
 class Config(models.TransientModel):
     _inherit = "res.config.settings"
 
-    deliverymatch_config_base_url = fields.Char(string="DeliveryMatch base URL *", required=True)
-    deliverymatch_config_api_key = fields.Char(string="API Key *", required=True)
-    deliverymatch_config_client_id = fields.Char(string="Client ID *", required=True)
+    deliverymatch_config_base_url = fields.Char(string="DeliveryMatch base URL *", required=False)
+    deliverymatch_config_api_key = fields.Char(string="API Key *", required=False)
+    deliverymatch_config_client_id = fields.Char(string="Client ID *", required=False)
     override_length = fields.Boolean(string="Take product-length from order line", default=False)
 
     sale_order_as_draft = fields.Boolean(string="Insert ALL SHIPMENTS with status 'DRAFT'.", default=False)
