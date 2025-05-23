@@ -4,9 +4,9 @@ class Config(models.TransientModel):
     _inherit = "res.config.settings"
 
     # NOTE odoo v17 implementation of config_parameter => https://www.cybrosys.com/blog/how-to-add-custom-fields-to-configuration-settings-in-odoo-17
-    deliverymatch_config_base_url = fields.Char(string="DeliveryMatch base URL *", required=False, config_parameter='dmmodule.deliverymatch_config_base_url')
-    deliverymatch_config_api_key = fields.Char(string="API Key *", required=False, config_parameter='dmmodule.deliverymatch_config_api_key')
-    deliverymatch_config_client_id = fields.Char(string="Client ID *", required=False, config_parameter='dmmodule.deliverymatch_config_client_id')
+    deliverymatch_config_base_url = fields.Char(string="DeliveryMatch base URL *", required=False, config_parameter='dmmodule.deliverymatch_config_base_url', default="")
+    deliverymatch_config_api_key = fields.Char(string="API Key *", required=False, config_parameter='dmmodule.deliverymatch_config_api_key', default="")
+    deliverymatch_config_client_id = fields.Char(string="Client ID *", required=False, config_parameter='dmmodule.deliverymatch_config_client_id', default="")
     override_length = fields.Boolean(string="Take product-length from order line", default=False)
 
     sale_order_as_draft = fields.Boolean(string="Insert ALL SHIPMENTS with status 'DRAFT'.", default=False)
