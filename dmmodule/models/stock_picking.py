@@ -652,14 +652,14 @@ class StockPicking(models.Model):
 
             self._logger.info(f"Validate order conditions: validate_order: {validate_order}, is_inbound: {is_inbound}, status_to_hub: {status_to_hub}")
 
-            if trigger_validation:
-                self._logger.info("Order validation TRIGGERD")
-                if self._check_backorder():
-                    self._logger.info("ACTION CHECK BACKORDER")
-
-                    return self.button_validate()
-            else:
-                self._logger.info("Order validation NOT TRIGGERD")
+            # Only trigger button validation after booking request
+            # if trigger_validation:
+            #     self._logger.info("Order validation TRIGGERD")
+            #     if self._check_backorder():
+            #         self._logger.info("ACTION CHECK BACKORDER")
+            #         # self.button_validate()
+            # else:
+            #     self._logger.info("Order validation NOT TRIGGERD")
 
             order_handler = OrderHandler(
                 self.get_base_url(),
