@@ -64,9 +64,9 @@ class DmDeliveryOptions(models.Model):
         delivery_order.dm_config_id = selected_delivery_option.config_id
 
         # POST shipmentmethod to deliverymatch
-        base_url = delivery_order.get_base_url()
-        api_key = delivery_order.get_api_key()
-        client_id = delivery_order.get_client_id()
+        base_url = delivery_order.get_deliverymatch_config_base_url()
+        api_key = delivery_order.get_deliverymatch_config_api_key()
+        client_id = delivery_order.get_deliverymatch_config_client_id()
 
         dm_api = DmApi(base_url, api_key, client_id)
         dm_api.update_shipment_method(selected_delivery_option.shipmentId, odoo_order_id, selected_delivery_option.methodId, selected_delivery_option.deliveryDate)
@@ -114,9 +114,9 @@ class DmDeliveryOptions(models.Model):
 
 
         # POST shipmentmethod to deliverymatch
-        base_url = update_sale_order.get_base_url()
-        api_key = update_sale_order.get_api_key()
-        client_id = update_sale_order.get_client_id()
+        base_url = update_sale_order.get_deliverymatch_config_base_url()
+        api_key = update_sale_order.get_deliverymatch_config_api_key()
+        client_id = update_sale_order.get_deliverymatch_config_client_id()
 
         dm_api = DmApi(base_url, api_key, client_id)
         dm_api.update_shipment_method(selected_delivery_option.shipmentId, odooOrderId, selected_delivery_option.methodId, selected_delivery_option.deliveryDate)

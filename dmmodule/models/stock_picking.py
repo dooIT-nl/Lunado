@@ -84,13 +84,13 @@ class StockPicking(models.Model):
         for record in self:
             record.show_packages = self.config_attribute("calculate_packages")
 
-    def get_api_key(self):
+    def get_deliverymatch_config_api_key(self):
         return self.config_attribute("deliverymatch_config_api_key")
 
-    def get_client_id(self):
+    def get_deliverymatch_config_client_id(self):
         return self.config_attribute("deliverymatch_config_client_id")
 
-    def get_base_url(self):
+    def get_deliverymatch_config_base_url(self):
         return self.config_attribute("deliverymatch_config_base_url")
 
     def get_delivery_option_preference(self):
@@ -203,7 +203,7 @@ class StockPicking(models.Model):
         return {"warning": {"title": title, "message": message}}
 
     def is_delivery(self) -> bool:
-        return self.picking_type_id.code == "outgoing"
+        return getattr(self.picking_type_id, "code", "") == "outgoing"
 
     def get_purchase_order(self, attribute, search_value):
         purchase_order = self.env["purchase.order"].search([(attribute, "=", search_value)], limit=1)
@@ -510,9 +510,9 @@ class StockPicking(models.Model):
                 return
 
             order_handler = OrderHandler(
-                self.get_base_url(),
-                self.get_api_key(),
-                self.get_client_id(),
+                self.get_deliverymatch_config_base_url(),
+                self.get_deliverymatch_config_api_key(),
+                self.get_deliverymatch_config_client_id(),
                 self.get_sale_order_is_dropshipment()
             )
 
@@ -549,7 +549,7 @@ class StockPicking(models.Model):
 
             new_shipment_id = shipping_options[0].shipment_id
 
-            self.dm_shipment_url = Helper().view_shipment_url(self.get_base_url(), new_shipment_id)
+            self.dm_shipment_url = Helper().view_shipment_url(self.get_deliverymatch_config_base_url(), new_shipment_id)
             self.dm_shipment_id = new_shipment_id
 
             if (shipping_options[0].method_id == None):
@@ -578,9 +578,9 @@ class StockPicking(models.Model):
         try:
 
             order_handler = OrderHandler(
-                self.get_base_url(),
-                self.get_api_key(),
-                self.get_client_id(),
+                self.get_deliverymatch_config_base_url(),
+                self.get_deliverymatch_config_api_key(),
+                self.get_deliverymatch_config_client_id(),
                 self.get_sale_order_is_dropshipment()
             )
 
@@ -626,7 +626,7 @@ class StockPicking(models.Model):
 
             stockpicking.dm_method_id = shipping_option.method_id
             stockpicking.dm_check_id = shipping_option.check_id
-            stockpicking.dm_shipment_url = Helper().view_shipment_url(self.get_base_url(), shipping_option.shipment_id)
+            stockpicking.dm_shipment_url = Helper().view_shipment_url(self.get_deliverymatch_config_base_url(), shipping_option.shipment_id)
             stockpicking.delivery_option_selected = True
             stockpicking.dm_config_id = shipping_option.config_id
 
@@ -662,9 +662,9 @@ class StockPicking(models.Model):
             #     self._logger.info("Order validation NOT TRIGGERD")
 
             order_handler = OrderHandler(
-                self.get_base_url(),
-                self.get_api_key(),
-                self.get_client_id(),
+                self.get_deliverymatch_config_base_url(),
+                self.get_deliverymatch_config_api_key(),
+                self.get_deliverymatch_config_client_id(),
                 self.get_sale_order_is_dropshipment()
             )
 
@@ -759,9 +759,9 @@ class StockPicking(models.Model):
 
         try:
             order_handler = OrderHandler(
-                self.get_base_url(),
-                self.get_api_key(),
-                self.get_client_id(),
+                self.get_deliverymatch_config_base_url(),
+                self.get_deliverymatch_config_api_key(),
+                self.get_deliverymatch_config_client_id(),
                 self.get_sale_order_is_dropshipment()
             )
 
@@ -779,7 +779,7 @@ class StockPicking(models.Model):
             order_handler.set_channel_name(self.picking_type_id.name, customer.is_franco),
             body = {
                 "client": {
-                    "id": self.get_client_id(),
+                    "id": self.get_deliverymatch_config_client_id(),
                     "channel": order_handler.api.channel,
                     "action": "select",
                 },
@@ -873,7 +873,7 @@ class StockPicking(models.Model):
             self.dm_config_id = getNewShipment.get('shipmentMethod' , {}).get('configurationID')
             self.dm_shipment_id = shipment_id
             self.delivery_option_selected = True if all(key in getNewShipment for key in ['carrier', 'serviceLevel', 'shipmentMethod']) else False
-            self.dm_shipment_url = Helper().view_shipment_url(self.get_base_url(), shipment_id)
+            self.dm_shipment_url = Helper().view_shipment_url(self.get_deliverymatch_config_base_url(), shipment_id)
 
             if not self.delivery_option_selected: raise UserError("The selected shipping option from the sales order is unavailable")
 

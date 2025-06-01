@@ -170,13 +170,13 @@ class SaleOrder(models.Model):
         return [i for i in ListHelper.flatten(packages) if i is not None]
 
 
-    def get_api_key(self):
+    def get_deliverymatch_config_api_key(self):
         return self.config_attribute("deliverymatch_config_api_key")
 
-    def get_client_id(self):
+    def get_deliverymatch_config_client_id(self):
         return self.config_attribute("deliverymatch_config_client_id")
 
-    def get_base_url(self):
+    def get_deliverymatch_config_base_url(self):
         return self.config_attribute("deliverymatch_config_base_url")
 
     def get_delivery_option_preference(self):
@@ -315,9 +315,9 @@ class SaleOrder(models.Model):
                 return
 
             order_handler = OrderHandler(
-                self.get_base_url(),
-                self.get_api_key(),
-                self.get_client_id(),
+                self.get_deliverymatch_config_base_url(),
+                self.get_deliverymatch_config_api_key(),
+                self.get_deliverymatch_config_client_id(),
                 self.get_is_dropshipment()
             )
 
@@ -347,7 +347,7 @@ class SaleOrder(models.Model):
             odoo_db.insert_into_deliver_options(shipping_options, self.id)
 
             new_shipment_id = shipping_options[0].shipment_id
-            self.shipmentURL = Helper().view_shipment_url(self.get_base_url(), new_shipment_id)
+            self.shipmentURL = Helper().view_shipment_url(self.get_deliverymatch_config_base_url(), new_shipment_id)
 
             self.dm_shipment_id = new_shipment_id
 
@@ -377,9 +377,9 @@ class SaleOrder(models.Model):
         try:
 
             order_handler = OrderHandler(
-                self.get_base_url(),
-                self.get_api_key(),
-                self.get_client_id(),
+                self.get_deliverymatch_config_base_url(),
+                self.get_deliverymatch_config_api_key(),
+                self.get_deliverymatch_config_client_id(),
                 self.get_is_dropshipment()
             )
 
@@ -423,7 +423,7 @@ class SaleOrder(models.Model):
 
             saleorder.dm_methodId = shipping_option.method_id
             saleorder.dm_checkId = shipping_option.check_id
-            saleorder.shipmentURL = Helper().view_shipment_url(self.get_base_url(), shipping_option.shipment_id)
+            saleorder.shipmentURL = Helper().view_shipment_url(self.get_deliverymatch_config_base_url(), shipping_option.shipment_id)
             saleorder.delivery_option_selected = True
             saleorder.dm_config_id = shipping_option.config_id
 
