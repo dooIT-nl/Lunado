@@ -59,6 +59,7 @@ class StockPicking(models.Model):
 
     dm_is_external_warehouse = fields.Boolean(default=False, copy=False)
     dm_shipment_booked = fields.Boolean(default=False, copy=False)
+    dm_shipment_hubbed = fields.Boolean(default=False, copy=False)
     tracking_urls = fields.Html(string="Tracking URL's", copy=False)
     delivery_order_number = fields.Char(string="Delivery order number", copy=False)
     get_carrier_from_sales_order = fields.Boolean(copy=False, default=False)
@@ -715,6 +716,7 @@ class StockPicking(models.Model):
             stock_picking_order.shipment_label_attachment = booking_details.get("shipment_label")
             has_labels = Helper.is_empty(stock_picking_order.shipment_label_attachment) == False
 
+            self.dm_shipment_hubbed = status_to_hub
             self.dm_shipment_booked = has_labels
 
             booking_type = "CARRIER" if status_to_hub == False else "HUB"

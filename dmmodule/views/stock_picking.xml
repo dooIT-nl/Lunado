@@ -15,8 +15,8 @@
 
             <notebook position="inside">
                 <page class="dm-page" string="DeliveryMatch | Shipping options" name="deliverymatch_delivery_page">
-                    <group string="Execution" class="dm-group" invisible="dm_shipment_booked == True"/>
-                        <div class="d-flex w-100 align-items-center" invisible="dm_shipment_booked == True">
+                    <group string="Execution" class="dm-group" invisible="dm_shipment_booked == True or dm_shipment_hubbed == True"/>
+                        <div class="d-flex w-100 align-items-center" invisible="dm_shipment_booked == True or dm_shipment_hubbed == True">
 
                             <button
                                 class="dm-orange dm-btn" 
@@ -76,6 +76,7 @@
                         <field name="dm_shipment_url" widget="url" readonly="True" />
                         <field name="dm_is_external_warehouse" invisible="True" />
                         <field name="dm_shipment_booked" invisible="1" />
+                        <field name="dm_shipment_hubbed" invisible="1" />
                         <field name="delivery_option_selected" invisible="True" />
                         <field name="show_packages" invisible="1" />
                         <field name="get_carrier_from_sales_order" invisible="1"/>
