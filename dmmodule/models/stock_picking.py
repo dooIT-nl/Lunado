@@ -158,16 +158,22 @@ class StockPicking(models.Model):
     def write(self, values):
         # set order to 'SEND ORDER TO WAREHOUSE' on location_id and location_dest_id
         # FOR INBOUND AND OUTBOUND ORDERS
-        if 'location_id' not in values and self.is_delivery():
-            values['location_id'] = self.location_id.id
+        for rec in self:
+            vals = values.copy()
 
-        if 'location_dest_id' not in values and self.is_delivery() == False:
-            values['location_dest_id'] = self.location_dest_id.id
+            if 'location_id' not in vals and rec.is_delivery():
+                vals['location_id'] = rec.location_id.id
 
-        for k, v in values.copy().items():
-            if (k == 'location_id' or k == 'location_dest_id'):
-                values['dm_is_external_warehouse'] = self.get_is_external_warehouse(v)
-        return super(StockPicking, self).write(values)
+            if 'location_dest_id' not in vals and not rec.is_delivery():
+                vals['location_dest_id'] = rec.location_dest_id.id
+
+            for key, value in vals.copy().items():
+                if key in ('location_id', 'location_dest_id'):
+                    vals['dm_is_external_warehouse'] = rec.get_is_external_warehouse(value)
+
+            super(StockPicking, rec).write(vals)
+
+        return True
 
     def get_warehouse(self):
         is_inbound: bool = bool(self.picking_type_id.code != "outgoing")
@@ -216,7 +222,7 @@ class StockPicking(models.Model):
             odoo_customer = self.partner_id
             is_franco = self.partner_id.is_franco_order
             customer: Customer = Customer(
-                odoo_customer.id,
+                odoo_customer.commercial_partner_id.id,
                 odoo_customer.name,
                 odoo_customer.parent_id.name,
                 odoo_customer.street,

@@ -11,7 +11,7 @@ class Callback(odoo.http.Controller):
     @route('/deliverymatch/callback/<string:delivery_order_number>', auth='api_key', website=True, type='json', methods=['POST'])
     def handler(self, delivery_order_number):
         data = request.httprequest.data
-        req = yaml.load(data, Loader=None)
+        req = yaml.load(data, Loader=yaml.SafeLoader)
 
         stock_picking = request.env["stock.picking"].search([("delivery_order_number", "=", delivery_order_number)])
 
@@ -48,6 +48,7 @@ class Callback(odoo.http.Controller):
         if not stock_move: raise NotFound("No stock move not found.")
 
         for line in stock_move:
+            if not 'quantity_done' in line: continue
             line.write({"quantity_done": line.product_uom_qty})
 
         has_labels = "labelURL" in req
@@ -89,6 +90,8 @@ class Callback(odoo.http.Controller):
             stock_move = request.env["stock.move"].search([("picking_id", "=", stock_picking.id), ("product_id", "=", product.id)], limit=1)
 
             if not stock_move: continue
+
+            if not "quantity_done" in stock_move: continue
 
             stock_move.write({"quantity_done": item['quantity']})
 

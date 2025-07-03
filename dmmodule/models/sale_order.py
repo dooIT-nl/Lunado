@@ -199,7 +199,7 @@ class SaleOrder(models.Model):
             is_franco = self.partner_id.is_franco_order
 
             customer: Customer = Customer(
-                odoo_customer.id,
+                self.partner_id.commercial_partner_id.id,
                 odoo_customer.name,
                 odoo_customer.parent_id.name,
                 odoo_customer.street,
