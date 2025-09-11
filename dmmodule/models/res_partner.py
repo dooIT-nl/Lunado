@@ -12,7 +12,6 @@ class ResPartner(models.Model):
                     "companyName": self.company_name if self.company_name else None,
                     "address1": self.street,
                     "address2": self.street2 if self.street2 else None,
-                    "street": self.street,
                     "postcode": self.zip,
                     "city": self.city,
                     "country": self.country_code,

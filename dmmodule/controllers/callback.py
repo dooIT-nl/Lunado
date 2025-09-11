@@ -5,14 +5,17 @@ import yaml
 from odoo.http import route, request, NotFound
 from werkzeug.exceptions import BadRequest
 from ..models import helper
+import logging
 
 
 class Callback(odoo.http.Controller):
+    _logger = logging.getLogger("DeliveryMatch - Callback")
+
     @route('/deliverymatch/callback/<string:delivery_order_number>', auth='api_key', website=True, type='json', methods=['POST'])
     def handler(self, delivery_order_number):
         data = request.httprequest.data
+        self._logger.info(f"incoming REQUEST OUTBOUND {data}")
         req = yaml.load(data, Loader=yaml.SafeLoader)
-
         stock_picking = request.env["stock.picking"].search([("delivery_order_number", "=", delivery_order_number)])
 
         if not stock_picking:
@@ -21,27 +24,21 @@ class Callback(odoo.http.Controller):
         if ('status' not in req) or ('packages' not in req):
             raise BadRequest("Incorrect payload")
 
-        if len(stock_picking.labels) == 0:
-            for index, package in enumerate(req["packages"]):
-                try:
-                    stock_picking.write({"labels": [(0, 0, {
-                        "label_url": package["labelURL"],
-                        "barcode": package["barcode"],
-                        "tracking_url": package["trackingURL"] if "trackingURL" in package else "",
-                        "weight": package["weight"],
-                        "length": package["length"],
-                        "height": package["height"],
-                        "width": package["width"],
-                        "type": package["type"],
-                        "description": package["description"],
-                    })]})
-                except IndexError:
-                    stock_picking.write({"labels": [(0, 0, {
-                        "label_url": package["labelURL"],
-                        "barcode": package["barcode"],
-                        "tracking_url": package["trackingURL"] if "trackingURL" in package else "",
-                    })]})
 
+        tracking_urls = []
+        for index, package in enumerate(req["packages"]):
+            tracking_url = package["trackingURL"]
+            barcode = package["barcode"]
+
+            tracking_urls.append(f'<a href="{tracking_url}">Tracking {barcode}</a>')
+            stock_picking.write({"packages": [(0, 0, {
+                "weight": package["weight"],
+                "length": package["length"],
+                "height": package["height"],
+                "width": package["width"],
+                "type": package["type"],
+                "description": package["description"],
+            })]})
 
         stock_move = request.env["stock.move"].search([("picking_id", "=", stock_picking.id)])
 
@@ -61,11 +58,15 @@ class Callback(odoo.http.Controller):
         if has_labels:
             stock_picking.shipment_label_attachment = helper.Helper().convert_label(req["labelURL"])
 
+        if len(tracking_urls) > 0:
+            stock_picking.tracking_urls = "<br>".join(tracking_urls)
+
         return {"status": "success"}
 
     @route('/deliverymatch/callback/inbound/<string:delivery_order_number>', auth='api_key', website=True, type='json', methods=['POST'])
     def handleInbound(self, delivery_order_number):
         data = request.httprequest.data
+        self._logger.info(f"incoming REQUEST INBOUND {data}")
         req = yaml.load(data, Loader=None)
 
         stock_picking = request.env["stock.picking"].search([("delivery_order_number", "=", delivery_order_number)])
@@ -91,9 +92,9 @@ class Callback(odoo.http.Controller):
 
             if not stock_move: continue
 
-            if not "quantity_done" in stock_move: continue
+            if not "quantity" in stock_move: continue
 
-            stock_move.write({"quantity_done": item['quantity']})
+            stock_move.write({"quantity": item['quantity']})
 
 
         return {"status": "success"}

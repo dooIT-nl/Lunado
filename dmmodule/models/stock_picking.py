@@ -393,7 +393,7 @@ class StockPicking(models.Model):
             all_move_ids_without_package = self._origin.move_ids_without_package
             total_weight = sum(line.product_tmpl_id.weight * line.product_uom_qty for line in  all_move_ids_without_package)
             total_packages = int(self.dm_label_amount)
-            package_weight = total_weight / total_packages
+            package_weight = Helper.is_empty(total_weight) if 0 else total_weight / total_packages
             package_description = self.config_attribute("package_description")
             package_type = self.config_attribute("package_type")
             package_length = int(self.config_attribute("package_length"))
@@ -809,7 +809,6 @@ class StockPicking(models.Model):
                         "name": customer.name,
                         "companyName": customer.company_name,
                         "address1": customer.address1,
-                        "street": customer.street,
                         "postcode": customer.postcode,
                         "city": customer.city,
                         "country": customer.country,

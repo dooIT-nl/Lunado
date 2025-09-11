@@ -79,7 +79,8 @@ class DmProduct:
                 self.warehouse_id = 1
                 # raise DeliveryMatchException("Warehouse ID missing while fetching products.")
 
-            if not value and attribute not in ["is_fragile", "is_dangerous", "hscode", "country_origin", "stock", "warehouse_id", "custom1", "barcode", "sku", "dangerous_goods", "lithium_battery_weight"]:
+            # IF value is empty and is not in ignore list throw missing value popup
+            if not value and attribute not in ["is_fragile", "is_dangerous", "hscode", "country_origin", "stock", "warehouse_id", "custom1", "barcode", "sku", "dangerous_goods", "lithium_battery_weight", "weight"]:
                 raise DeliveryMatchException(f"{attribute} is missing. In {content}.") 
 
 
@@ -137,8 +138,11 @@ class DmProducts:
         formatted_products = []
 
         for product in self.products:
+            product_weight = Helper.is_empty(product.weight) if 0 else product.weight
+
+
             formatted_product = {
-                "weight": product.weight,
+                "weight": product_weight,
                 "length": product.length,
                 "width": product.width,
                 "height": product.height,

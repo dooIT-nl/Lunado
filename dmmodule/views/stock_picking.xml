@@ -47,7 +47,7 @@
                                     name="book_delivery_to_hub"
                                     string="Send order to warehouse"
                                     type="object"
-                                    invisible="dm_is_external_warehouse == False or products_availability_state != 'available'"
+                                    invisible="dm_is_external_warehouse == False or products_availability_state != 'available' and dm_is_inbound == False"
                                 />
                             </div>
 
@@ -55,7 +55,7 @@
                         </div>
 
 
-                    <group string="Calculated Packages" class="d-flex flex-column w-100" invisible="dm_shipment_booked == True or show_packages == False">
+                    <group string="Calculated Packages" class="d-flex flex-column w-100" invisible="show_packages == False">
                         <field name="packages" class="w-100" string="" context="{'tree_view_ref' : 'dmmodule.package_table_tree'}" />
                         <button name="show_existing_packages" string="Add existing package type" type="object" class="oe_highlight"></button>
                     </group>

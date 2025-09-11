@@ -111,7 +111,6 @@ class DmApi:
                         "name": customer.name,
                         "companyName": customer.company_name,
                         "address1": customer.address1,
-                        "street": customer.street,
                         "postcode": customer.postcode,
                         "city": customer.city,
                         "country": customer.country,
@@ -206,7 +205,6 @@ class DmApi:
                         "name": customer.name,
                         "companyName": customer.company_name,
                         "address1": customer.address1,
-                        "street": customer.street,
                         "postcode": customer.postcode,
                         "city": customer.city,
                         "country": customer.country,
@@ -532,7 +530,7 @@ class DmApi:
 
     def get_shipment(self, id=None, order_number=None):
         if Helper.is_empty(id) and Helper.is_empty(order_number):
-            return None
+            return {}
 
         body = {
             "shipment": {
@@ -551,7 +549,17 @@ class DmApi:
             "GET", f"{self.base_url}/getShipment", headers=self.headers, data=body
         )
 
-        if raw_response.status_code != 200:
+        response_status_code = raw_response.status_code
+
+        self._logger.info(f"getShipment REQUEST: {body}")
+        self._logger.info(f"getShipment RESPONSE: {raw_response.text} HTTP status: {response_status_code}")
+
+        if response_status_code == 404:
+            formatted_response = json.loads(raw_response.text)
+            if "code" in  formatted_response and formatted_response["code"] == 32:
+                return {}
+
+        if response_status_code != 200:
             self._logger.error("getShipment failed")
             raise DeliveryMatchException("An error occured while fetching DeliveryMatch shipment data.")
 
