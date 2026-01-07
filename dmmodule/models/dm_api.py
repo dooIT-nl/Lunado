@@ -608,7 +608,7 @@ If you are unsure whether your base URL, API key or client ID is correct, please
 
                     if (responseCode == 0 and response["message"] == "Page not found."):
                         self._logger.error("BaseUrl not found")
-                        raise Exception("Unkown URL endpoint: Please check the base url in the DeliveryMatch settings.")
+                        raise Exception("Unknown URL endpoint: Please check the base url in the DeliveryMatch settings.")
 
                     if ((responseCode == 7 or responseCode == 150) == False):
                         self._logger.error("incorrect credentials")

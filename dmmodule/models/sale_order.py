@@ -252,50 +252,99 @@ class SaleOrder(models.Model):
             self._logger.info("fetching products details...")
             products: DmProducts = DmProducts()
             override_length: bool = self.override_product_length()
+            MrpBom = self.env["mrp.bom"]
 
-            products_list = list(map(lambda line: line.as_deliverymatch_product(), self.order_line))
+            # key: (variant_id: product.product.id)
+            # value: {"variant": product.product, "tmpl": product.template, "qty": float, "length": int, "custom1": string or None}
+            aggregated_item_list = {}
 
             for ol in self.order_line:
-                product_line = ol.product_template_id
+                product_variant = ol.product_id  # product.product
+                product_tmpl = ol.product_template_id  # product.template
 
-                if product_line.detailed_type != "product" or ol.product_uom_qty <= 0:
+                if product_tmpl.detailed_type != "product" or ol.product_uom_qty <= 0:
                     continue
 
                 quantity = ol.product_uom_qty
-                length = product_line.dm_length
-
-                if getattr(ol, "x_studio_length", 0) > 0 and override_length:
-                    length = ol.x_studio_length * 100
-
                 if self.is_fragile_order and getattr(ol, "x_studio_qty", 0) > 0:
                     quantity = ol.x_studio_qty # Maatwerk Lunado Hoeveelheid
 
                 custom1 = None
-                if product_line.dm_send_lot_code:
+                if product_tmpl.dm_send_lot_code:
                     custom1 = Helper.remove_letters_from_str(self.display_name)
 
+                bom_map = MrpBom._bom_find(product_variant) # returns a defaultdict
+                bom = bom_map.get(product_variant) # returns a mrp.bom or None
+
+                if bom and bom.type == "phantom":
+                    item_list = []
+
+                    # bom.explode(product: product.product, quantity: float, picking_type=False: bool) returns a tuple (boms_done, lines)
+                    #
+                    # boms_done is a list of tuples <bom_record: mrp.bom, bom_context: dict>
+                    # lines is a list of tuples <bom_line: mrp.bom.line, line_context: dict>
+                    #
+                    # The context dicts contain fields that are not part of the mrp.bom or mrp.bom.line in the tuple, but have been influenced by it during explode()
+                    _, lines = bom.explode(product_variant, quantity)
+
+                    for bom_line, data in lines:
+                        variant = bom_line.product_id
+                        comp_qty = data.get("qty", 0)
+
+                        if variant and comp_qty > 0:
+                            item_list.append((variant, comp_qty))
+                else:
+                    item_list = [(product_variant, quantity)]
+                # ---------------------------------------------------------------
+
+                # If multiple BOMs contain the same product, we add only one element to an aggregated item list and sum the quantities
+                for variant, comp_qty in item_list:
+                    tmpl = variant.product_tmpl_id
+
+                    comp_length = tmpl.dm_length
+                    if override_length and getattr(ol, "x_studio_length", 0) > 0:
+                        comp_length = ol.x_studio_length * 100
+
+                    key = variant.id
+
+                    if key not in aggregated_item_list:
+                        aggregated_item_list[key] = {
+                            "variant": variant,
+                            "tmpl": tmpl,
+                            "qty": 0.0,
+                            "length": comp_length,
+                            "custom1": custom1,
+                        }
+
+                    aggregated_item_list[key]["qty"] += comp_qty
+
+            for _, row in aggregated_item_list.items():
+                variant = row["variant"] # product.product
+                tmpl = row["tmpl"]       # product.template
+                quantity = row["qty"]
+                custom1 = row["custom1"]
+
                 product = DmProduct(
-                    content=product_line.name,
-                    description=product_line.name,
-                    weight=product_line.weight,
-                    length=length,
-                    width=product_line.dm_width,
-                    height=product_line.dm_height,
-                    is_fragile=product_line.dm_is_fragile,
-                    is_dangerous=product_line.dm_is_dangerous,
-                    sku=product_line.dm_sku,
-                    hscode=product_line.dm_hscode,
-                    barcode=product_line.barcode,
-                    warehouse_id=self.warehouse_id.warehouse_options,  # dm_warehouse_id
-                    stock=(product_line.qty_available < quantity),
-                    country_origin=product_line.dm_country_origin,
-                    value=product_line.list_price,
+                    content=variant.name,
+                    description=variant.name,
+                    weight=variant.weight,
+                    length=row["length"],
+                    width=tmpl.dm_width,
+                    height=tmpl.dm_height,
+                    is_fragile=tmpl.dm_is_fragile,
+                    is_dangerous=tmpl.dm_is_dangerous,
+                    sku=variant.default_code or tmpl.dm_sku,
+                    hscode=tmpl.dm_hscode,
+                    barcode=variant.barcode,
+                    warehouse_id=self.warehouse_id.warehouse_options,
+                    stock=(variant.qty_available < quantity),
+                    country_origin=tmpl.dm_country_origin,
+                    value=tmpl.list_price,
                     quantity=quantity,
                     custom1=custom1,
-                    dangerous_goods={"UN": product_line.un_number, "packingType": product_line.dg_packing_instruction} if product_line.dm_is_dangerous else None,
-                    lithium_battery_weight= product_line.dm_lithium_battery_weight
+                    dangerous_goods={"UN": tmpl.un_number, "packingType": tmpl.dg_packing_instruction} if tmpl.dm_is_dangerous else None,
+                    lithium_battery_weight=tmpl.dm_lithium_battery_weight,
                 )
-
                 products.add_product(product)
 
             self._logger.info("fetched products details")
