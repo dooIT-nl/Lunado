@@ -1,5 +1,5 @@
 from odoo import models, fields
-
+# comment
 class ProductProduct(models.Model):
     _inherit = "product.product"
 
