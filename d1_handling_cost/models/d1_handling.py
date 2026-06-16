@@ -33,6 +33,7 @@ class D1Handling(models.Model):
     product_id = fields.Many2one(
         comodel_name="product.template",
         string="Product",
+        required=True,
     )
     line_ids = fields.One2many(
         comodel_name="d1.handling.line",
