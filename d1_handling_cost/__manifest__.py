@@ -13,7 +13,6 @@
         "security/ir.model.access.csv",
         "views/d1_handling_views.xml",
         "views/res_partner_views.xml",
-        "data/ir_config_parameter.xml",
     ],
     "installable": True,
     "application": False,

@@ -43,13 +43,7 @@ Verkoop → Catalogus → Handling
    worden in een **aparte, latere opruimactie** verwijderd — niet door deze
    module.
 
-3. **Config-parameter `d1_handling_cost.shipping_product_id`** — Na installatie
-   moet hier het product.template-ID van het legacy DeliveryMatch
-   shipping-product worden ingevuld. Zolang dit niet is geconfigureerd, telt
-   dat product mee in het handling-basisbedrag (kan leiden tot een verkeerd
-   staffelbedrag). **OPEN PUNT**.
-
-4. **Overige Studio-automatiseringen** — De automatiseringen voor
+3. **Overige Studio-automatiseringen** — De automatiseringen voor
    product/purchase/sale horen bij andere modules en worden niet door deze
    module behandeld.
 

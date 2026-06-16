@@ -5,8 +5,6 @@ from odoo.fields import Command
 
 _logger = logging.getLogger(__name__)
 
-SHIPPING_PARAM = "d1_handling_cost.shipping_product_id"
-
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
@@ -29,24 +27,8 @@ class SaleOrder(models.Model):
         return res
 
     # ------------------------------------------------------------------
-    # Handling helpers
+    # Handling logic
     # ------------------------------------------------------------------
-    def _d1_handling_excluded_products(self, handling_product):
-        """Return product.template recordset to exclude from the handling
-        base amount: the handling product itself and the (legacy) shipping
-        product referenced in the config parameter."""
-        products = self.env["product.template"]
-        if handling_product:
-            products |= handling_product
-        param = (
-            self.env["ir.config_parameter"]
-            .sudo()  # config params require sudo
-            .get_param(SHIPPING_PARAM)
-        )
-        if param and param.isdigit():
-            products |= self.env["product.template"].browse(int(param)).exists()
-        return products
-
     def _d1_apply_handling(self):
         """Sync a single handling cost line on draft orders based on the
         customer's handling configuration and the order's net amount.
@@ -73,12 +55,11 @@ class SaleOrder(models.Model):
                     existing.unlink()
                 continue
 
-            # Calculate base amount excluding handling & shipping products
-            excluded = order._d1_handling_excluded_products(handling_product)
+            # Calculate base amount excluding the handling product itself
             base_amount = sum(
                 line.price_subtotal
                 for line in order.order_line
-                if line.product_template_id not in excluded
+                if line.product_template_id != handling_product
             )
 
             # Find the matching bracket
