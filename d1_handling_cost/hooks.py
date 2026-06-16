@@ -37,10 +37,10 @@ def _post_init_migrate_handling(env):
         return
 
     # ------------------------------------------------------------------
-    # 1. Migrate d1.handling records (batch create)
+    # 1. Migrate d1.handling records (one by one to avoid mail.thread
+    #    batch-create issues with the name/tracking field)
     # ------------------------------------------------------------------
-    handling_vals_list = []
-    old_ids_order = []  # track old id order to map to created records
+    id_map = {}  # {old_handling_id: new_d1_handling_record}
     for old in old_handlings:
         vals = {
             "name": old.x_name or _("(no name)"),
@@ -51,16 +51,14 @@ def _post_init_migrate_handling(env):
             vals["currency_id"] = old.x_studio_currency_id.id
         if hasattr(old, "x_studio_product") and old.x_studio_product:
             vals["product_id"] = old.x_studio_product.id
-        handling_vals_list.append(vals)
-        old_ids_order.append(old.id)
 
-    new_handlings = env["d1.handling"].create(handling_vals_list)
-    id_map = dict(zip(old_ids_order, new_handlings))
+        new_rec = env["d1.handling"].create(vals)
+        id_map[old.id] = new_rec
 
     # ------------------------------------------------------------------
-    # 2. Migrate d1.handling.line records (batch create)
+    # 2. Migrate d1.handling.line records
     # ------------------------------------------------------------------
-    line_vals_list = []
+    line_count = 0
     if "x_handling_line_b0f2a" in env:
         old_lines = env["x_handling_line_b0f2a"].search([])
         for old_line in old_lines:
@@ -79,18 +77,15 @@ def _post_init_migrate_handling(env):
                 )
                 continue
 
-            line_vals = {
+            env["d1.handling.line"].create({
                 "handling_id": new_handling.id,
                 "name": getattr(old_line, "x_name", "") or "",
                 "sequence": getattr(old_line, "x_studio_sequence", 0) or 0,
                 "amount": getattr(old_line, "x_studio_bedrag", 0.0) or 0.0,
                 "value_from": getattr(old_line, "x_studio_van", 0.0) or 0.0,
                 "total": getattr(old_line, "x_studio_tot", 0.0) or 0.0,
-            }
-            line_vals_list.append(line_vals)
-
-    if line_vals_list:
-        env["d1.handling.line"].create(line_vals_list)
+            })
+            line_count += 1
 
     # ------------------------------------------------------------------
     # 3. Migrate res.partner → d1_handling_id
@@ -117,6 +112,6 @@ def _post_init_migrate_handling(env):
         "d1_handling_cost: migration complete — %d handlings, %d lines, "
         "%d partners migrated.",
         len(id_map),
-        len(line_vals_list),
+        line_count,
         partner_count,
     )
