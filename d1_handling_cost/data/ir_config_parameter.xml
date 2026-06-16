@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!--
+        Legacy DeliveryMatch shipping product id (product.template).
+        Set this after installation so the handling automation excludes it
+        from the base amount calculation.  Leave empty until configured.
+    -->
+    <record id="d1_config_shipping_product_id" model="ir.config_parameter">
+        <field name="key">d1_handling_cost.shipping_product_id</field>
+        <field name="value"/>
+    </record>
+
+</odoo>
