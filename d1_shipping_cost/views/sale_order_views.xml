@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add "Bereken transportkosten" button and summary field to sale.order form -->
+    <record id="d1_sale_order_form_view" model="ir.ui.view">
+        <field name="name">sale.order.form.d1.transport</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Button in header -->
+            <xpath expr="//form/header/button[@name='action_quotation_send']" position="after">
+                <button name="action_d1_compute_transport_cost"
+                        string="Bereken transportkosten"
+                        type="object"
+                        class="btn-secondary"
+                        icon="fa-truck"/>
+            </xpath>
+
+            <!-- Transport summary + pallet flag below order lines -->
+            <xpath expr="//field[@name='note']" position="before">
+                <group string="Transportkostenberekening" invisible="not d1_transport_message">
+                    <field name="d1_pallet_calculation"/>
+                    <field name="d1_transport_message" nolabel="1" colspan="2"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    <!-- Add Palletberekening filter to sale order search view -->
+    <record id="d1_sale_order_search_view" model="ir.ui.view">
+        <field name="name">sale.order.search.d1.transport</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
+                <separator/>
+                <filter name="d1_pallet_calculation"
+                        string="Palletberekening"
+                        domain="[('d1_pallet_calculation', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add Palletberekening to sale order list view -->
+    <record id="d1_sale_order_list_view" model="ir.ui.view">
+        <field name="name">sale.order.list.d1.transport</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="d1_pallet_calculation" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

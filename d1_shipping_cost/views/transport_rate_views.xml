@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List view -->
+    <record id="d1_shipping_rate_list" model="ir.ui.view">
+        <field name="name">d1.shipping.rate.list</field>
+        <field name="model">d1.shipping.rate</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="shipping_class_id"/>
+                <field name="country_ids" widget="many2many_tags" optional="show"/>
+                <field name="state_ids" widget="many2many_tags" optional="hide"/>
+                <field name="zip_prefix_ids" widget="many2many_tags" optional="hide"/>
+                <field name="length_bracket_id" optional="show"/>
+                <field name="unit_type"/>
+                <field name="qty_from"/>
+                <field name="qty_to"/>
+                <field name="price"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form view -->
+    <record id="d1_shipping_rate_form" model="ir.ui.view">
+        <field name="name">d1.shipping.rate.form</field>
+        <field name="model">d1.shipping.rate</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group string="Algemeen">
+                            <field name="name"/>
+                            <field name="shipping_class_id"/>
+                        </group>
+                        <group string="Staffel">
+                            <field name="length_bracket_id"/>
+                            <field name="unit_type"/>
+                            <field name="qty_from"/>
+                            <field name="qty_to"/>
+                            <field name="price"/>
+                        </group>
+                    </group>
+                    <group string="Adresfilter">
+                        <group>
+                            <field name="country_ids" widget="many2many_tags"/>
+                            <field name="state_ids" widget="many2many_tags"
+                                   domain="[('country_id', 'in', country_ids)]"/>
+                        </group>
+                        <group>
+                            <field name="zip_prefix_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="d1_shipping_rate_search" model="ir.ui.view">
+        <field name="name">d1.shipping.rate.search</field>
+        <field name="model">d1.shipping.rate</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="shipping_class_id"/>
+                <field name="country_ids"/>
+                <group>
+                    <filter name="group_class" string="Transportklasse" context="{'group_by': 'shipping_class_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="d1_shipping_rate_action" model="ir.actions.act_window">
+        <field name="name">Transporttarieven</field>
+        <field name="res_model">d1.shipping.rate</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Maak een nieuw transporttarief aan
+            </p>
+            <p>
+                Beheer hier de tariefstaffels per transportklasse, land en eenheidsstaffel.
+                Gebruik de adresfilter (land, provincie, postcode-prefix) voor afwijkende tarieven.
+            </p>
+        </field>
+    </record>
+</odoo>

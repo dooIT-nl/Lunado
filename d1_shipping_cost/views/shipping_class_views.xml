@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List view -->
+    <record id="d1_shipping_class_list" model="ir.ui.view">
+        <field name="name">d1.shipping.class.list</field>
+        <field name="model">d1.shipping.class</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form view -->
+    <record id="d1_shipping_class_form" model="ir.ui.view">
+        <field name="name">d1.shipping.class.form</field>
+        <field name="model">d1.shipping.class</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="d1_shipping_class_action" model="ir.actions.act_window">
+        <field name="name">Transportklassen</field>
+        <field name="res_model">d1.shipping.class</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Maak een nieuwe transportklasse aan
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sales > Configuration > Transport (group) -->
+    <menuitem
+        id="d1_menu_transport_group"
+        name="Transport"
+        parent="sale.menu_sale_config"
+        sequence="50"/>
+
+    <menuitem
+        id="d1_menu_shipping_class_config"
+        name="Transportklassen"
+        parent="d1_menu_transport_group"
+        action="d1_shipping_class_action"
+        sequence="10"/>
+
+    <menuitem
+        id="d1_menu_length_bracket_config"
+        name="Lengteklassen"
+        parent="d1_menu_transport_group"
+        action="d1_shipping_length_bracket_action"
+        sequence="15"/>
+
+    <menuitem
+        id="d1_menu_transport_config"
+        name="Transporttarieven"
+        parent="d1_menu_transport_group"
+        action="d1_shipping_rate_action"
+        sequence="20"/>
+</odoo>

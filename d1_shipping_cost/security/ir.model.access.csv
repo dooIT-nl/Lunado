@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_d1_shipping_class_user,d1.shipping.class user,model_d1_shipping_class,sales_team.group_sale_salesman,1,0,0,0
+access_d1_shipping_class_manager,d1.shipping.class manager,model_d1_shipping_class,sales_team.group_sale_manager,1,1,1,1
+access_d1_shipping_length_bracket_user,d1.shipping.length.bracket user,model_d1_shipping_length_bracket,sales_team.group_sale_salesman,1,0,0,0
+access_d1_shipping_length_bracket_manager,d1.shipping.length.bracket manager,model_d1_shipping_length_bracket,sales_team.group_sale_manager,1,1,1,1
+access_d1_shipping_zip_prefix_user,d1.shipping.zip.prefix user,model_d1_shipping_zip_prefix,sales_team.group_sale_salesman,1,0,0,0
+access_d1_shipping_zip_prefix_manager,d1.shipping.zip.prefix manager,model_d1_shipping_zip_prefix,sales_team.group_sale_manager,1,1,1,1
+access_d1_shipping_rate_user,d1.shipping.rate user,model_d1_shipping_rate,sales_team.group_sale_salesman,1,0,0,0
+access_d1_shipping_rate_manager,d1.shipping.rate manager,model_d1_shipping_rate,sales_team.group_sale_manager,1,1,1,1

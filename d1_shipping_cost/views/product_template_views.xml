@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend product.template form: add Transport tab -->
+    <record id="d1_product_template_form_view" model="ir.ui.view">
+        <field name="name">product.template.form.d1.transport</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='purchase']" position="after">
+                <page string="Transport" name="d1_transport">
+                    <group>
+                        <group string="Transportklasse">
+                            <field name="d1_shipping_class_id"/>
+                        </group>
+                        <group string="Afmetingen (cm)">
+                            <field name="d1_length_cm"/>
+                            <field name="d1_width_cm"/>
+                            <field name="d1_height_cm"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

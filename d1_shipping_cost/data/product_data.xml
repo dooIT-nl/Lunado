@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Service product used as the transport cost order line -->
+        <record id="product_transport_cost" model="product.product">
+            <field name="name">Transportkosten</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="description_sale">Automatisch berekende transportkosten (TK1+TK2+TK3).</field>
+        </record>
+    </data>
+</odoo>
