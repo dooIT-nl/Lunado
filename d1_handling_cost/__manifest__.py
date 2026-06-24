@@ -7,7 +7,7 @@
     "website": "https://dooit.nl",
     "license": "LGPL-3",
     "depends": [
-        "sale_management",
+        "sale_management","contact",
     ],
     "data": [
         "security/ir.model.access.csv",
