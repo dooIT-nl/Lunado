@@ -40,8 +40,3 @@ class D1Handling(models.Model):
         string="Lines",
         copy=True,
     )
-    d1_lunado = fields.Char(
-        string="Lunado Description",
-        required=False,
-        tracking=False,
-    )
