@@ -18,6 +18,12 @@
                             <field name="d1_height_cm"/>
                         </group>
                     </group>
+                    <group>
+                        <group string="Orderregel-berekening">
+                            <field name="d1_use_qty"/>
+                            <field name="d1_use_length"/>
+                        </group>
+                    </group>
                 </page>
             </xpath>
         </field>

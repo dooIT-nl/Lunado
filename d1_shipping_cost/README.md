@@ -36,6 +36,10 @@ odoo-bin -i d1_shipping_cost --stop-after-init --no-http
 1. **Producten configureren**: ga naar een product > tabblad "Transport" en
    stel de transportklasse (TK1/TK2/TK3) en afmetingen in. Gewicht wordt
    uit het standaard gewichtsveld gelezen.
+   - **Gebruik Hoeveelheid**: vink aan om de orderregel-hoeveelheid te berekenen
+     als `d1_qty × d1_length_cm` (i.p.v. handmatige invoer).
+   - **Gebruik Lengte**: vink aan om een afwijkende lengte per orderregel toe te
+     staan. Als dit uit staat, wordt de productlengte automatisch ingevuld.
 
 2. **Tarieven beheren**: Verkoop > Configuratie > Transporttarieven.
    Vul de staffels per klasse, land en eenheidsbereik in.
@@ -58,16 +62,25 @@ odoo-bin -i d1_shipping_cost --stop-after-init --no-http
 
 ## Berekeningsflows
 
-### TK1 — Bundels
-1. Bepaal buizen per bundel o.b.v. productafmetingen vs bundelgrootte.
-2. Bereken voorlopig aantal bundels.
-3. Corrigeer op gewicht (max kg per bundel).
+### TK1 — Bundels (met gewichtsbanding)
+1. **Gewichtsbanding per stuk** (vóór bundelberekening):
+   - Stukgewicht ≥ max bundel-kg → hele TK1 = palletberekening (handmatig).
+   - max/2 ≤ stukgewicht < max → één-per-bundel pool (bundels = aantal stuks).
+   - Stukgewicht < max/2 → normale geometrische berekening pool.
+2. Normale pool: bepaal buizen per bundel o.b.v. productafmetingen vs bundelgrootte,
+   gewichtscorrectie.
+3. **Totaal bundels = één-per-bundel + normaal**.
 4. Drempelcheck → pallet (handmatig) of tariefopzoeking per lengteklasse.
 
-### TK2 — Dozen op gewicht
-1. Totaalgewicht-check → pallet indien boven drempel.
-2. Bereken aantal dozen = ceil(totaalgewicht / max kg per doos).
-3. Tariefopzoeking.
+### TK2 — Dozen op gewicht (met gewichtsbanding)
+1. Totaalgewicht-check → pallet indien boven instelbare drempel.
+2. **Gewichtsbanding per stuk** (vóór doosberekening):
+   - Stukgewicht ≥ max doos-kg → hele TK2 = palletberekening (handmatig).
+   - max/2 ≤ stukgewicht < max → één-per-doos pool (dozen = aantal stuks).
+   - Stukgewicht < max/2 → normale gewichtssommering pool.
+3. Normale pool: dozen = ceil(totaalgewicht / max kg per doos).
+4. **Totaal dozen = één-per-doos + normaal**.
+5. Tariefopzoeking.
 
 ### TK3 — Displays
 1. Totaalgewicht-check → pallet indien boven drempel.
