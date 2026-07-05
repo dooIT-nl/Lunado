@@ -1,7 +1,7 @@
 {
     "name": "Transportkosten",
     "summary": "Calculate transport costs for quotations and sales orders based on three transport classes (TK1/TK2/TK3)",
-    "version": "1.0",
+    "version": "1.2",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -24,8 +24,10 @@
     "installable": True,
     "application": False,
     "description": """
-        Transportkosten 1.0
+        Transportkosten 1.1
         ====================
+        * v1.2: Qty/Length fields on order lines + native calculation (replaces Studio automations)
+        * v1.1: Weight banding per piece for TK1/TK2 (heavy/mid/light pools)
         * v1.0: Initial release — transport cost calculation for TK1/TK2/TK3
     """,
 }

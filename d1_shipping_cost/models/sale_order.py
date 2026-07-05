@@ -230,13 +230,13 @@ class SaleOrder(models.Model):
     # ------------------------------------------------------------------
 
     def _d1_compute_tk1(self, lines):
-        """Calculate transport cost for TK1 (bundles).
+        """Calculate transport cost for TK1 (bundles) with weight banding.
 
-        Flow:
-        a) Determine tubes per bundle based on product dimensions vs bundle size.
-        b) Determine preliminary number of bundles from total qty.
-        c) Correct for max weight per bundle.
-        d) Threshold check → pallet (manual) or rate lookup by length bracket.
+        Weight banding per piece (applied before bundle calculation):
+        - piece_weight >= max_kg         → entire TK1 → pallet (manual).
+        - max_kg/2 <= piece_weight < max_kg → one-per-bundle pool (qty = bundles).
+        - piece_weight < max_kg/2        → normal geometric calculation pool.
+        Total bundles = one-per-bundle pool + normal pool.
 
         Returns: (cost, message_string, is_manual_flag)
         """
@@ -247,76 +247,106 @@ class SaleOrder(models.Model):
         bundle_w = self._d1_get_param_float("d1_shipping.bundle_width_cm", 15.0)
         bundle_h = self._d1_get_param_float("d1_shipping.bundle_height_cm", 15.0)
         bundle_max_kg = self._d1_get_param_float("d1_shipping.bundle_max_weight_kg", 20.0)
-        # TODO (open punt): tk1_max_bundels drempelwaarde nog vast te stellen
+        half_max_kg = bundle_max_kg / 2.0
         tk1_max_bundles = self._d1_get_param_int("d1_shipping.tk1_max_bundels", 99999)
 
-        # --- a) Tubes per bundle ---
-        total_bundles = 0
-        total_weight = 0.0
-        total_qty = 0
+        # --- Step 1: Weight banding — split lines into pools ---
+        pool_one_per = []   # (product, qty) — mid-band: one piece per bundle
+        pool_normal = []    # (product, qty) — light band: normal geometric calc
         max_length_cm = 0.0
-        bundle_details = []
+        details = []
 
-        # Group by product to handle different dimensions
-        product_lines = {}
         for line in lines:
             prod = line.product_id
-            product_lines.setdefault(prod.id, {"product": prod, "qty": 0})
-            product_lines[prod.id]["qty"] += line.product_uom_qty
-
-        for pdata in product_lines.values():
-            prod = pdata["product"]
-            qty = pdata["qty"]
-            total_qty += qty
-
-            w = prod.d1_width_cm or 0.0
-            h = prod.d1_height_cm or 0.0
-            length = prod.d1_length_cm or 0.0
-            weight_per_unit = prod.weight or 0.0  # kg — standard Odoo field
+            piece_weight = prod.weight or 0.0
+            qty = line.product_uom_qty
+            # Use order line length (may differ from product if user overrides)
+            length = line.d1_length_cm or prod.d1_length_cm or 0.0
 
             if length > max_length_cm:
                 max_length_cm = length
 
-            total_weight += qty * weight_per_unit
+            # Heavy band: piece >= max → entire TK1 class = pallet
+            if piece_weight >= bundle_max_kg:
+                msg = (
+                    "TK1: product '%s' weegt %.2f kg/stuk (>= %.0f kg max bundel) "
+                    "→ PALLETBEREKENING (handmatig)."
+                    % (prod.display_name, piece_weight, bundle_max_kg)
+                )
+                _logger.info(
+                    "Order %s: TK1 pallet — product '%s' piece weight %.2f >= %.0f",
+                    self.name, prod.display_name, piece_weight, bundle_max_kg,
+                )
+                return 0.0, msg, True
+
+            # Mid band: max/2 <= piece < max → one piece per bundle
+            if piece_weight >= half_max_kg:
+                pool_one_per.append({"product": prod, "qty": qty})
+                details.append(
+                    "  %s: %d stuks × 1/bundel (%.2f kg/stuk, één-per-bundel)"
+                    % (prod.display_name, int(qty), piece_weight)
+                )
+            else:
+                # Light band (incl. weight == 0): normal geometric calculation
+                pool_normal.append({"product": prod, "qty": qty})
+
+        # --- Step 2: One-per-bundle pool ---
+        bundles_one_per = sum(int(p["qty"]) for p in pool_one_per)
+
+        # --- Step 3: Normal geometric pool (existing logic) ---
+        bundles_normal = 0
+        total_weight_light = 0.0
+
+        # Group normal-pool by product for geometric calculation
+        normal_by_product = {}
+        for p in pool_normal:
+            pid = p["product"].id
+            normal_by_product.setdefault(pid, {"product": p["product"], "qty": 0})
+            normal_by_product[pid]["qty"] += p["qty"]
+
+        for pdata in normal_by_product.values():
+            prod = pdata["product"]
+            qty = pdata["qty"]
+            w = prod.d1_width_cm or 0.0
+            h = prod.d1_height_cm or 0.0
+            weight_per_unit = prod.weight or 0.0
+
+            total_weight_light += qty * weight_per_unit
 
             # Tubes fitting in the bundle cross-section
             tubes_w = max(int(bundle_w // w), 1) if w > 0 else 1
             tubes_h = max(int(bundle_h // h), 1) if h > 0 else 1
             tubes_per_bundle = tubes_w * tubes_h
 
-            # Preliminary bundles for this product
             prod_bundles = math.ceil(qty / tubes_per_bundle) if tubes_per_bundle > 0 else math.ceil(qty)
-            total_bundles += prod_bundles
+            bundles_normal += prod_bundles
 
-            bundle_details.append(
-                "  %s: %d stuks, %d/bundel → %d bundels"
+            details.append(
+                "  %s: %d stuks, %d/bundel → %d bundels (normaal)"
                 % (prod.display_name, int(qty), tubes_per_bundle, prod_bundles)
             )
 
-        # --- b) preliminary bundles already summed above ---
-        bundles_preliminary = total_bundles
+        # Weight correction on the normal (light) pool only
+        bundles_preliminary = bundles_normal
+        if bundles_normal > 0 and total_weight_light > 0:
+            if total_weight_light / bundles_normal >= bundle_max_kg:
+                bundles_normal = math.ceil(total_weight_light / bundle_max_kg)
 
-        # --- c) Weight correction ---
-        if bundles_preliminary > 0 and total_weight > 0:
-            avg_weight_per_bundle = total_weight / bundles_preliminary
-            if avg_weight_per_bundle >= bundle_max_kg:
-                bundles_corrected = math.ceil(total_weight / bundle_max_kg)
-            else:
-                bundles_corrected = bundles_preliminary
-        else:
-            bundles_corrected = bundles_preliminary
+        # --- Step 4: Total bundles = both pools ---
+        total_bundles = bundles_one_per + bundles_normal
 
-        # --- d) Threshold decision ---
-        if bundles_corrected >= tk1_max_bundles:
-            # TODO (open punt): tk1_max_bundels drempelwaarde nog vast te stellen
+        # --- Step 5: Threshold & rate lookup (unchanged tail) ---
+        if total_bundles >= tk1_max_bundles:
             msg = (
-                "TK1: %d bundels >= drempel (%d) → PALLETBEREKENING (handmatig).\n%s"
-                % (bundles_corrected, tk1_max_bundles, "\n".join(bundle_details))
+                "TK1: %d bundels >= drempel (%d) → PALLETBEREKENING (handmatig).\n"
+                "  (%d één-per-bundel + %d normaal)\n%s"
+                % (total_bundles, tk1_max_bundles, bundles_one_per, bundles_normal,
+                   "\n".join(details))
             )
-            _logger.info("Order %s: TK1 pallet threshold reached (%d bundles)", self.name, bundles_corrected)
+            _logger.info("Order %s: TK1 pallet threshold reached (%d bundles)", self.name, total_bundles)
             return 0.0, msg, True
 
-        # Determine length bracket from configurable d1.shipping.length.bracket
+        # Determine length bracket from max length across ALL TK1 lines (both pools)
         bracket = self._d1_find_length_bracket(max_length_cm)
         bracket_label = bracket.name if bracket else "onbekend"
         bracket_id = bracket.id if bracket else False
@@ -325,33 +355,32 @@ class SaleOrder(models.Model):
             msg = (
                 "TK1: %d bundels, max lengte %.0f cm — GEEN LENGTEKLASSE GEVONDEN, "
                 "handmatig bepalen.\n%s"
-                % (bundles_corrected, max_length_cm, "\n".join(bundle_details))
+                % (total_bundles, max_length_cm, "\n".join(details))
             )
             return 0.0, msg, True
 
-        price = self._d1_find_rate(class_id, bundles_corrected, length_bracket_id=bracket_id)
+        price = self._d1_find_rate(class_id, total_bundles, length_bracket_id=bracket_id)
 
         if price == 0.0:
             msg = (
                 "TK1: %d bundels, lengteklasse %s — GEEN TARIEF GEVONDEN voor afleveradres, handmatig bepalen.\n%s"
-                % (
-                    bundles_corrected,
-                    bracket_label,
-                    "\n".join(bundle_details),
-                )
+                % (total_bundles, bracket_label, "\n".join(details))
             )
             return 0.0, msg, True
 
+        weight_corrected = bundles_normal != bundles_preliminary
         msg = (
-            "TK1: %d bundels (gewichtscorrectie: %s), max lengte %.0f cm (%s), "
-            "tarief € %.2f.\n%s"
+            "TK1: %d bundels (%d één-per-bundel + %d normaal%s), "
+            "max lengte %.0f cm (%s), tarief € %.2f.\n%s"
             % (
-                bundles_corrected,
-                "ja" if bundles_corrected != bundles_preliminary else "nee",
+                total_bundles,
+                bundles_one_per,
+                bundles_normal,
+                ", gewichtscorrectie" if weight_corrected else "",
                 max_length_cm,
                 bracket_label,
                 price,
-                "\n".join(bundle_details),
+                "\n".join(details),
             )
         )
         return price, msg, False
@@ -361,23 +390,27 @@ class SaleOrder(models.Model):
     # ------------------------------------------------------------------
 
     def _d1_compute_tk2(self, lines):
-        """Calculate transport cost for TK2 (boxes by weight, e.g. couplings).
+        """Calculate transport cost for TK2 (boxes by weight) with weight banding.
 
-        Flow:
-        - Total weight >= threshold → pallet (manual).
-        - Otherwise: boxes = ceil(weight / box_max_kg), lookup rate.
+        Weight banding per piece (applied before box calculation):
+        - piece_weight >= max_kg         → entire TK2 → pallet (manual).
+        - max_kg/2 <= piece_weight < max_kg → one-per-box pool (qty = boxes).
+        - piece_weight < max_kg/2        → normal weight-sum pool.
+        Total boxes = one-per-box pool + normal pool.
 
         Returns: (cost, message_string, is_manual_flag)
         """
         self.ensure_one()
         class_id = self._d1_get_class_id("tk2")
 
-        # TODO (open punt): tk2_max_gewicht_kg drempelwaarde nog vast te stellen
         tk2_max_kg = self._d1_get_param_float("d1_shipping.tk2_max_gewicht_kg", 99999.0)
         box_max_kg = self._d1_get_param_float("d1_shipping.box_max_weight_kg", 20.0)
+        if box_max_kg <= 0:
+            box_max_kg = 20.0
+        half_max_kg = box_max_kg / 2.0
 
+        # --- Step 1: Overall weight threshold (existing) ---
         total_weight = sum(l.product_uom_qty * (l.product_id.weight or 0.0) for l in lines)
-
         if total_weight >= tk2_max_kg:
             msg = (
                 "TK2: totaal gewicht %.2f kg >= drempel %.0f kg → PALLETBEREKENING (handmatig)."
@@ -386,23 +419,69 @@ class SaleOrder(models.Model):
             _logger.info("Order %s: TK2 pallet threshold reached (%.2f kg)", self.name, total_weight)
             return 0.0, msg, True
 
-        if box_max_kg <= 0:
-            box_max_kg = 20.0
-        num_boxes = math.ceil(total_weight / box_max_kg) if total_weight > 0 else 0
+        # --- Step 2: Weight banding per piece ---
+        boxes_one_per = 0
+        light_weight = 0.0
+        details = []
 
-        if num_boxes == 0:
+        for line in lines:
+            prod = line.product_id
+            piece_weight = prod.weight or 0.0
+            qty = line.product_uom_qty
+
+            # Heavy band: piece >= max → entire TK2 class = pallet
+            if piece_weight >= box_max_kg:
+                msg = (
+                    "TK2: product '%s' weegt %.2f kg/stuk (>= %.0f kg max doos) "
+                    "→ PALLETBEREKENING (handmatig)."
+                    % (prod.display_name, piece_weight, box_max_kg)
+                )
+                _logger.info(
+                    "Order %s: TK2 pallet — product '%s' piece weight %.2f >= %.0f",
+                    self.name, prod.display_name, piece_weight, box_max_kg,
+                )
+                return 0.0, msg, True
+
+            # Mid band: max/2 <= piece < max → one piece per box
+            if piece_weight >= half_max_kg:
+                boxes_one_per += int(qty)
+                details.append(
+                    "  %s: %d stuks × 1/doos (%.2f kg/stuk, één-per-doos)"
+                    % (prod.display_name, int(qty), piece_weight)
+                )
+            else:
+                # Light band (incl. weight == 0): sum weight for normal box calc
+                light_weight += qty * piece_weight
+                if piece_weight > 0:
+                    details.append(
+                        "  %s: %d stuks × %.2f kg = %.2f kg (normaal)"
+                        % (prod.display_name, int(qty), piece_weight, qty * piece_weight)
+                    )
+
+        # --- Step 3 & 4: Normal pool box count + total ---
+        boxes_normal = math.ceil(light_weight / box_max_kg) if light_weight > 0 else 0
+        total_boxes = boxes_one_per + boxes_normal
+
+        if total_boxes == 0:
             return 0.0, "TK2: geen gewicht → € 0,00.", False
 
-        price = self._d1_find_rate(class_id, num_boxes)
+        # --- Step 5: Rate lookup ---
+        price = self._d1_find_rate(class_id, total_boxes)
 
         if price == 0.0:
             msg = (
-                "TK2: %d dozen (%.2f kg) — GEEN TARIEF GEVONDEN voor afleveradres, handmatig bepalen."
-                % (num_boxes, total_weight)
+                "TK2: %d dozen (%d één-per-doos + %d normaal) "
+                "— GEEN TARIEF GEVONDEN voor afleveradres, handmatig bepalen.\n%s"
+                % (total_boxes, boxes_one_per, boxes_normal, "\n".join(details))
             )
             return 0.0, msg, True
 
-        msg = "TK2: %.2f kg → %d dozen, tarief € %.2f." % (total_weight, num_boxes, price)
+        msg = (
+            "TK2: %.2f kg → %d dozen (%d één-per-doos + %d normaal), "
+            "tarief € %.2f.\n%s"
+            % (total_weight, total_boxes, boxes_one_per, boxes_normal,
+               price, "\n".join(details))
+        )
         return price, msg, False
 
     # ------------------------------------------------------------------

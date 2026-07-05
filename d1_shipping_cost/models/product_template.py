@@ -27,3 +27,15 @@ class ProductTemplate(models.Model):
         string="Hoogte (cm)",
         help="Producthoogte in centimeters, gebruikt voor transportkostenberekening.",
     )
+    d1_use_qty = fields.Boolean(
+        string="Gebruik Hoeveelheid",
+        copy=True,
+        help="Indien aangevinkt, wordt de orderregelhoeveelheid berekend als "
+             "d1_qty × d1_length_cm in plaats van handmatig ingevoerd.",
+    )
+    d1_use_length = fields.Boolean(
+        string="Gebruik Lengte",
+        copy=True,
+        help="Indien aangevinkt, kan de gebruiker een afwijkende lengte "
+             "invoeren op de orderregel. Anders wordt de productlengte gebruikt.",
+    )
