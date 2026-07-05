@@ -10,32 +10,32 @@ class ProductTemplate(models.Model):
 
     d1_shipping_class_id = fields.Many2one(
         comodel_name="d1.shipping.class",
-        string="Transportklasse",
-        help="Transportklasse voor berekening van verzendkosten. "
-             "TK1 = bundels (lange producten), TK2 = dozen (op gewicht), "
-             "TK3 = dozen (displays/volumineus).",
+        string="Shipping Class",
+        help="Shipping class for transport cost calculation. "
+             "TK1 = bundles (long products), TK2 = boxes (by weight), "
+             "TK3 = boxes (displays/voluminous).",
     )
     d1_length_cm = fields.Float(
-        string="Lengte (cm)",
-        help="Productlengte in centimeters, gebruikt voor transportkostenberekening.",
+        string="Length (cm)",
+        help="Product length in centimeters, used for transport cost calculation.",
     )
     d1_width_cm = fields.Float(
-        string="Breedte (cm)",
-        help="Productbreedte in centimeters, gebruikt voor transportkostenberekening.",
+        string="Width (cm)",
+        help="Product width in centimeters, used for transport cost calculation.",
     )
     d1_height_cm = fields.Float(
-        string="Hoogte (cm)",
-        help="Producthoogte in centimeters, gebruikt voor transportkostenberekening.",
+        string="Height (cm)",
+        help="Product height in centimeters, used for transport cost calculation.",
     )
     d1_use_qty = fields.Boolean(
-        string="Gebruik Hoeveelheid",
+        string="Use Quantity",
         copy=True,
-        help="Indien aangevinkt, wordt de orderregelhoeveelheid berekend als "
-             "d1_qty × d1_length_cm in plaats van handmatig ingevoerd.",
+        help="If checked, the order line quantity is calculated as "
+             "d1_qty × d1_length instead of being entered manually.",
     )
     d1_use_length = fields.Boolean(
-        string="Gebruik Lengte",
+        string="Use Length",
         copy=True,
-        help="Indien aangevinkt, kan de gebruiker een afwijkende lengte "
-             "invoeren op de orderregel. Anders wordt de productlengte gebruikt.",
+        help="If checked, the user can enter a custom length on the "
+             "order line. Otherwise the product length is used.",
     )

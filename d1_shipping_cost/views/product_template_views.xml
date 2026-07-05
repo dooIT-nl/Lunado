@@ -9,17 +9,17 @@
             <xpath expr="//page[@name='purchase']" position="after">
                 <page string="Transport" name="d1_transport">
                     <group>
-                        <group string="Transportklasse">
+                        <group string="Shipping Class">
                             <field name="d1_shipping_class_id"/>
                         </group>
-                        <group string="Afmetingen (cm)">
+                        <group string="Dimensions (cm)">
                             <field name="d1_length_cm"/>
                             <field name="d1_width_cm"/>
                             <field name="d1_height_cm"/>
                         </group>
                     </group>
                     <group>
-                        <group string="Orderregel-berekening">
+                        <group string="Order Line Calculation">
                             <field name="d1_use_qty"/>
                             <field name="d1_use_length"/>
                         </group>

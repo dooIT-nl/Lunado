@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Add "Bereken transportkosten" button and summary field to sale.order form -->
+    <!-- Add "Calculate transport costs" button and summary field to sale.order form -->
     <record id="d1_sale_order_form_view" model="ir.ui.view">
         <field name="name">sale.order.form.d1.transport</field>
         <field name="model">sale.order</field>
@@ -9,7 +9,7 @@
             <!-- Button in header -->
             <xpath expr="//form/header/button[@name='action_quotation_send']" position="after">
                 <button name="action_d1_compute_transport_cost"
-                        string="Bereken transportkosten"
+                        string="Calculate transport costs"
                         type="object"
                         class="btn-secondary"
                         icon="fa-truck"/>
@@ -17,14 +17,14 @@
 
             <!-- Transport summary + pallet flag below order lines -->
             <xpath expr="//field[@name='note']" position="before">
-                <group string="Transportkostenberekening" invisible="not d1_transport_message">
+                <group string="Transport Cost Calculation" invisible="not d1_transport_message">
                     <field name="d1_pallet_calculation"/>
                     <field name="d1_transport_message" nolabel="1" colspan="2"/>
                 </group>
             </xpath>
         </field>
     </record>
-    <!-- Add d1_qty / d1_length_cm to order line views (list + form) -->
+    <!-- Add d1_qty / d1_length to order line views (list + form) -->
     <record id="d1_sale_order_line_views" model="ir.ui.view">
         <field name="name">sale.order.form.d1.order.line.fields</field>
         <field name="model">sale.order</field>
@@ -35,11 +35,11 @@
                 <field name="d1_use_qty" column_invisible="True"/>
                 <field name="d1_use_length" column_invisible="True"/>
                 <field name="d1_qty"
-                       string="Hoeveelheid"
+                       string="Pieces"
                        optional="show"
                        readonly="not d1_use_qty"/>
-                <field name="d1_length_cm"
-                       string="Lengte"
+                <field name="d1_length"
+                       string="Length"
                        optional="show"
                        readonly="not d1_use_length"/>
             </xpath>
@@ -49,15 +49,15 @@
                 <field name="d1_use_length" invisible="True"/>
                 <label for="d1_qty" invisible="not d1_use_qty"/>
                 <field name="d1_qty" invisible="not d1_use_qty"/>
-                <label for="d1_length_cm" invisible="not d1_use_qty"/>
-                <field name="d1_length_cm"
+                <label for="d1_length" invisible="not d1_use_qty"/>
+                <field name="d1_length"
                        invisible="not d1_use_qty"
                        readonly="not d1_use_length"/>
             </xpath>
         </field>
     </record>
 
-    <!-- Add Palletberekening filter to sale order search view -->
+    <!-- Add Pallet Calculation filter to sale order search view -->
     <record id="d1_sale_order_search_view" model="ir.ui.view">
         <field name="name">sale.order.search.d1.transport</field>
         <field name="model">sale.order</field>
@@ -66,13 +66,13 @@
             <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
                 <separator/>
                 <filter name="d1_pallet_calculation"
-                        string="Palletberekening"
+                        string="Pallet Calculation"
                         domain="[('d1_pallet_calculation', '=', True)]"/>
             </xpath>
         </field>
     </record>
 
-    <!-- Add Palletberekening to sale order list view -->
+    <!-- Add Pallet Calculation to sale order list view -->
     <record id="d1_sale_order_list_view" model="ir.ui.view">
         <field name="name">sale.order.list.d1.transport</field>
         <field name="model">sale.order</field>

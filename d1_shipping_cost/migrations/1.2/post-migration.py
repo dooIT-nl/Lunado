@@ -1,7 +1,7 @@
 """Migrate Studio fields to native d1_ fields (idempotent).
 
 Copies x_studio_use_qty → d1_use_qty, x_studio_use_length → d1_use_length on
-product.template, and x_studio_qty → d1_qty, x_studio_length → d1_length_cm on
+product.template, and x_studio_qty → d1_qty, x_studio_length → d1_length on
 sale.order.line.  Only where the source is filled and the destination is empty/zero.
 The old x_studio fields are left untouched.
 """
@@ -45,7 +45,7 @@ def migrate(cr, version):
     # --- sale.order.line ---
     for src, dst in [
         ("x_studio_qty", "d1_qty"),
-        ("x_studio_length", "d1_length_cm"),
+        ("x_studio_length", "d1_length"),
     ]:
         if not _column_exists(cr, "sale_order_line", src):
             _logger.info("  Column %s does not exist on sale_order_line — skipping.", src)

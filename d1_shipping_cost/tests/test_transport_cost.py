@@ -181,6 +181,29 @@ class TestTransportCost(TransactionCase):
         if not cls.bracket_gte_215:
             cls.bracket_gte_215 = LB.create({"name": ">= 2,15 m", "length_from_cm": 215, "length_to_cm": 0})
 
+        # ---- Carriers (transporteurs via delivery.carrier) ----
+        Carrier = cls.env["delivery.carrier"]
+        carrier_product = cls.env["product.product"].create({
+            "name": "Carrier Service",
+            "type": "service",
+            "list_price": 0.0,
+        })
+        cls.carrier_tk1 = Carrier.create({
+            "name": "Transporteur TK1",
+            "delivery_type": "fixed",
+            "product_id": carrier_product.id,
+        })
+        cls.carrier_tk2 = Carrier.create({
+            "name": "Transporteur TK2",
+            "delivery_type": "fixed",
+            "product_id": carrier_product.id,
+        })
+        cls.carrier_tk3 = Carrier.create({
+            "name": "Transporteur TK3",
+            "delivery_type": "fixed",
+            "product_id": carrier_product.id,
+        })
+
         # Remove any pre-existing rates to avoid conflicts with test data
         Rate = cls.env["d1.shipping.rate"]
         Rate.search([]).unlink()
@@ -192,6 +215,7 @@ class TestTransportCost(TransactionCase):
             "unit_type": "bundle",
             "qty_from": 1, "qty_to": 10,
             "price": 25.0,
+            "carrier_id": cls.carrier_tk1.id,
         })
         Rate.create({
             "name": "TK1 NL <1.65m 11-19",
@@ -201,6 +225,7 @@ class TestTransportCost(TransactionCase):
             "unit_type": "bundle",
             "qty_from": 11, "qty_to": 19,
             "price": 45.0,
+            "carrier_id": cls.carrier_tk1.id,
         })
         Rate.create({
             "name": "TK1 NL >=2.15m 1-10",
@@ -210,6 +235,7 @@ class TestTransportCost(TransactionCase):
             "unit_type": "bundle",
             "qty_from": 1, "qty_to": 10,
             "price": 50.0,
+            "carrier_id": cls.carrier_tk1.id,
         })
         Rate.create({
             "name": "TK2 NL 1-5 boxes",
@@ -218,6 +244,7 @@ class TestTransportCost(TransactionCase):
             "unit_type": "box",
             "qty_from": 1, "qty_to": 5,
             "price": 15.0,
+            "carrier_id": cls.carrier_tk2.id,
         })
         Rate.create({
             "name": "TK2 NL 6-10 boxes",
@@ -226,6 +253,7 @@ class TestTransportCost(TransactionCase):
             "unit_type": "box",
             "qty_from": 6, "qty_to": 10,
             "price": 28.0,
+            "carrier_id": cls.carrier_tk2.id,
         })
         Rate.create({
             "name": "TK3 NL 1-5 boxes",
@@ -234,6 +262,7 @@ class TestTransportCost(TransactionCase):
             "unit_type": "box",
             "qty_from": 1, "qty_to": 5,
             "price": 20.0,
+            "carrier_id": cls.carrier_tk3.id,
         })
 
     def _create_order(self, lines_data):
@@ -333,16 +362,16 @@ class TestTransportCost(TransactionCase):
         self.assertIn("3 één-per-bundel + 1 normaal", order.d1_transport_message)
 
     def test_tk1_uses_order_line_length(self):
-        """TK1: max length is taken from order line d1_length_cm, not product."""
+        """TK1: max length is taken from order line d1_length, not product."""
         # Product has length 150 cm (< 165 → lt_165 bracket)
-        # But order line overrides to 220 cm (>= 215 → gte_215 bracket)
+        # But order line overrides to 220 (>= 215 → gte_215 bracket)
         # This should use the gte_215 rate (50.00), not lt_165 (25.00)
         order = self.env["sale.order"].create({"partner_id": self.partner.id})
         self.env["sale.order.line"].create({
             "order_id": order.id,
             "product_id": self.product_tk1.id,
             "product_uom_qty": 5,
-            "d1_length_cm": 220.0,  # override: product is 150 cm
+            "d1_length": 220.0,  # override: product is 150 cm
         })
         order.action_d1_compute_transport_cost()
 
@@ -514,9 +543,49 @@ class TestTransportCost(TransactionCase):
     # Qty × Length calculation tests
     # ------------------------------------------------------------------
 
+    def test_tk1_uses_d1_qty_when_use_qty(self):
+        """TK1: when d1_use_qty=True, bundle calculation uses d1_qty (piece count)
+        instead of product_uom_qty (which is d1_qty × d1_length = total meters).
+
+        Without fix: product_uom_qty=500 → ceil(500/25) = 20 bundles >= max → PALLET
+        With fix:    d1_qty=250 → ceil(250/25) = 10 bundles → rate 1-10 → 25.00
+        """
+        product = self.env["product.product"].create({
+            "name": "Test TK1 Use Qty",
+            "type": "consu",
+            "d1_shipping_class_id": self.class_tk1.id,
+            "d1_use_qty": True,
+            "d1_use_length": False,
+            "d1_length_cm": 200.0,  # 200 cm → line gets 2.0 (/ 100)
+            "d1_width_cm": 3.0,
+            "d1_height_cm": 3.0,
+            "weight": 0.0,  # no weight to avoid weight correction
+            "list_price": 10.0,
+        })
+        order = self.env["sale.order"].create({"partner_id": self.partner.id})
+        line = self.env["sale.order.line"].create({
+            "order_id": order.id,
+            "product_id": product.id,
+            "d1_qty": 250,
+        })
+        # Verify setup: product_uom_qty = 250 * 2.0 = 500
+        self.assertEqual(line.product_uom_qty, 500.0)
+
+        order.action_d1_compute_transport_cost()
+
+        # d1_qty=250, tubes_per_bundle = floor(15/3)*floor(15/3) = 25
+        # bundles = ceil(250/25) = 10, rate lt_165 1-10 → 25.00
+        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
+        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        self.assertTrue(transport_line, "Should find rate, NOT pallet")
+        self.assertEqual(transport_line.price_unit, 25.0,
+                         "Should use d1_qty=250 (10 bundles) not product_uom_qty=500 (20 bundles → pallet)")
+        self.assertFalse(order.d1_pallet_calculation,
+                         "Should not be pallet when using d1_qty")
+
     def test_qty_length_use_qty_no_length(self):
         """d1_use_qty=True, d1_use_length=False: length filled from product,
-        product_uom_qty = d1_qty * d1_length_cm. Tested via create() (API)."""
+        product_uom_qty = d1_qty * d1_length. Tested via create() (API)."""
         product = self.env["product.product"].create({
             "name": "Test Qty Product",
             "type": "consu",
@@ -532,15 +601,15 @@ class TestTransportCost(TransactionCase):
             "d1_qty": 5,
         })
         # Length should be auto-filled from product (200 cm / 100 = 2.0 m)
-        self.assertEqual(line.d1_length_cm, 2.0,
-                         "d1_length_cm should be product length / 100")
+        self.assertEqual(line.d1_length, 2.0,
+                         "d1_length should be product length / 100")
         # product_uom_qty = 5 * 2.0 = 10.0
         self.assertEqual(line.product_uom_qty, 10.0,
-                         "product_uom_qty should be d1_qty * d1_length_cm")
+                         "product_uom_qty should be d1_qty * d1_length")
 
     def test_qty_length_use_qty_and_length(self):
-        """d1_use_qty=True, d1_use_length=True: d1_length_cm stays as entered,
-        product_uom_qty = d1_qty * d1_length_cm."""
+        """d1_use_qty=True, d1_use_length=True: d1_length stays as entered,
+        product_uom_qty = d1_qty * d1_length."""
         product = self.env["product.product"].create({
             "name": "Test Qty+Length Product",
             "type": "consu",
@@ -554,14 +623,14 @@ class TestTransportCost(TransactionCase):
             "order_id": order.id,
             "product_id": product.id,
             "d1_qty": 3,
-            "d1_length_cm": 150.0,  # user override, NOT from product
+            "d1_length": 150.0,  # user override, NOT from product
         })
         # Length should stay at user-entered value
-        self.assertEqual(line.d1_length_cm, 150.0,
-                         "d1_length_cm should stay as user entered (not product)")
+        self.assertEqual(line.d1_length, 150.0,
+                         "d1_length should stay as user entered (not product)")
         # product_uom_qty = 3 * 150 = 450
         self.assertEqual(line.product_uom_qty, 450.0,
-                         "product_uom_qty should be d1_qty * d1_length_cm")
+                         "product_uom_qty should be d1_qty * d1_length")
 
     def test_qty_length_no_use_qty(self):
         """d1_use_qty=False: product_uom_qty stays untouched."""
@@ -606,3 +675,86 @@ class TestTransportCost(TransactionCase):
         # 10 * 1.0 = 10.0
         self.assertEqual(line.product_uom_qty, 10.0,
                          "product_uom_qty should recalculate after write")
+
+    # ------------------------------------------------------------------
+    # Carrier (transporteur) determination tests
+    # ------------------------------------------------------------------
+
+    def test_carrier_tk1_only(self):
+        """Carrier is set from TK1 rate when only TK1 products in order."""
+        order = self._create_order([(self.product_tk1, 10)])
+        order.action_d1_compute_transport_cost()
+
+        self.assertEqual(order.carrier_id, self.carrier_tk1,
+                         "Carrier should be TK1 carrier")
+        self.assertIn("Transporteur", order.d1_transport_message)
+
+    def test_carrier_tk2_only(self):
+        """Carrier is set from TK2 rate when only TK2 products in order."""
+        order = self._create_order([(self.product_tk2, 30)])
+        order.action_d1_compute_transport_cost()
+
+        self.assertEqual(order.carrier_id, self.carrier_tk2,
+                         "Carrier should be TK2 carrier")
+
+    def test_carrier_tk3_only(self):
+        """Carrier is set from TK3 rate when only TK3 products in order."""
+        order = self._create_order([(self.product_tk3_small, 5)])
+        order.action_d1_compute_transport_cost()
+
+        self.assertEqual(order.carrier_id, self.carrier_tk3,
+                         "Carrier should be TK3 carrier")
+
+    def test_carrier_priority_tk1_over_tk2(self):
+        """Mixed TK1 + TK2: carrier comes from TK1 (priority TK1 > TK2)."""
+        order = self._create_order([
+            (self.product_tk1, 10),
+            (self.product_tk2, 30),
+        ])
+        order.action_d1_compute_transport_cost()
+
+        self.assertEqual(order.carrier_id, self.carrier_tk1,
+                         "Carrier should be TK1 (priority TK1 > TK2)")
+
+    def test_carrier_priority_tk3_over_tk2(self):
+        """Mixed TK3 + TK2: carrier comes from TK3 (priority TK3 > TK2)."""
+        order = self._create_order([
+            (self.product_tk3_small, 5),
+            (self.product_tk2, 30),
+        ])
+        order.action_d1_compute_transport_cost()
+
+        self.assertEqual(order.carrier_id, self.carrier_tk3,
+                         "Carrier should be TK3 (priority TK3 > TK2)")
+
+    def test_carrier_priority_tk1_over_tk3(self):
+        """Mixed TK1 + TK3: carrier comes from TK1 (priority TK1 > TK3)."""
+        order = self._create_order([
+            (self.product_tk1, 10),
+            (self.product_tk3_small, 5),
+        ])
+        order.action_d1_compute_transport_cost()
+
+        self.assertEqual(order.carrier_id, self.carrier_tk1,
+                         "Carrier should be TK1 (priority TK1 > TK3)")
+
+    def test_carrier_fallback_on_pallet(self):
+        """When TK1 goes to pallet (no rate), carrier falls through to next class."""
+        # TK1 heavy → pallet (no rate, no carrier)
+        # TK2 light → rate found → TK2 carrier
+        order = self._create_order([
+            (self.product_tk1_heavy, 3),
+            (self.product_tk2, 30),
+        ])
+        order.action_d1_compute_transport_cost()
+
+        self.assertEqual(order.carrier_id, self.carrier_tk2,
+                         "Should fall through to TK2 carrier when TK1 is pallet")
+
+    def test_carrier_empty_no_classes(self):
+        """No shipping classes in order → carrier stays empty."""
+        order = self._create_order([(self.product_no_class, 10)])
+        order.action_d1_compute_transport_cost()
+
+        self.assertFalse(order.carrier_id,
+                         "No carrier when no shipping classes in order")

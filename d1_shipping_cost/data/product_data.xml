@@ -3,13 +3,13 @@
     <data noupdate="1">
         <!-- Service product used as the transport cost order line -->
         <record id="product_transport_cost" model="product.product">
-            <field name="name">Transportkosten</field>
+            <field name="name">Transport Costs</field>
             <field name="type">service</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
             <field name="list_price">0.0</field>
             <field name="standard_price">0.0</field>
-            <field name="description_sale">Automatisch berekende transportkosten (TK1+TK2+TK3).</field>
+            <field name="description_sale">Automatically calculated transport costs (TK1+TK2+TK3).</field>
         </record>
     </data>
 </odoo>

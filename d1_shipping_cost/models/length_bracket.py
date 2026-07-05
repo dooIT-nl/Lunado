@@ -19,25 +19,25 @@ class D1ShippingLengthBracket(models.Model):
     _order = "length_from_cm, length_to_cm"
 
     name = fields.Char(
-        string="Naam",
+        string="Name",
         required=True,
-        help="Weergavenaam, bv. '< 1,65 m' of '165 – 214 cm'.",
+        help="Display name, e.g. '< 1.65 m' or '165 – 214 cm'.",
     )
     length_from_cm = fields.Float(
-        string="Lengte vanaf (cm)",
+        string="Length from (cm)",
         required=True,
         default=0.0,
-        help="Ondergrens van het bereik (inclusief), in centimeters.",
+        help="Lower bound of the range (inclusive), in centimeters.",
     )
     length_to_cm = fields.Float(
-        string="Lengte t/m (cm)",
+        string="Length to (cm)",
         required=True,
         default=0.0,
-        help="Bovengrens van het bereik (inclusief), in centimeters. "
-             "Gebruik 0 voor open einde (geen bovengrens).",
+        help="Upper bound of the range (inclusive), in centimeters. "
+             "Use 0 for open end (no upper bound).",
     )
     sequence = fields.Integer(
-        string="Volgorde",
+        string="Sequence",
         default=10,
     )
 
@@ -47,6 +47,6 @@ class D1ShippingLengthBracket(models.Model):
         for rec in self:
             if rec.length_to_cm > 0 and rec.length_from_cm > rec.length_to_cm:
                 raise ValidationError(
-                    _("'Lengte vanaf' (%.0f cm) mag niet groter zijn dan 'Lengte t/m' (%.0f cm).")
+                    _("'Length from' (%.0f cm) cannot be greater than 'Length to' (%.0f cm).")
                     % (rec.length_from_cm, rec.length_to_cm)
                 )

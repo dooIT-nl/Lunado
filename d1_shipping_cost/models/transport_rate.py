@@ -26,12 +26,12 @@ class D1ShippingRate(models.Model):
     _order = "shipping_class_id, length_bracket_id, qty_from"
 
     name = fields.Char(
-        string="Naam",
+        string="Name",
         required=True,
     )
     shipping_class_id = fields.Many2one(
         comodel_name="d1.shipping.class",
-        string="Transportklasse",
+        string="Shipping Class",
         required=True,
     )
 
@@ -41,58 +41,61 @@ class D1ShippingRate(models.Model):
         relation="d1_shipping_rate_country_rel",
         column1="rate_id",
         column2="country_id",
-        string="Landen",
-        help="Landen waarvoor dit tarief geldt. Laat leeg voor alle landen.",
+        string="Countries",
+        help="Countries this rate applies to. Leave empty for all countries.",
     )
     state_ids = fields.Many2many(
         comodel_name="res.country.state",
         relation="d1_shipping_rate_state_rel",
         column1="rate_id",
         column2="state_id",
-        string="Provincies",
-        help="Provincies/staten waarvoor dit tarief geldt. Laat leeg voor alle provincies.",
+        string="States",
+        help="States/provinces this rate applies to. Leave empty for all states.",
     )
     zip_prefix_ids = fields.Many2many(
         comodel_name="d1.shipping.zip.prefix",
         relation="d1_shipping_rate_zip_prefix_rel",
         column1="rate_id",
         column2="zip_prefix_id",
-        string="Postcode-prefixen",
-        help="Postcode-prefixen waarvoor dit tarief geldt. "
-             "Reguliere expressies worden ondersteund, bv. '$' aan het einde "
-             "matcht de exacte postcode (bijv. '100$' matcht alleen '100'). "
-             "Laat leeg voor alle postcodes.",
+        string="Zip Prefixes",
+        help="Zip prefixes this rate applies to. Regular expressions are "
+             "supported. Leave empty for all zip codes.",
     )
 
     length_bracket_id = fields.Many2one(
         comodel_name="d1.shipping.length.bracket",
-        string="Lengteklasse",
-        help="Alleen van toepassing voor TK1. Laat leeg voor TK2/TK3.",
+        string="Length Bracket",
+        help="Only applicable for TK1. Leave empty for TK2/TK3.",
     )
     unit_type = fields.Selection(
         selection=[
-            ("bundle", "Bundels"),
-            ("box", "Dozen"),
+            ("bundle", "Bundles"),
+            ("box", "Boxes"),
         ],
-        string="Eenheidstype",
+        string="Unit Type",
         required=True,
-        help="TK1 = bundels; TK2/TK3 = dozen.",
+        help="TK1 = bundles; TK2/TK3 = boxes.",
     )
     qty_from = fields.Integer(
-        string="Aantal vanaf",
+        string="Quantity from",
         required=True,
-        help="Ondergrens van de staffel (inclusief).",
+        help="Lower bound of the tier (inclusive).",
     )
     qty_to = fields.Integer(
-        string="Aantal t/m",
+        string="Quantity to",
         required=True,
-        help="Bovengrens van de staffel (inclusief). Gebruik 0 of een groot getal voor open einde.",
+        help="Upper bound of the tier (inclusive). Use 0 or a large number for open end.",
     )
     price = fields.Float(
-        string="Tarief",
+        string="Rate",
         required=True,
         digits="Product Price",
-        help="Tarief voor deze staffel. Wordt als totaalbedrag voor de staffelrange toegepast.",
+        help="Rate for this tier. Applied as a total amount for the tier range.",
+    )
+    carrier_id = fields.Many2one(
+        comodel_name="delivery.carrier",
+        string="Carrier",
+        help="Preferred carrier for this rate. Automatically applied to the sales order.",
     )
 
     @api.constrains("qty_from", "qty_to")
@@ -101,7 +104,7 @@ class D1ShippingRate(models.Model):
         for rec in self:
             if rec.qty_to > 0 and rec.qty_from > rec.qty_to:
                 raise ValidationError(
-                    _("'Aantal vanaf' (%s) mag niet groter zijn dan 'Aantal t/m' (%s).")
+                    _("'Quantity from' (%s) cannot be greater than 'Quantity to' (%s).")
                     % (rec.qty_from, rec.qty_to)
                 )
 

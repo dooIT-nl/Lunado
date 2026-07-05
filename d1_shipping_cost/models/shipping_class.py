@@ -19,25 +19,24 @@ class D1ShippingClass(models.Model):
     _order = "sequence, code"
 
     name = fields.Char(
-        string="Naam",
+        string="Name",
         required=True,
-        help="Weergavenaam van de transportklasse, bv. 'TK1 — Bundels'.",
+        help="Display name of the shipping class, e.g. 'TK1 — Bundles'.",
     )
     code = fields.Char(
         string="Code",
         required=True,
-        help="Technische code, bv. 'tk1', 'tk2', 'tk3'. "
-             "Wordt gebruikt in de berekeningslogica.",
+        help="Technical code, e.g. 'TK1', 'TK2', 'TK3'. Used in calculation logic.",
     )
     description = fields.Text(
-        string="Omschrijving",
-        help="Toelichting op de transportklasse.",
+        string="Description",
+        help="Explanation of the shipping class.",
     )
     sequence = fields.Integer(
-        string="Volgorde",
+        string="Sequence",
         default=10,
     )
 
     _sql_constraints = [
-        ("code_unique", "unique(code)", "De code van een transportklasse moet uniek zijn."),
+        ("code_unique", "unique(code)", "The shipping class code must be unique."),
     ]

@@ -21,13 +21,13 @@ class D1ShippingZipPrefix(models.Model):
     name = fields.Char(
         string="Prefix",
         required=True,
-        help="Postcode-prefix. Reguliere expressies worden ondersteund, "
-             "bv. '100$' matcht alleen exact '100'. Wordt automatisch "
-             "naar hoofdletters omgezet.",
+        help="Zip code prefix. Regular expressions are supported, "
+             "e.g. '100$' matches only exact '100'. Automatically "
+             "converted to uppercase.",
     )
 
     _sql_constraints = [
-        ("name_unique", "unique(name)", "Dit prefix bestaat al."),
+        ("name_unique", "unique(name)", "This prefix already exists."),
     ]
 
     @api.model_create_multi

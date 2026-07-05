@@ -11,22 +11,24 @@ _logger = logging.getLogger(__name__)
 # Marker on the transport cost order line so we can identify and replace it.
 TRANSPORT_LINE_NAME_MARKER = "[TRANSPORT]"
 
+# Carrier priority: TK1 takes precedence over TK3, TK3 over TK2.
+_CARRIER_PRIORITY = ("tk1", "tk3", "tk2")
+
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     d1_transport_message = fields.Text(
-        string="Transport berekening",
+        string="Transport Calculation",
         readonly=True,
-        help="Samenvatting van de laatste transportkostenberekening.",
+        help="Summary of the last transport cost calculation.",
     )
     d1_pallet_calculation = fields.Boolean(
-        string="Palletberekening",
+        string="Pallet Calculation",
         readonly=True,
-        help="Aangevinkt wanneer de transportkosten niet automatisch berekend "
-             "konden worden en handmatige palletberekening nodig is.",
+        help="Checked when transport costs could not be calculated automatically "
+             "and manual pallet calculation is needed.",
     )
-
     # ------------------------------------------------------------------
     # Public action (button)
     # ------------------------------------------------------------------
@@ -46,12 +48,13 @@ class SaleOrder(models.Model):
     # ------------------------------------------------------------------
 
     def _d1_do_compute_transport(self):
-        """Orchestrator: run TK1/TK2/TK3 calculations and create the order line."""
+        """Orchestrator: run TK1/TK2/TK3 calculations, determine carrier, create order line."""
         self.ensure_one()
 
         messages = []  # collects user-facing messages per class
         total_cost = 0.0
         has_manual = False  # True if any class requires manual handling
+        carriers = {}  # {class_code: carrier_id or False}
 
         # Group order lines by shipping class code
         lines_by_class = self._d1_group_lines_by_class()
@@ -68,10 +71,11 @@ class SaleOrder(models.Model):
                 class_name = lines_by_class[code]["class_name"]
                 method = compute_methods.get(code)
                 if method:
-                    cost, msg, manual = method(lines_by_class[code]["lines"])
+                    cost, msg, manual, carrier_id = method(lines_by_class[code]["lines"])
                     total_cost += cost
                     messages.append(msg)
                     has_manual = has_manual or manual
+                    carriers[code] = carrier_id
                 else:
                     messages.append(
                         "%s: geen berekeningslogica beschikbaar — overgeslagen." % class_name
@@ -79,15 +83,30 @@ class SaleOrder(models.Model):
             else:
                 messages.append("%s: geen producten in order — overgeslagen." % code.upper())
 
+        # Determine carrier based on priority: TK1 > TK3 > TK2
+        selected_carrier_id = False
+        carrier_source = ""
+        for code in _CARRIER_PRIORITY:
+            if carriers.get(code):
+                selected_carrier_id = carriers[code]
+                carrier_source = code.upper()
+                break
+
         # Build summary
         summary = "\n".join(messages)
+        if selected_carrier_id:
+            carrier_name = self.env["delivery.carrier"].browse(selected_carrier_id).display_name
+            summary += "\n\nTransporteur: %s (bepaald door %s)" % (carrier_name, carrier_source)
+        elif any(lines_by_class.get(c) for c in ("tk1", "tk3", "tk2")):
+            summary += "\n\nTransporteur: handmatig selecteren"
         if has_manual:
             summary += "\n\n⚠ Er zijn onderdelen die handmatig beoordeeld moeten worden (zie hierboven)."
         summary += "\n\nTotaal transportkosten: € %.2f" % total_cost
 
-        # Write to summary field and pallet flag
+        # Write to summary field, pallet flag and carrier
         self.d1_transport_message = summary
         self.d1_pallet_calculation = has_manual
+        self.carrier_id = selected_carrier_id
 
         # Post to chatter — wrap in Markup so Odoo renders it as HTML
         self.message_post(
@@ -172,11 +191,9 @@ class SaleOrder(models.Model):
             unit_qty: int — number of units (bundles/boxes).
             length_bracket_id: int or False — id of d1.shipping.length.bracket.
 
-        Returns the price (float) or 0.0 if no matching rate is found.
-
-        # TODO (open punt): Confirm with business whether rates are
-        # total-per-bracket or per-unit. Current implementation treats
-        # the price field as the total cost for the bracket.
+        Returns a tuple (price, carrier_id):
+            - price: float — the rate price, or 0.0 if not found.
+            - carrier_id: int or False — the preferred carrier from the rate.
         """
         partner = self._d1_get_shipping_partner()
 
@@ -203,19 +220,20 @@ class SaleOrder(models.Model):
         for rate in rates:
             if rate._match_address(partner):
                 _logger.info(
-                    "Order %s: found rate '%s' (€ %.2f) for class=%s, partner=%s, qty=%s",
+                    "Order %s: found rate '%s' (€ %.2f, carrier=%s) for class=%s, partner=%s, qty=%s",
                     self.name, rate.name, rate.price,
+                    rate.carrier_id.display_name or "-",
                     rate.shipping_class_id.code,
                     partner.name, unit_qty,
                 )
-                return rate.price
+                return rate.price, rate.carrier_id.id or False
 
         _logger.warning(
             "Order %s: no rate found for class_id=%s, partner=%s, qty=%s, bracket_id=%s",
             self.name, shipping_class_id,
             partner.name, unit_qty, length_bracket_id,
         )
-        return 0.0
+        return 0.0, False
 
     def _d1_get_class_id(self, code):
         """Return the d1.shipping.class record id for the given code, or False.
@@ -238,7 +256,7 @@ class SaleOrder(models.Model):
         - piece_weight < max_kg/2        → normal geometric calculation pool.
         Total bundles = one-per-bundle pool + normal pool.
 
-        Returns: (cost, message_string, is_manual_flag)
+        Returns: (cost, message_string, is_manual_flag, carrier_id)
         """
         self.ensure_one()
         class_id = self._d1_get_class_id("tk1")
@@ -259,9 +277,14 @@ class SaleOrder(models.Model):
         for line in lines:
             prod = line.product_id
             piece_weight = prod.weight or 0.0
-            qty = line.product_uom_qty
+            # When d1_use_qty is active, product_uom_qty = d1_qty × d1_length
+            # (total meters), so use d1_qty (actual piece count) instead.
+            if prod.d1_use_qty and line.d1_qty:
+                qty = line.d1_qty
+            else:
+                qty = line.product_uom_qty
             # Use order line length (may differ from product if user overrides)
-            length = line.d1_length_cm or prod.d1_length_cm or 0.0
+            length = line.d1_length or prod.d1_length_cm or 0.0
 
             if length > max_length_cm:
                 max_length_cm = length
@@ -277,7 +300,7 @@ class SaleOrder(models.Model):
                     "Order %s: TK1 pallet — product '%s' piece weight %.2f >= %.0f",
                     self.name, prod.display_name, piece_weight, bundle_max_kg,
                 )
-                return 0.0, msg, True
+                return 0.0, msg, True, False
 
             # Mid band: max/2 <= piece < max → one piece per bundle
             if piece_weight >= half_max_kg:
@@ -344,7 +367,7 @@ class SaleOrder(models.Model):
                    "\n".join(details))
             )
             _logger.info("Order %s: TK1 pallet threshold reached (%d bundles)", self.name, total_bundles)
-            return 0.0, msg, True
+            return 0.0, msg, True, False
 
         # Determine length bracket from max length across ALL TK1 lines (both pools)
         bracket = self._d1_find_length_bracket(max_length_cm)
@@ -357,16 +380,16 @@ class SaleOrder(models.Model):
                 "handmatig bepalen.\n%s"
                 % (total_bundles, max_length_cm, "\n".join(details))
             )
-            return 0.0, msg, True
+            return 0.0, msg, True, False
 
-        price = self._d1_find_rate(class_id, total_bundles, length_bracket_id=bracket_id)
+        price, carrier_id = self._d1_find_rate(class_id, total_bundles, length_bracket_id=bracket_id)
 
         if price == 0.0:
             msg = (
                 "TK1: %d bundels, lengteklasse %s — GEEN TARIEF GEVONDEN voor afleveradres, handmatig bepalen.\n%s"
                 % (total_bundles, bracket_label, "\n".join(details))
             )
-            return 0.0, msg, True
+            return 0.0, msg, True, False
 
         weight_corrected = bundles_normal != bundles_preliminary
         msg = (
@@ -383,7 +406,7 @@ class SaleOrder(models.Model):
                 "\n".join(details),
             )
         )
-        return price, msg, False
+        return price, msg, False, carrier_id
 
     # ------------------------------------------------------------------
     # TK2 — Box calculation (by weight)
@@ -398,7 +421,7 @@ class SaleOrder(models.Model):
         - piece_weight < max_kg/2        → normal weight-sum pool.
         Total boxes = one-per-box pool + normal pool.
 
-        Returns: (cost, message_string, is_manual_flag)
+        Returns: (cost, message_string, is_manual_flag, carrier_id)
         """
         self.ensure_one()
         class_id = self._d1_get_class_id("tk2")
@@ -417,7 +440,7 @@ class SaleOrder(models.Model):
                 % (total_weight, tk2_max_kg)
             )
             _logger.info("Order %s: TK2 pallet threshold reached (%.2f kg)", self.name, total_weight)
-            return 0.0, msg, True
+            return 0.0, msg, True, False
 
         # --- Step 2: Weight banding per piece ---
         boxes_one_per = 0
@@ -440,7 +463,7 @@ class SaleOrder(models.Model):
                     "Order %s: TK2 pallet — product '%s' piece weight %.2f >= %.0f",
                     self.name, prod.display_name, piece_weight, box_max_kg,
                 )
-                return 0.0, msg, True
+                return 0.0, msg, True, False
 
             # Mid band: max/2 <= piece < max → one piece per box
             if piece_weight >= half_max_kg:
@@ -463,10 +486,10 @@ class SaleOrder(models.Model):
         total_boxes = boxes_one_per + boxes_normal
 
         if total_boxes == 0:
-            return 0.0, "TK2: geen gewicht → € 0,00.", False
+            return 0.0, "TK2: geen gewicht → € 0,00.", False, False
 
         # --- Step 5: Rate lookup ---
-        price = self._d1_find_rate(class_id, total_boxes)
+        price, carrier_id = self._d1_find_rate(class_id, total_boxes)
 
         if price == 0.0:
             msg = (
@@ -474,7 +497,7 @@ class SaleOrder(models.Model):
                 "— GEEN TARIEF GEVONDEN voor afleveradres, handmatig bepalen.\n%s"
                 % (total_boxes, boxes_one_per, boxes_normal, "\n".join(details))
             )
-            return 0.0, msg, True
+            return 0.0, msg, True, False
 
         msg = (
             "TK2: %.2f kg → %d dozen (%d één-per-doos + %d normaal), "
@@ -482,7 +505,7 @@ class SaleOrder(models.Model):
             % (total_weight, total_boxes, boxes_one_per, boxes_normal,
                price, "\n".join(details))
         )
-        return price, msg, False
+        return price, msg, False, carrier_id
 
     # ------------------------------------------------------------------
     # TK3 — Display calculation (heavy / voluminous)
@@ -499,7 +522,7 @@ class SaleOrder(models.Model):
            c. (L + 2W + 2H) >= 300 cm → exception Wesseling/Mainfreight.
         3. Otherwise: box calculation, same as TK2.
 
-        Returns: (cost, message_string, is_manual_flag)
+        Returns: (cost, message_string, is_manual_flag, carrier_id)
         """
         self.ensure_one()
         class_id = self._d1_get_class_id("tk3")
@@ -517,7 +540,7 @@ class SaleOrder(models.Model):
                 % (total_weight, tk3_max_kg)
             )
             _logger.info("Order %s: TK3 pallet threshold reached (%.2f kg)", self.name, total_weight)
-            return 0.0, msg, True
+            return 0.0, msg, True, False
 
         # --- Step 2: per-article dimension/weight checks ---
         for line in lines:
@@ -533,7 +556,7 @@ class SaleOrder(models.Model):
                     "TK3: product '%s' weegt %.2f kg (>= 20 kg) → PALLETBEREKENING (handmatig)."
                     % (prod.display_name, w_kg)
                 )
-                return 0.0, msg, True
+                return 0.0, msg, True, False
 
             # 2b. Largest dimension >= 165 cm → exception
             max_dim = max(length, width, height)
@@ -545,7 +568,7 @@ class SaleOrder(models.Model):
                     "→ UITZONDERING Wesseling/Mainfreight (berekening nog te bepalen)."
                     % (prod.display_name, max_dim)
                 )
-                return 0.0, msg, True
+                return 0.0, msg, True, False
 
             # 2c. Girth-like measure: L + 2W + 2H >= 300 cm → exception
             girth = length + 2 * width + 2 * height
@@ -557,7 +580,7 @@ class SaleOrder(models.Model):
                     "→ UITZONDERING Wesseling/Mainfreight (berekening nog te bepalen)."
                     % (prod.display_name, girth)
                 )
-                return 0.0, msg, True
+                return 0.0, msg, True, False
 
         # --- Step 3: within limits → box calculation ---
         if box_max_kg <= 0:
@@ -565,19 +588,19 @@ class SaleOrder(models.Model):
         num_boxes = math.ceil(total_weight / box_max_kg) if total_weight > 0 else 0
 
         if num_boxes == 0:
-            return 0.0, "TK3: geen gewicht → € 0,00.", False
+            return 0.0, "TK3: geen gewicht → € 0,00.", False, False
 
-        price = self._d1_find_rate(class_id, num_boxes)
+        price, carrier_id = self._d1_find_rate(class_id, num_boxes)
 
         if price == 0.0:
             msg = (
                 "TK3: %d dozen (%.2f kg) — GEEN TARIEF GEVONDEN voor afleveradres, handmatig bepalen."
                 % (num_boxes, total_weight)
             )
-            return 0.0, msg, True
+            return 0.0, msg, True, False
 
         msg = "TK3: %.2f kg → %d dozen, tarief € %.2f." % (total_weight, num_boxes, price)
-        return price, msg, False
+        return price, msg, False, carrier_id
 
     # ------------------------------------------------------------------
     # Transport cost order line management
@@ -595,8 +618,8 @@ class SaleOrder(models.Model):
         )
         if not transport_product:
             raise UserError(
-                _("Transportkosten serviceproduct niet gevonden. "
-                  "Controleer of de module correct is geïnstalleerd.")
+                _("Transport cost service product not found. "
+                  "Please verify the module is correctly installed.")
             )
 
         # Remove existing transport lines
