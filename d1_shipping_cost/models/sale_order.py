@@ -244,6 +244,46 @@ class SaleOrder(models.Model):
         return sc.id if sc else False
 
     # ------------------------------------------------------------------
+    # Shared helper: piece weight & qty for length-based products
+    # ------------------------------------------------------------------
+
+    def _d1_piece_weight(self, product, line, meter_uom):
+        """Return the weight of a single piece for an order line.
+
+        ``product.weight`` is per unit of measure.  When the product is
+        sold by a length UoM (m, cm, mm …) the weight must be multiplied
+        by the piece length to obtain the actual piece weight.
+
+        :param product:   product.product record
+        :param line:      sale.order.line record
+        :param meter_uom: cached uom.uom record for meters
+        :return: float — weight in kg per piece
+        """
+        weight_per_uom = product.weight or 0.0
+        if not weight_per_uom or not line.d1_length:
+            return weight_per_uom
+        # Check if the product's UoM belongs to the Length tree.
+        if not product.uom_id._has_common_reference(meter_uom):
+            return weight_per_uom
+        # Convert d1_length (meters) → product UoM and multiply.
+        length_in_prod_uom = meter_uom._compute_quantity(
+            line.d1_length, product.uom_id, round=False,
+        )
+        return weight_per_uom * length_in_prod_uom
+
+    @staticmethod
+    def _d1_piece_qty(product, line):
+        """Return the number of pieces for an order line.
+
+        When ``d1_use_qty`` is active, ``product_uom_qty`` is total UoM
+        units (e.g. total meters), so we use ``d1_qty`` (actual piece
+        count) instead.
+        """
+        if product.d1_use_qty and line.d1_qty:
+            return line.d1_qty
+        return line.product_uom_qty
+
+    # ------------------------------------------------------------------
     # TK1 — Bundle calculation (long products / tubes)
     # ------------------------------------------------------------------
 
@@ -260,6 +300,7 @@ class SaleOrder(models.Model):
         """
         self.ensure_one()
         class_id = self._d1_get_class_id("tk1")
+        meter_uom = self.env.ref("uom.product_uom_meter")
 
         # Config parameters
         bundle_w = self._d1_get_param_float("d1_shipping.bundle_width_cm", 15.0)
@@ -276,17 +317,8 @@ class SaleOrder(models.Model):
 
         for line in lines:
             prod = line.product_id
-            piece_weight = prod.weight or 0.0
-            # For products sold by length (d1_use_qty), prod.weight is per
-            # unit of measure (meter).  Actual piece weight = weight/m × length.
-            if prod.d1_use_qty and line.d1_length:
-                piece_weight = piece_weight * line.d1_length
-            # When d1_use_qty is active, product_uom_qty = d1_qty × d1_length
-            # (total meters), so use d1_qty (actual piece count) instead.
-            if prod.d1_use_qty and line.d1_qty:
-                qty = line.d1_qty
-            else:
-                qty = line.product_uom_qty
+            piece_weight = self._d1_piece_weight(prod, line, meter_uom)
+            qty = self._d1_piece_qty(prod, line)
             # Use order line length (may differ from product if user overrides).
             # d1_length is in meters; convert to cm for bracket lookup.
             if line.d1_length:
@@ -433,6 +465,7 @@ class SaleOrder(models.Model):
         """
         self.ensure_one()
         class_id = self._d1_get_class_id("tk2")
+        meter_uom = self.env.ref("uom.product_uom_meter")
 
         tk2_max_kg = self._d1_get_param_float("d1_shipping.tk2_max_gewicht_kg", 99999.0)
         box_max_kg = self._d1_get_param_float("d1_shipping.box_max_weight_kg", 20.0)
@@ -440,8 +473,12 @@ class SaleOrder(models.Model):
             box_max_kg = 20.0
         half_max_kg = box_max_kg / 2.0
 
-        # --- Step 1: Overall weight threshold (existing) ---
-        total_weight = sum(l.product_uom_qty * (l.product_id.weight or 0.0) for l in lines)
+        # --- Step 1: Overall weight threshold ---
+        total_weight = sum(
+            self._d1_piece_qty(l.product_id, l)
+            * self._d1_piece_weight(l.product_id, l, meter_uom)
+            for l in lines
+        )
         if total_weight >= tk2_max_kg:
             msg = (
                 "TK2: totaal gewicht %.2f kg >= drempel %.0f kg → PALLETBEREKENING (handmatig)."
@@ -457,8 +494,8 @@ class SaleOrder(models.Model):
 
         for line in lines:
             prod = line.product_id
-            piece_weight = prod.weight or 0.0
-            qty = line.product_uom_qty
+            piece_weight = self._d1_piece_weight(prod, line, meter_uom)
+            qty = self._d1_piece_qty(prod, line)
 
             # Heavy band: piece >= max → entire TK2 class = pallet
             if piece_weight >= box_max_kg:
@@ -534,12 +571,17 @@ class SaleOrder(models.Model):
         """
         self.ensure_one()
         class_id = self._d1_get_class_id("tk3")
+        meter_uom = self.env.ref("uom.product_uom_meter")
 
         # TODO (open punt): tk3_max_gewicht_kg drempelwaarde nog vast te stellen
         tk3_max_kg = self._d1_get_param_float("d1_shipping.tk3_max_gewicht_kg", 99999.0)
         box_max_kg = self._d1_get_param_float("d1_shipping.box_max_weight_kg", 20.0)
 
-        total_weight = sum(l.product_uom_qty * (l.product_id.weight or 0.0) for l in lines)
+        total_weight = sum(
+            self._d1_piece_qty(l.product_id, l)
+            * self._d1_piece_weight(l.product_id, l, meter_uom)
+            for l in lines
+        )
 
         # --- Step 1: total weight threshold ---
         if total_weight >= tk3_max_kg:
@@ -553,7 +595,7 @@ class SaleOrder(models.Model):
         # --- Step 2: per-article dimension/weight checks ---
         for line in lines:
             prod = line.product_id
-            w_kg = prod.weight or 0.0
+            w_kg = self._d1_piece_weight(prod, line, meter_uom)
             length = prod.d1_length_cm or 0.0
             width = prod.d1_width_cm or 0.0
             height = prod.d1_height_cm or 0.0

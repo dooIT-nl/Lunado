@@ -1,7 +1,7 @@
 {
     "name": "Transport Costs",
     "summary": "Calculate transport costs for quotations and sales orders based on three transport classes (TK1/TK2/TK3)",
-    "version": "1.7",
+    "version": "1.8",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -25,6 +25,7 @@
     "description": """
         Transport Costs 1.4
         ===================
+        * v1.8: UoM-aware piece weight — use product_template.uom_id to detect length UoMs (m, cm, mm …) across TK1/TK2/TK3
         * v1.7: Fix TK1 piece weight for products sold by meter (weight/m × length = actual piece weight)
         * v1.6: Use carrier product for transport cost line, fix d1_length m→cm conversion in TK1
         * v1.5: i18n — d1_qty label 'Hoeveelheid', product_uom_qty label 'Aantal' (nl_NL)
