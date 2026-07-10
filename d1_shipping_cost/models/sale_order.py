@@ -277,17 +277,25 @@ class SaleOrder(models.Model):
         for line in lines:
             prod = line.product_id
             piece_weight = prod.weight or 0.0
+            # For products sold by length (d1_use_qty), prod.weight is per
+            # unit of measure (meter).  Actual piece weight = weight/m × length.
+            if prod.d1_use_qty and line.d1_length:
+                piece_weight = piece_weight * line.d1_length
             # When d1_use_qty is active, product_uom_qty = d1_qty × d1_length
             # (total meters), so use d1_qty (actual piece count) instead.
             if prod.d1_use_qty and line.d1_qty:
                 qty = line.d1_qty
             else:
                 qty = line.product_uom_qty
-            # Use order line length (may differ from product if user overrides)
-            length = line.d1_length or prod.d1_length_cm or 0.0
+            # Use order line length (may differ from product if user overrides).
+            # d1_length is in meters; convert to cm for bracket lookup.
+            if line.d1_length:
+                length_cm = line.d1_length * 100.0
+            else:
+                length_cm = prod.d1_length_cm or 0.0
 
-            if length > max_length_cm:
-                max_length_cm = length
+            if length_cm > max_length_cm:
+                max_length_cm = length_cm
 
             # Heavy band: piece >= max → entire TK1 class = pallet
             if piece_weight >= bundle_max_kg:
@@ -311,14 +319,17 @@ class SaleOrder(models.Model):
                 )
             else:
                 # Light band (incl. weight == 0): normal geometric calculation
-                pool_normal.append({"product": prod, "qty": qty})
+                pool_normal.append({"product": prod, "qty": qty, "piece_weight": piece_weight})
 
         # --- Step 2: One-per-bundle pool ---
         bundles_one_per = sum(int(p["qty"]) for p in pool_one_per)
 
         # --- Step 3: Normal geometric pool (existing logic) ---
         bundles_normal = 0
-        total_weight_light = 0.0
+
+        # Compute total weight from pool entries (piece_weight already
+        # accounts for length when the product is sold by the meter).
+        total_weight_light = sum(p["qty"] * p["piece_weight"] for p in pool_normal)
 
         # Group normal-pool by product for geometric calculation
         normal_by_product = {}
@@ -332,9 +343,6 @@ class SaleOrder(models.Model):
             qty = pdata["qty"]
             w = prod.d1_width_cm or 0.0
             h = prod.d1_height_cm or 0.0
-            weight_per_unit = prod.weight or 0.0
-
-            total_weight_light += qty * weight_per_unit
 
             # Tubes fitting in the bundle cross-section
             tubes_w = max(int(bundle_w // w), 1) if w > 0 else 1
@@ -609,33 +617,35 @@ class SaleOrder(models.Model):
     def _d1_set_transport_line(self, total_cost):
         """Remove existing transport line and add a new one with total_cost.
 
-        Uses a dedicated service product (created via data/product_data.xml).
+        Uses the delivery product from the selected carrier
+        (delivery.carrier.product_id).  The carrier is set on the order
+        by _d1_do_compute_transport before this method is called.
         """
         self.ensure_one()
 
-        transport_product = self.env.ref(
-            "d1_shipping_cost.product_transport_cost", raise_if_not_found=False
-        )
-        if not transport_product:
-            raise UserError(
-                _("Transport cost service product not found. "
-                  "Please verify the module is correctly installed.")
-            )
-
-        # Remove existing transport lines
+        # Remove existing transport lines (identified by name marker)
         existing = self.order_line.filtered(
-            lambda l: l.product_id == transport_product
+            lambda l: TRANSPORT_LINE_NAME_MARKER in (l.name or "")
         )
         if existing:
             existing.unlink()
 
         # Add new line (only if cost > 0)
-        if total_cost > 0:
-            self.env["sale.order.line"].create({
-                "order_id": self.id,
-                "product_id": transport_product.id,
-                "name": "%s Transportkosten" % TRANSPORT_LINE_NAME_MARKER,
-                "product_uom_qty": 1,
-                "price_unit": total_cost,
-                "sequence": 9999,  # place at the end
-            })
+        if total_cost <= 0:
+            return
+
+        carrier = self.carrier_id
+        if not carrier or not carrier.product_id:
+            raise UserError(
+                _("No delivery carrier (or no product on the carrier) is set. "
+                  "Cannot create the transport cost line.")
+            )
+
+        self.env["sale.order.line"].create({
+            "order_id": self.id,
+            "product_id": carrier.product_id.id,
+            "name": "%s %s" % (TRANSPORT_LINE_NAME_MARKER, carrier.name),
+            "product_uom_qty": 1,
+            "price_unit": total_cost,
+            "sequence": 9999,  # place at the end
+        })

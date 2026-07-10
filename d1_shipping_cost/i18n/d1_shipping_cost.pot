@@ -444,7 +444,7 @@ msgstr ""
 #. module: d1_shipping_cost
 #: code:addons/d1_shipping_cost/models/sale_order.py:0
 #, python-format
-msgid "Transport cost service product not found. Please verify the module is correctly installed."
+msgid "No delivery carrier (or no product on the carrier) is set. Cannot create the transport cost line."
 msgstr ""
 
 #. module: d1_shipping_cost

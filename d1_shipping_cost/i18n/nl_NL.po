@@ -444,8 +444,8 @@ msgstr "Transportkosten"
 #. module: d1_shipping_cost
 #: code:addons/d1_shipping_cost/models/sale_order.py:0
 #, python-format
-msgid "Transport cost service product not found. Please verify the module is correctly installed."
-msgstr "Transportkosten serviceproduct niet gevonden. Controleer of de module correct is geïnstalleerd."
+msgid "No delivery carrier (or no product on the carrier) is set. Cannot create the transport cost line."
+msgstr "Geen transporteur (of geen product op de transporteur) ingesteld. Kan de transportkostenregel niet aanmaken."
 
 #. module: d1_shipping_cost
 #: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__unit_type
