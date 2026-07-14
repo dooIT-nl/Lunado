@@ -40,6 +40,7 @@ class TestD1PricelistApi(TransactionCase):
         self.assertEqual(result["pricelist_id"], self.pricelist.id)
         self.assertEqual(result["partner_id"], self.partner.id)
         self.assertEqual(result["product_id"], self.product.id)
+        self.assertIn("default_code", result)
 
     def test_price_tier_quantity(self):
         """Quantity 10 triggers the 10% tier rule."""

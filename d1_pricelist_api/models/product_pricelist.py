@@ -66,6 +66,7 @@ class D1ProductPricelist(models.Model):
             "partner_name": partner.display_name,
             "product_id": product.id,
             "product_name": product.display_name,
+            "default_code": product.default_code or "",
             "quantity": quantity,
             "price": price,
             "price_note": "excl. VAT",
