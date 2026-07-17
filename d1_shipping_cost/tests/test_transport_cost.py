@@ -758,3 +758,33 @@ class TestTransportCost(TransactionCase):
 
         self.assertFalse(order.carrier_id,
                          "No carrier when no shipping classes in order")
+
+    # ------------------------------------------------------------------
+    # Skip calculation when customer has a fixed delivery method
+    # ------------------------------------------------------------------
+
+    def test_skip_when_partner_carrier_set(self):
+        """Partner with property_delivery_carrier_id → calculation skipped."""
+        self.partner.property_delivery_carrier_id = self.carrier_tk1
+        order = self._create_order([(self.product_tk1, 50)])
+        order.action_d1_compute_transport_cost()
+
+        # Message reflects the skip, not a TK calculation
+        self.assertIn("skipped", order.d1_transport_message)
+        self.assertIn(self.carrier_tk1.display_name, order.d1_transport_message)
+        self.assertNotIn("TK1:", order.d1_transport_message)
+
+        # No transport cost line is created when skipping
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or "")
+        )
+        self.assertFalse(transport_line, "No transport line when skipped")
+
+    def test_no_skip_when_partner_carrier_empty(self):
+        """Partner without property_delivery_carrier_id → normal calculation runs."""
+        self.partner.property_delivery_carrier_id = False
+        order = self._create_order([(self.product_tk1, 50)])
+        order.action_d1_compute_transport_cost()
+
+        self.assertIn("TK1", order.d1_transport_message)
+        self.assertNotIn("skipped", order.d1_transport_message)

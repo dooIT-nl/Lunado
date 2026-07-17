@@ -48,8 +48,34 @@ class SaleOrder(models.Model):
     # ------------------------------------------------------------------
 
     def _d1_do_compute_transport(self):
-        """Orchestrator: run TK1/TK2/TK3 calculations, determine carrier, create order line."""
+        """Orchestrator: run TK1/TK2/TK3 calculations, determine carrier, create order line.
+
+        Wanneer de klant een vaste verzendwijze heeft
+        (``partner_id.property_delivery_carrier_id``), wordt de
+        transportkostenberekening overgeslagen en wordt dit in de Chatter
+        vermeld.
+        """
         self.ensure_one()
+
+        # Skip calculation when the customer has a fixed delivery method.
+        partner_carrier = self.partner_id.with_company(
+            self.company_id
+        ).property_delivery_carrier_id
+        if partner_carrier:
+            skip_msg = _(
+                "Customer delivery method: %s, transport cost calculation skipped"
+            ) % partner_carrier.display_name
+            self.d1_transport_message = skip_msg
+            _logger.info(
+                "Order %s: transport calculation skipped — partner carrier '%s' set.",
+                self.name, partner_carrier.display_name,
+            )
+            self.message_post(
+                body=Markup("<strong>Transportkostenberekening</strong><br/><pre>%s</pre>")
+                % Markup(skip_msg.replace("\n", "<br/>")),
+                subtype_xmlid="mail.mt_note",
+            )
+            return True
 
         messages = []  # collects user-facing messages per class
         total_cost = 0.0

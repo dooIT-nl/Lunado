@@ -17,12 +17,14 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: d1_shipping_cost
+#. odoo-python
 #: code:addons/d1_shipping_cost/models/length_bracket.py:0
 #, python-format
 msgid "'Length from' (%.0f cm) cannot be greater than 'Length to' (%.0f cm)."
 msgstr "'Lengte vanaf' (%.0f cm) mag niet groter zijn dan 'Lengte t/m' (%.0f cm)."
 
 #. module: d1_shipping_cost
+#. odoo-python
 #: code:addons/d1_shipping_cost/models/transport_rate.py:0
 #, python-format
 msgid "'Quantity from' (%s) cannot be greater than 'Quantity to' (%s)."
@@ -102,6 +104,13 @@ msgstr "Maak een nieuwe transportklasse aan"
 #: model_terms:ir.actions.act_window,help:d1_shipping_cost.d1_shipping_rate_action
 msgid "Create a new shipping rate"
 msgstr "Maak een nieuw transporttarief aan"
+
+#. module: d1_shipping_cost
+#. odoo-python
+#: code:addons/d1_shipping_cost/models/sale_order.py:0
+#, python-format
+msgid "Customer delivery method: %s, transport cost calculation skipped"
+msgstr "Verzendwijze klant: %s, transportkostenberekening overgeslagen"
 
 #. module: d1_shipping_cost
 #: model:ir.model,name:d1_shipping_cost.model_d1_shipping_class
@@ -442,6 +451,7 @@ msgid "Transport Costs"
 msgstr "Transportkosten"
 
 #. module: d1_shipping_cost
+#. odoo-python
 #: code:addons/d1_shipping_cost/models/sale_order.py:0
 #, python-format
 msgid "No delivery carrier (or no product on the carrier) is set. Cannot create the transport cost line."
