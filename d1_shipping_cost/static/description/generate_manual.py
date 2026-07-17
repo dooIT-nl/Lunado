@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
-"""Generate the d1_shipping_cost user manual in Word (.docx) format."""
+"""Generate the d1_shipping_cost user manual in Word (.docx) format.
+
+Houd dit script gelijk met de module. Bij een functionele wijziging:
+1. Werk de betreffende paragraaf/tabel hieronder bij.
+2. Verhoog MANUAL_VERSION / MANUAL_DATE.
+3. Voeg een regel toe aan "Bijlage C — Wijzigingshistorie".
+4. Draai het script opnieuw om de .docx te regenereren.
+"""
 
 from docx import Document
 from docx.shared import Pt, Inches, Cm, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.style import WD_STYLE_TYPE
+
+MANUAL_VERSION = "1.9"
+MANUAL_DATE = "Juli 2026"
 
 doc = Document()
 
@@ -60,7 +70,7 @@ doc.add_paragraph()
 
 info = doc.add_paragraph()
 info.alignment = WD_ALIGN_PARAGRAPH.CENTER
-info.add_run("Versie 1.0 — Juni 2026").font.size = Pt(11)
+info.add_run(f"Versie {MANUAL_VERSION} — {MANUAL_DATE}").font.size = Pt(11)
 
 doc.add_page_break()
 
@@ -78,14 +88,21 @@ toc_items = [
     "   2.5 Postcode-prefixen en adresfiltering",
     "   2.6 Instellingen (drempelwaarden)",
     "3. Producten configureren",
-    "4. Transportkosten berekenen",
-    "   4.1 Berekening starten",
-    "   4.2 Resultaat en palletberekening",
-    "   4.3 Herberekening",
-    "5. Lijstweergave en filteren",
+    "   3.1 Transportvelden",
+    "   3.2 Hoeveelheid × lengte (staaf-/lengteproducten)",
+    "4. Orderregels: Hoeveelheid en Lengte",
+    "5. Transportkosten berekenen",
+    "   5.1 Berekening starten",
+    "   5.2 Vaste verzendwijze klant (berekening overslaan)",
+    "   5.3 Resultaat, transporteur en transportkostenregel",
+    "   5.4 Palletberekening",
+    "   5.5 Herberekening",
+    "6. Lijstweergave en filteren",
     "",
     "Bijlage A — Berekeningsflows TK1 / TK2 / TK3",
-    "Bijlage B — Open punten",
+    "Bijlage B — Transporteurbepaling en gewicht per stuk",
+    "Bijlage C — Open punten",
+    "Bijlage D — Wijzigingshistorie",
 ]
 for item in toc_items:
     p = doc.add_paragraph(item)
@@ -112,9 +129,15 @@ add_table(
 )
 doc.add_paragraph(
     "Per klasse wordt een apart deelproces doorlopen. De som van TK1 + TK2 + TK3 "
-    "wordt als één transportkostenregel aan de order toegevoegd. Wanneer de kosten "
-    "niet automatisch bepaald kunnen worden (bv. te veel bundels of te zwaar), wordt "
-    "de order gemarkeerd voor handmatige palletberekening."
+    "wordt als één transportkostenregel aan de order toegevoegd. Op basis van de "
+    "gevonden tarieven wordt bovendien automatisch de transporteur (verzendwijze) "
+    "op de order bepaald. Wanneer de kosten niet automatisch bepaald kunnen worden "
+    "(bv. te veel bundels, te zwaar of een uitzonderingsmaat), wordt de order "
+    "gemarkeerd voor handmatige palletberekening."
+)
+doc.add_paragraph(
+    "Heeft de klant zelf een vaste verzendwijze afgesproken, dan wordt de "
+    "automatische berekening overgeslagen (zie §5.2)."
 )
 
 # ============================================================
@@ -128,6 +151,11 @@ doc.add_paragraph(
     "\"Transportkosten\") of via de command line:"
 )
 doc.add_paragraph("odoo-bin -i d1_shipping_cost --stop-after-init --no-http", style="No Spacing")
+doc.add_paragraph(
+    "De module is afhankelijk van de standaardmodules Verkoop (sale_management), "
+    "Levering (delivery) en Producten (product). De koppeling met Levering is nodig "
+    "voor de transporteurs (delivery.carrier) en de vaste verzendwijze per klant."
+)
 doc.add_paragraph()
 
 doc.add_heading("2.2 Transportklassen", level=2)
@@ -179,8 +207,8 @@ doc.add_heading("2.4 Transporttarieven", level=2)
 doc.add_paragraph("Ga naar: Verkoop → Configuratie → Transport → Transporttarieven")
 doc.add_paragraph(
     "Hier worden de tariefstaffels beheerd. Elk tarief koppelt een transportklasse, "
-    "optioneel een lengteklasse, een eenheidsstaffel (van/t.m.) en een adresfilter "
-    "aan een prijs."
+    "optioneel een lengteklasse, een eenheidsstaffel (van/t.m.), een adresfilter en "
+    "een transporteur aan een prijs."
 )
 add_table(
     ["Veld", "Omschrijving"],
@@ -191,6 +219,8 @@ add_table(
         ["Eenheidstype", "Bundels (TK1) of Dozen (TK2/TK3)"],
         ["Aantal vanaf / t.m.", "Staffelbereik. 0 als bovengrens = open einde."],
         ["Tarief", "Prijs voor deze staffel"],
+        ["Transporteur", "De verzendwijze (delivery.carrier) die bij dit tarief hoort. "
+                         "Bepaalt de transporteur op de order (zie Bijlage B)."],
         ["Landen", "Adresfilter: alleen voor deze landen (leeg = alle)"],
         ["Provincies", "Adresfilter: alleen voor deze provincies"],
         ["Postcode-prefixen", "Adresfilter: postcode moet beginnen met prefix"],
@@ -211,7 +241,9 @@ doc.add_paragraph(
 )
 doc.add_paragraph(
     "Als alle drie leeg zijn, geldt het tarief als generiek (voor alle adressen). "
-    "Reguliere expressies worden ondersteund in postcode-prefixen."
+    "Reguliere expressies worden ondersteund in postcode-prefixen. Bij meerdere "
+    "passende tarieven wint het meest specifieke adresfilter (postcode > provincie > "
+    "land > generiek)."
 )
 doc.add_paragraph("Voorbeelden:")
 add_table(
@@ -229,13 +261,13 @@ doc.add_paragraph("Hier stel je de drempelwaarden en afmetingen in:")
 add_table(
     ["Parameter", "Standaard", "Toelichting"],
     [
-        ["TK1 max bundels", "99999", "Boven deze waarde → palletberekening"],
+        ["TK1 max bundels", "99999", "Vanaf dit aantal bundels → palletberekening"],
         ["Bundelbreedte (cm)", "15", "Breedte van een standaardbundel"],
         ["Bundelhoogte (cm)", "15", "Hoogte van een standaardbundel"],
-        ["Max gewicht bundel (kg)", "20", "Max gewicht per bundel"],
-        ["TK2 max gewicht (kg)", "99999", "Boven dit totaalgewicht → palletberekening"],
-        ["TK3 max gewicht (kg)", "99999", "Boven dit totaalgewicht → palletberekening"],
-        ["Max gewicht doos (kg)", "20", "Max gewicht per doos (TK2/TK3)"],
+        ["Max gewicht bundel (kg)", "20", "Max gewicht per bundel (ook gebruikt voor gewichtsbanding)"],
+        ["TK2 max gewicht (kg)", "99999", "Vanaf dit totaalgewicht → palletberekening"],
+        ["TK3 max gewicht (kg)", "99999", "Vanaf dit totaalgewicht → palletberekening"],
+        ["Max gewicht doos (kg)", "20", "Max gewicht per doos (TK2/TK3, ook voor gewichtsbanding)"],
     ],
 )
 
@@ -245,6 +277,8 @@ doc.add_page_break()
 # 3. PRODUCTEN CONFIGUREREN
 # ============================================================
 doc.add_heading("3. Producten configureren", level=1)
+
+doc.add_heading("3.1 Transportvelden", level=2)
 doc.add_paragraph("Ga naar een product → tabblad Transport")
 doc.add_paragraph("Stel de volgende velden in:")
 add_table(
@@ -254,19 +288,77 @@ add_table(
         ["Lengte (cm)", "Productlengte in centimeters"],
         ["Breedte (cm)", "Productbreedte in centimeters"],
         ["Hoogte (cm)", "Producthoogte in centimeters"],
+        ["Gebruik Hoeveelheid", "Aan = de orderregel-hoeveelheid wordt berekend als "
+                                 "Hoeveelheid × Lengte (zie §3.2 en §4)."],
+        ["Gebruik Lengte", "Aan = de gebruiker mag op de orderregel een eigen lengte "
+                            "invoeren. Uit = de productlengte wordt gebruikt."],
     ],
 )
 doc.add_paragraph(
-    "Het gewicht wordt gelezen uit het standaard Odoo-veld Gewicht (kg) op het "
-    "product. Dit hoeft niet apart ingesteld te worden op het Transport-tabblad."
+    "Het gewicht wordt gelezen uit het standaard Odoo-veld Gewicht op het product. "
+    "Dit hoeft niet apart ingesteld te worden op het Transport-tabblad."
+)
+
+doc.add_heading("3.2 Hoeveelheid × lengte (staaf-/lengteproducten)", level=2)
+doc.add_paragraph(
+    "Voor producten die per lengte-eenheid worden verkocht (bijvoorbeeld per meter) "
+    "kan het handig zijn om op de orderregel het aantal stuks én de lengte per stuk "
+    "apart in te voeren. Zet daarvoor op het product Gebruik Hoeveelheid aan."
+)
+doc.add_paragraph("Gedrag:")
+doc.add_paragraph(
+    "• Gebruik Hoeveelheid aan, Gebruik Lengte uit → de lengte wordt automatisch "
+    "overgenomen van de productlengte (in meters). De besteleenheid (Aantal) wordt "
+    "berekend als Hoeveelheid × Lengte.",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "• Gebruik Hoeveelheid aan, Gebruik Lengte aan → de gebruiker voert zelf een "
+    "lengte per stuk in op de orderregel. Aantal = Hoeveelheid × Lengte.",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "• Gebruik Hoeveelheid uit → normaal gedrag: de gebruiker voert het Aantal "
+    "handmatig in.",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "Bij de gewichtsberekening houdt de module rekening met de maateenheid van het "
+    "product: is het product een lengte-eenheid (m, cm, mm …), dan wordt het "
+    "productgewicht (per eenheid) vermenigvuldigd met de lengte om het werkelijke "
+    "stukgewicht te bepalen (zie Bijlage B)."
 )
 
 # ============================================================
-# 4. TRANSPORTKOSTEN BEREKENEN
+# 4. ORDERREGELS: HOEVEELHEID EN LENGTE
 # ============================================================
-doc.add_heading("4. Transportkosten berekenen", level=1)
+doc.add_heading("4. Orderregels: Hoeveelheid en Lengte", level=1)
+doc.add_paragraph(
+    "Op de orderregels van een offerte/verkooporder zijn twee extra kolommen "
+    "beschikbaar (standaard zichtbaar, in te klappen via het kolommenmenu):"
+)
+add_table(
+    ["Kolom", "Omschrijving"],
+    [
+        ["Hoeveelheid", "Aantal stuks. Alleen invoerbaar bij producten met "
+                        "'Gebruik Hoeveelheid' aan."],
+        ["Lengte", "Lengte per stuk (in meters). Alleen invoerbaar bij producten met "
+                   "'Gebruik Lengte' aan; anders automatisch gevuld vanuit het product."],
+    ],
+)
+doc.add_paragraph(
+    "Wanneer 'Gebruik Hoeveelheid' actief is, wordt het standaard Odoo-veld Aantal "
+    "automatisch berekend als Hoeveelheid × Lengte. Deze berekening werkt zowel in "
+    "de UI (bij het wijzigen van velden) als bij het aanmaken/wijzigen van regels via "
+    "import of API."
+)
 
-doc.add_heading("4.1 Berekening starten", level=2)
+# ============================================================
+# 5. TRANSPORTKOSTEN BEREKENEN
+# ============================================================
+doc.add_heading("5. Transportkosten berekenen", level=1)
+
+doc.add_heading("5.1 Berekening starten", level=2)
 doc.add_paragraph(
     "Open een offerte of verkooporder en klik op de knop \"Bereken transportkosten\" "
     "(🚛-icoon) in de header. De module doorloopt per aanwezige transportklasse "
@@ -278,38 +370,85 @@ doc.add_paragraph(
     "ingesteld worden meegenomen. Regels zonder klasse worden genegeerd."
 )
 
-doc.add_heading("4.2 Resultaat en palletberekening", level=2)
-doc.add_paragraph("Na de berekening verschijnt onder de orderregels:")
+doc.add_heading("5.2 Vaste verzendwijze klant (berekening overslaan)", level=2)
 doc.add_paragraph(
-    "• Een samenvattingsveld met per klasse het resultaat (aantal bundels/dozen, "
-    "tarief, of reden voor handmatige berekening)",
-    style="List Bullet",
+    "Heeft de klant een vaste verzendwijze afgesproken, dan hoeft de module niets te "
+    "berekenen. Dit wordt bepaald via het standaardveld Verzendwijze "
+    "(property_delivery_carrier_id) op de klant (tabblad Verkoop & Aankoop van de "
+    "contactpersoon)."
 )
 doc.add_paragraph(
-    "• Het veld Palletberekening (checkbox) — aangevinkt wanneer de kosten niet "
-    "automatisch bepaald konden worden",
-    style="List Bullet",
+    "Als dit veld gevuld is en je klikt op \"Bereken transportkosten\", dan wordt de "
+    "TK1/TK2/TK3-berekening volledig overgeslagen. Er wordt géén transportkostenregel "
+    "toegevoegd en er verschijnt een bericht in de Chatter, bijvoorbeeld:"
 )
+p = doc.add_paragraph(style="No Spacing")
+p.add_run("Transportkostenberekening").bold = True
 doc.add_paragraph(
-    "• Een chatterbericht met dezelfde samenvatting (voor audit trail)",
-    style="List Bullet",
+    "Verzendwijze klant: <naam verzendwijze>, transportkostenberekening overgeslagen",
+    style="No Spacing",
 )
+doc.add_paragraph()
 doc.add_paragraph(
-    "Wanneer Palletberekening is aangevinkt, wordt er géén transportkostenregel "
-    "toegevoegd. De order moet dan handmatig beoordeeld worden."
+    "Alleen wanneer de klant géén vaste verzendwijze heeft, wordt de automatische "
+    "berekening uitgevoerd."
 )
 
-doc.add_heading("4.3 Herberekening", level=2)
+doc.add_heading("5.3 Resultaat, transporteur en transportkostenregel", level=2)
+doc.add_paragraph("Na een uitgevoerde berekening verschijnt onder de orderregels:")
+doc.add_paragraph(
+    "• Een samenvattingsveld (Transport berekening) met per klasse het resultaat "
+    "(aantal bundels/dozen, tarief, of reden voor handmatige berekening).",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "• De bepaalde transporteur. De module kiest de transporteur op basis van de "
+    "gevonden tarieven, met prioriteit TK1 > TK3 > TK2 (zie Bijlage B). De "
+    "transporteur wordt op de order gezet (veld Verzendwijze / carrier_id).",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "• Eén transportkostenregel onderaan de order. Als product wordt het product van "
+    "de gekozen transporteur gebruikt; de regel krijgt de markering [TRANSPORT] en het "
+    "totaalbedrag als prijs.",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "• Een chatterbericht met dezelfde samenvatting (voor audit trail).",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "Let op: is er geen transporteur (of geen product op de transporteur) bepaald "
+    "terwijl er wel kosten zijn, dan geeft de module een foutmelding en wordt er geen "
+    "regel aangemaakt. Controleer in dat geval de tarieven en de transporteur-"
+    "configuratie."
+)
+
+doc.add_heading("5.4 Palletberekening", level=2)
+doc.add_paragraph(
+    "Het veld Palletberekening (checkbox) wordt aangevinkt wanneer de kosten niet "
+    "automatisch bepaald konden worden — bijvoorbeeld bij te veel bundels, te zwaar, "
+    "een ontbrekend tarief of een TK3-uitzonderingsmaat."
+)
+doc.add_paragraph(
+    "Wanneer Palletberekening is aangevinkt, wordt er géén (of slechts een gedeeltelijke) "
+    "automatische transportkostenregel toegevoegd voor het handmatige deel. De order "
+    "moet dan handmatig beoordeeld worden. De samenvatting vermeldt precies welk "
+    "onderdeel handmatige behandeling vereist."
+)
+
+doc.add_heading("5.5 Herberekening", level=2)
 doc.add_paragraph(
     "Bij het opnieuw klikken op \"Bereken transportkosten\" wordt de bestaande "
-    "transportkostenregel automatisch verwijderd en vervangen door een nieuwe "
-    "berekening. Er worden dus nooit dubbele transportkostenregels aangemaakt."
+    "transportkostenregel (herkend aan de [TRANSPORT]-markering) automatisch "
+    "verwijderd en vervangen door een nieuwe berekening. Er worden dus nooit dubbele "
+    "transportkostenregels aangemaakt."
 )
 
 # ============================================================
-# 5. LIJSTWEERGAVE EN FILTEREN
+# 6. LIJSTWEERGAVE EN FILTEREN
 # ============================================================
-doc.add_heading("5. Lijstweergave en filteren", level=1)
+doc.add_heading("6. Lijstweergave en filteren", level=1)
 doc.add_paragraph(
     "In de lijst van verkooporders is de kolom Palletberekening zichtbaar "
     "(na de klantkolom). Daarnaast is er een zoekfilter \"Palletberekening\" "
@@ -327,13 +466,37 @@ doc.add_heading("Bijlage A — Berekeningsflows TK1 / TK2 / TK3", level=1)
 doc.add_heading("A.1 TK1 — Bundelberekening (lange producten)", level=2)
 doc.add_paragraph(
     "Invoer: alle orderregels met transportklasse TK1. Per product zijn breedte, "
-    "hoogte, lengte (cm) en gewicht (kg) bekend."
+    "hoogte, lengte (cm) en gewicht (kg) bekend. Het aantal stuks komt uit het veld "
+    "Hoeveelheid (bij 'Gebruik Hoeveelheid') of anders uit Aantal."
 )
 
-doc.add_heading("Stap a) Buizen per bundel", level=3)
+doc.add_heading("Stap 1) Gewichtsbanding per stuk", level=3)
 doc.add_paragraph(
-    "Per product wordt berekend hoeveel stuks in de dwarsdoorsnede van een "
-    "standaardbundel passen:"
+    "Vóór de bundelberekening worden de stuks op basis van het stukgewicht in drie "
+    "banden verdeeld (max = Max gewicht bundel, standaard 20 kg):"
+)
+doc.add_paragraph(
+    "• Stukgewicht >= max → de volledige TK1-klasse gaat naar PALLETBEREKENING.",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "• max/2 <= stukgewicht < max → 'één-per-bundel'-pool: elk stuk vormt een eigen "
+    "bundel.",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "• Stukgewicht < max/2 → normale (geometrische) pool.",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "Het stukgewicht houdt rekening met de maateenheid: bij lengteproducten is dat "
+    "productgewicht × lengte (zie Bijlage B)."
+)
+
+doc.add_heading("Stap 2) Buizen per bundel (normale pool)", level=3)
+doc.add_paragraph(
+    "Per product in de normale pool wordt berekend hoeveel stuks in de dwarsdoorsnede "
+    "van een standaardbundel passen:"
 )
 p = doc.add_paragraph()
 p.add_run("buizen_in_breedte").bold = True
@@ -348,35 +511,38 @@ doc.add_paragraph(
     "floor = naar beneden afronden. Als de artikelafmeting 0 of groter dan de "
     "bundelmaat is, wordt minimaal 1 aangehouden."
 )
-
-doc.add_heading("Stap b) Voorlopig aantal bundels", level=3)
 p = doc.add_paragraph()
-p.add_run("bundels_voorlopig").bold = True
-p.add_run(" = ceil(totaal_aantal_stuks / buizen_per_bundel)")
-doc.add_paragraph("ceil = naar boven afronden.")
+p.add_run("bundels_normaal").bold = True
+p.add_run(" = ceil(aantal_stuks / buizen_per_bundel), per product opgeteld")
 
-doc.add_heading("Stap c) Gewichtscorrectie", level=3)
+doc.add_heading("Stap 3) Gewichtscorrectie (normale pool)", level=3)
 doc.add_paragraph("Controleer of het gemiddelde gewicht per bundel binnen de limiet valt:")
 doc.add_paragraph(
-    "• Als (totaal_gewicht / bundels_voorlopig) < max_gewicht_bundel → "
-    "aantal_bundels = bundels_voorlopig",
+    "• Als (gewicht_normale_pool / bundels_normaal) < max_gewicht_bundel → "
+    "bundels_normaal blijft ongewijzigd.",
     style="List Bullet",
 )
 doc.add_paragraph(
-    "• Anders → aantal_bundels = ceil(totaal_gewicht / max_gewicht_bundel)",
+    "• Anders → bundels_normaal = ceil(gewicht_normale_pool / max_gewicht_bundel).",
     style="List Bullet",
 )
 
-doc.add_heading("Stap d) Drempelbeslissing", level=3)
+doc.add_heading("Stap 4) Totaal bundels", level=3)
+p = doc.add_paragraph()
+p.add_run("totaal_bundels").bold = True
+p.add_run(" = bundels_één-per-bundel + bundels_normaal")
+
+doc.add_heading("Stap 5) Drempel- en tariefbeslissing", level=3)
 doc.add_paragraph(
-    "• Als aantal_bundels >= TK1 max bundels (instelbaar) → "
-    "PALLETBEREKENING (handmatig). Geen automatische prijs.",
+    "• Als totaal_bundels >= TK1 max bundels (instelbaar) → PALLETBEREKENING "
+    "(handmatig). Geen automatische prijs.",
     style="List Bullet",
 )
 doc.add_paragraph(
-    "• Anders → bepaal de lengteklasse op basis van de maximale productlengte "
-    "in de order (opzoeking in de tabel Lengteklassen) en zoek het tarief op "
-    "in de Transporttarieven (klasse TK1 + lengteklasse + staffel + adresfilter).",
+    "• Anders → bepaal de lengteklasse op basis van de maximale productlengte in de "
+    "order (opzoeking in de tabel Lengteklassen) en zoek het tarief op in de "
+    "Transporttarieven (klasse TK1 + lengteklasse + staffel + adresfilter). Uit het "
+    "tarief volgt tevens de transporteur.",
     style="List Bullet",
 )
 
@@ -384,22 +550,23 @@ doc.add_heading("Rekenvoorbeeld TK1", level=3)
 add_table(
     ["Gegeven", "Waarde"],
     [
-        ["Product", "Aluminium buis 60×3 mm, lengte 150 cm, gewicht 2 kg"],
+        ["Product", "Aluminium buis 60×3 mm, lengte 150 cm, gewicht 2 kg/stuk"],
         ["Bundelafmeting", "15×15 cm (standaard)"],
         ["Max gewicht bundel", "20 kg"],
         ["Besteld aantal", "50 stuks"],
     ],
 )
 doc.add_paragraph("Berekening:")
-doc.add_paragraph("1. buizen_in_breedte = floor(15 / 3.0) = 5", style="List Number")
-doc.add_paragraph("2. buizen_in_hoogte = floor(15 / 3.0) = 5", style="List Number")
-doc.add_paragraph("3. buizen_per_bundel = 5 × 5 = 25", style="List Number")
-doc.add_paragraph("4. bundels_voorlopig = ceil(50 / 25) = 2", style="List Number")
-doc.add_paragraph("5. totaal_gewicht = 50 × 2 = 100 kg", style="List Number")
-doc.add_paragraph("6. gemiddeld gewicht/bundel = 100 / 2 = 50 kg > 20 kg → correctie!", style="List Number")
-doc.add_paragraph("7. aantal_bundels = ceil(100 / 20) = 5 bundels", style="List Number")
-doc.add_paragraph("8. max lengte = 150 cm → lengteklasse '< 1,65 m'", style="List Number")
-doc.add_paragraph("9. Tariefopzoeking: TK1, < 1,65 m, 5 bundels → € 25,00", style="List Number")
+doc.add_paragraph("1. stukgewicht 2 kg < 10 (= 20/2) → normale pool", style="List Number")
+doc.add_paragraph("2. buizen_in_breedte = floor(15 / 3.0) = 5", style="List Number")
+doc.add_paragraph("3. buizen_in_hoogte = floor(15 / 3.0) = 5", style="List Number")
+doc.add_paragraph("4. buizen_per_bundel = 5 × 5 = 25", style="List Number")
+doc.add_paragraph("5. bundels_normaal = ceil(50 / 25) = 2", style="List Number")
+doc.add_paragraph("6. gewicht_normale_pool = 50 × 2 = 100 kg", style="List Number")
+doc.add_paragraph("7. gemiddeld gewicht/bundel = 100 / 2 = 50 kg > 20 kg → correctie!", style="List Number")
+doc.add_paragraph("8. bundels_normaal = ceil(100 / 20) = 5 → totaal_bundels = 5", style="List Number")
+doc.add_paragraph("9. max lengte = 150 cm → lengteklasse '< 1,65 m'", style="List Number")
+doc.add_paragraph("10. Tariefopzoeking: TK1, < 1,65 m, 5 bundels → € 25,00 (+ transporteur)", style="List Number")
 
 doc.add_paragraph()
 
@@ -407,35 +574,58 @@ doc.add_paragraph()
 doc.add_heading("A.2 TK2 — Doosberekening (op gewicht)", level=2)
 doc.add_paragraph("Invoer: alle orderregels met transportklasse TK2.")
 
-doc.add_heading("Stap 1) Gewichtsdrempel", level=3)
+doc.add_heading("Stap 1) Totaalgewicht-drempel", level=3)
 doc.add_paragraph(
     "• Als totaal_gewicht >= TK2 max gewicht (instelbaar) → PALLETBEREKENING.",
     style="List Bullet",
 )
 
-doc.add_heading("Stap 2) Doosberekening", level=3)
-p = doc.add_paragraph()
-p.add_run("aantal_dozen").bold = True
-p.add_run(" = ceil(totaal_gewicht / max_gewicht_doos)")
-
-doc.add_heading("Stap 3) Tariefopzoeking", level=3)
+doc.add_heading("Stap 2) Gewichtsbanding per stuk", level=3)
 doc.add_paragraph(
-    "Zoek in Transporttarieven: klasse TK2, staffel op aantal_dozen, adresfilter."
+    "Per stuk wordt op basis van het stukgewicht ingedeeld (max = Max gewicht doos, "
+    "standaard 20 kg):"
+)
+doc.add_paragraph(
+    "• Stukgewicht >= max → volledige TK2-klasse → PALLETBEREKENING.",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "• max/2 <= stukgewicht < max → 'één-per-doos'-pool: elk stuk in een eigen doos.",
+    style="List Bullet",
+)
+doc.add_paragraph(
+    "• Stukgewicht < max/2 → lichte pool: gewichten worden opgeteld.",
+    style="List Bullet",
+)
+
+doc.add_heading("Stap 3) Doosberekening en totaal", level=3)
+p = doc.add_paragraph()
+p.add_run("dozen_normaal").bold = True
+p.add_run(" = ceil(gewicht_lichte_pool / max_gewicht_doos)")
+p = doc.add_paragraph()
+p.add_run("totaal_dozen").bold = True
+p.add_run(" = dozen_één-per-doos + dozen_normaal")
+
+doc.add_heading("Stap 4) Tariefopzoeking", level=3)
+doc.add_paragraph(
+    "Zoek in Transporttarieven: klasse TK2, staffel op totaal_dozen, adresfilter. "
+    "Uit het tarief volgt tevens de transporteur."
 )
 
 doc.add_heading("Rekenvoorbeeld TK2", level=3)
 add_table(
     ["Gegeven", "Waarde"],
     [
-        ["Product", "Koppeling, gewicht 0,5 kg"],
+        ["Product", "Koppeling, gewicht 0,5 kg/stuk"],
         ["Max gewicht doos", "20 kg"],
         ["Besteld aantal", "30 stuks"],
     ],
 )
 doc.add_paragraph("Berekening:")
 doc.add_paragraph("1. totaal_gewicht = 30 × 0,5 = 15 kg (< drempel → door)", style="List Number")
-doc.add_paragraph("2. aantal_dozen = ceil(15 / 20) = 1 doos", style="List Number")
-doc.add_paragraph("3. Tariefopzoeking: TK2, 1 doos → € 15,00", style="List Number")
+doc.add_paragraph("2. stukgewicht 0,5 kg < 10 → lichte pool", style="List Number")
+doc.add_paragraph("3. dozen_normaal = ceil(15 / 20) = 1 → totaal_dozen = 1", style="List Number")
+doc.add_paragraph("4. Tariefopzoeking: TK2, 1 doos → € 15,00 (+ transporteur)", style="List Number")
 
 doc.add_paragraph()
 
@@ -473,7 +663,10 @@ doc.add_paragraph("Als alle checks doorstaan zijn:")
 p = doc.add_paragraph()
 p.add_run("aantal_dozen").bold = True
 p.add_run(" = ceil(totaal_gewicht / max_gewicht_doos)")
-doc.add_paragraph("Tariefopzoeking: klasse TK3, staffel op aantal_dozen, adresfilter.")
+doc.add_paragraph(
+    "Tariefopzoeking: klasse TK3, staffel op aantal_dozen, adresfilter. Uit het "
+    "tarief volgt tevens de transporteur."
+)
 
 doc.add_heading("Rekenvoorbeeld TK3", level=3)
 add_table(
@@ -490,14 +683,62 @@ doc.add_paragraph("2. Per artikel: gewicht 2 kg < 20 → OK", style="List Number
 doc.add_paragraph("3. Grootste afmeting = 60 cm < 165 → OK", style="List Number")
 doc.add_paragraph("4. Omtrekmaat = 60 + 2×40 + 2×30 = 200 cm < 300 → OK", style="List Number")
 doc.add_paragraph("5. aantal_dozen = ceil(10 / 20) = 1 doos", style="List Number")
-doc.add_paragraph("6. Tariefopzoeking: TK3, 1 doos → € 20,00", style="List Number")
+doc.add_paragraph("6. Tariefopzoeking: TK3, 1 doos → € 20,00 (+ transporteur)", style="List Number")
 
 doc.add_page_break()
 
 # ============================================================
-# BIJLAGE B — OPEN PUNTEN
+# BIJLAGE B — TRANSPORTEURBEPALING EN GEWICHT PER STUK
 # ============================================================
-doc.add_heading("Bijlage B — Open punten", level=1)
+doc.add_heading("Bijlage B — Transporteurbepaling en gewicht per stuk", level=1)
+
+doc.add_heading("B.1 Transporteurbepaling", level=2)
+doc.add_paragraph(
+    "Elk transporttarief kan een transporteur (delivery.carrier) hebben. Tijdens de "
+    "berekening levert elke klasse die een tarief vindt ook een transporteur op. De "
+    "module kiest vervolgens één transporteur voor de hele order op basis van de "
+    "volgende prioriteit:"
+)
+p = doc.add_paragraph()
+p.add_run("TK1 > TK3 > TK2").bold = True
+doc.add_paragraph(
+    "De eerste klasse (in deze volgorde) met een transporteur bepaalt de order-"
+    "transporteur. De gekozen transporteur wordt op de order gezet (veld "
+    "Verzendwijze / carrier_id) en het product van die transporteur wordt gebruikt "
+    "voor de transportkostenregel."
+)
+doc.add_paragraph(
+    "Wordt er geen transporteur gevonden terwijl er wel klassen aanwezig zijn, dan "
+    "vermeldt de samenvatting 'handmatig selecteren'."
+)
+
+doc.add_heading("B.2 Gewicht per stuk bij lengteproducten", level=2)
+doc.add_paragraph(
+    "Het standaard Odoo-veld Gewicht is het gewicht per maateenheid van het product. "
+    "Bij producten die per lengte worden verkocht (maateenheid m, cm, mm …) is dat "
+    "dus het gewicht per meter, niet per stuk."
+)
+doc.add_paragraph(
+    "De module detecteert dit via de maateenheid van het product. Als het product een "
+    "lengte-eenheid gebruikt én de orderregel een lengte heeft, wordt het stukgewicht "
+    "berekend als:"
+)
+p = doc.add_paragraph()
+p.add_run("stukgewicht").bold = True
+p.add_run(" = gewicht_per_eenheid × lengte_in_producteenheid")
+doc.add_paragraph(
+    "Voorbeeld: een buis weegt 3 kg/m en is 2 m lang → stukgewicht = 6 kg. Dit "
+    "stukgewicht wordt gebruikt in de gewichtsbanding (TK1/TK2) en de per-artikel "
+    "checks (TK3). Voor producten die niet per lengte worden verkocht, blijft het "
+    "gewicht simpelweg het productgewicht."
+)
+
+doc.add_page_break()
+
+# ============================================================
+# BIJLAGE C — OPEN PUNTEN
+# ============================================================
+doc.add_heading("Bijlage C — Open punten", level=1)
 doc.add_paragraph(
     "De volgende punten zijn nog niet definitief vastgesteld en moeten met de "
     "business worden afgestemd:"
@@ -506,9 +747,9 @@ add_table(
     ["#", "Open punt", "Huidige situatie"],
     [
         ["1", "Drempelwaarde TK1 max bundels",
-         "Standaard 99999 (= altijd doorrekenen). Vastgesteld worden met business."],
+         "Standaard 99999 (= altijd doorrekenen). Vast te stellen met business."],
         ["2", "Drempelwaarde TK2/TK3 max gewicht (kg)",
-         "Standaard 99999. Vastgesteld worden met business."],
+         "Standaard 99999. Vast te stellen met business."],
         ["3", "Bundel-/doosafmetingen (15×15 cm, 20 kg)",
          "Zijn aannames. Laten bevestigen door business."],
         ["4", "TK3 uitzondering Wesseling/Mainfreight",
@@ -517,8 +758,32 @@ add_table(
         ["5", "Tarief-interpretatie",
          "Tarieven worden als totaalbedrag per staffel geïnterpreteerd "
          "(niet per eenheid). Bevestigen met business."],
-        ["6", "Carrier-koppeling",
-         "Valt buiten scope. Geen verzendkoppeling met externe carriers."],
+    ],
+)
+
+# ============================================================
+# BIJLAGE D — WIJZIGINGSHISTORIE
+# ============================================================
+doc.add_heading("Bijlage D — Wijzigingshistorie", level=1)
+add_table(
+    ["Versie", "Wijziging"],
+    [
+        ["1.9", "Berekening wordt overgeslagen als de klant een vaste verzendwijze "
+                "heeft (property_delivery_carrier_id); melding in de Chatter."],
+        ["1.8", "Maateenheid-bewust stukgewicht — detectie van lengte-eenheden "
+                "(m, cm, mm …) via de product-maateenheid voor TK1/TK2/TK3."],
+        ["1.7", "Correctie stukgewicht TK1 voor per-meter verkochte producten "
+                "(gewicht/m × lengte = werkelijk stukgewicht)."],
+        ["1.6", "Product van de transporteur wordt gebruikt voor de transportkosten-"
+                "regel; correctie m→cm in TK1."],
+        ["1.5", "i18n — labels Hoeveelheid/Aantal (nl_NL)."],
+        ["1.4", "i18n — Engelse bronteksten, Nederlandse (nl_NL) vertalingen."],
+        ["1.3", "Transporteurbepaling (prioriteit TK1 > TK3 > TK2); Lengte/Hoeveelheid "
+                "op orderregels."],
+        ["1.2", "Velden Hoeveelheid/Lengte op orderregels + native berekening "
+                "(vervangt Studio-automatiseringen)."],
+        ["1.1", "Gewichtsbanding per stuk voor TK1/TK2 (zwaar/midden/licht)."],
+        ["1.0", "Eerste versie — transportkostenberekening voor TK1/TK2/TK3."],
     ],
 )
 
