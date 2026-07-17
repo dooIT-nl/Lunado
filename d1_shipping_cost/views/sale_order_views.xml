@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add "Calculate transport costs" button and summary field to sale.order form -->
+    <record id="d1_sale_order_form_view" model="ir.ui.view">
+        <field name="name">sale.order.form.d1.transport</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Button in header -->
+            <xpath expr="//form/header/button[@name='action_quotation_send']" position="after">
+                <button name="action_d1_compute_transport_cost"
+                        string="Calculate transport costs"
+                        type="object"
+                        class="btn-secondary"
+                        icon="fa-truck"/>
+            </xpath>
+
+            <!-- Transport summary + pallet flag below order lines -->
+            <xpath expr="//field[@name='note']" position="before">
+                <group string="Transport Cost Calculation" invisible="not d1_transport_message">
+                    <field name="d1_pallet_calculation"/>
+                    <field name="d1_transport_message" nolabel="1" colspan="2"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    <!-- Add d1_qty / d1_length to order line views (list + form) -->
+    <record id="d1_sale_order_line_views" model="ir.ui.view">
+        <field name="name">sale.order.form.d1.order.line.fields</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- In the inline LIST: before product_uom_qty column -->
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_uom_qty']" position="before">
+                <field name="d1_use_qty" column_invisible="True"/>
+                <field name="d1_use_length" column_invisible="True"/>
+                <field name="d1_qty"
+                       string="Pieces"
+                       optional="show"
+                       readonly="not d1_use_qty"/>
+                <field name="d1_length"
+                       string="Length"
+                       optional="show"
+                       readonly="not d1_use_length"/>
+            </xpath>
+            <!-- In the inline FORM: before the product_uom_qty label -->
+            <xpath expr="//field[@name='order_line']/form//label[@for='product_uom_qty']" position="before">
+                <field name="d1_use_qty" invisible="True"/>
+                <field name="d1_use_length" invisible="True"/>
+                <label for="d1_qty" invisible="not d1_use_qty"/>
+                <field name="d1_qty" invisible="not d1_use_qty"/>
+                <label for="d1_length" invisible="not d1_use_qty"/>
+                <field name="d1_length"
+                       invisible="not d1_use_qty"
+                       readonly="not d1_use_length"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add Pallet Calculation filter to sale order search view -->
+    <record id="d1_sale_order_search_view" model="ir.ui.view">
+        <field name="name">sale.order.search.d1.transport</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
+                <separator/>
+                <filter name="d1_pallet_calculation"
+                        string="Pallet Calculation"
+                        domain="[('d1_pallet_calculation', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add Pallet Calculation to sale order list view -->
+    <record id="d1_sale_order_list_view" model="ir.ui.view">
+        <field name="name">sale.order.list.d1.transport</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="d1_pallet_calculation" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

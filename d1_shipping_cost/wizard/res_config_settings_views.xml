@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add transport cost settings to Sales > Settings -->
+    <record id="d1_res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.form.d1.transport</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='sale_management']" position="inside">
+                <block title="Transport Costs" name="d1_transport_settings">
+                    <setting string="TK1 Thresholds (bundles)" help="Configuration for the bundle calculation of TK1 products.">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label for="d1_tk1_max_bundels" class="col-lg-4 o_light_label"/>
+                                <field name="d1_tk1_max_bundels" class="col-lg-2"/>
+                            </div>
+                            <div class="row">
+                                <label for="d1_bundle_width_cm" class="col-lg-4 o_light_label"/>
+                                <field name="d1_bundle_width_cm" class="col-lg-2"/>
+                            </div>
+                            <div class="row">
+                                <label for="d1_bundle_height_cm" class="col-lg-4 o_light_label"/>
+                                <field name="d1_bundle_height_cm" class="col-lg-2"/>
+                            </div>
+                            <div class="row">
+                                <label for="d1_bundle_max_weight_kg" class="col-lg-4 o_light_label"/>
+                                <field name="d1_bundle_max_weight_kg" class="col-lg-2"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="TK2/TK3 Thresholds (boxes)" help="Maximum weight for TK2/TK3 before pallet calculation and max box weight.">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label for="d1_tk2_max_gewicht_kg" class="col-lg-4 o_light_label"/>
+                                <field name="d1_tk2_max_gewicht_kg" class="col-lg-2"/>
+                            </div>
+                            <div class="row">
+                                <label for="d1_tk3_max_gewicht_kg" class="col-lg-4 o_light_label"/>
+                                <field name="d1_tk3_max_gewicht_kg" class="col-lg-2"/>
+                            </div>
+                            <div class="row">
+                                <label for="d1_box_max_weight_kg" class="col-lg-4 o_light_label"/>
+                                <field name="d1_box_max_weight_kg" class="col-lg-2"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>
