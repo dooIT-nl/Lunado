@@ -15,10 +15,8 @@
                     The computed date is kept as delivery date.
                 </div>
             </xpath>
-            <xpath expr="//field[@name='commitment_date']" position="before">
+            <xpath expr="//label[@for='commitment_date']" position="before">
                 <field name="d1_customer_request_date"/>
-            </xpath>
-            <xpath expr="//field[@name='commitment_date']" position="after">
                 <field name="d1_computed_commitment_date" readonly="1"/>
                 <field name="d1_delivery_date_warning" invisible="1"/>
             </xpath>
