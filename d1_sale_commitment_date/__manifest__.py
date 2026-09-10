@@ -1,7 +1,7 @@
 {
     "name": "Sale Commitment Date from Order Lines",
     "summary": "Compute the sale order delivery date from stock, incoming receipts and customer lead time",
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.1.0",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -13,8 +13,11 @@
     "installable": True,
     "application": False,
     "description": """
-        Sale Commitment Date from Order Lines 19.0.1.0.1
+        Sale Commitment Date from Order Lines 19.0.1.1.0
         ================================================
+        * v1.1: vertalingen toegevoegd (nl_NL, de_DE) voor velden, helpteksten
+          en waarschuwingsbanner; bannertekst herschreven voor schone
+          vertaaltermen
         * v1.0.1: velden met eigen label in de Delivery-sectie geplaatst
           (stonden labelloos in de Delivery Date-rij en waren onzichtbaar)
         * v1.0: initiele versie — berekening commitment_date per orderregel

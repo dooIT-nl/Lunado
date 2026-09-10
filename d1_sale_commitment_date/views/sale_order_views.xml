@@ -9,10 +9,8 @@
             <xpath expr="//sheet" position="before">
                 <div class="alert alert-warning" role="alert"
                      invisible="not d1_delivery_date_warning">
-                    The customer requested delivery date is earlier than the
-                    earliest possible delivery date
-                    (<field name="d1_computed_commitment_date" readonly="1" class="oe_inline"/>).
-                    The computed date is kept as delivery date.
+                    <span>The customer requested delivery date is earlier than the earliest possible delivery date. The computed date is kept as delivery date. Earliest possible delivery:</span>
+                    <field name="d1_computed_commitment_date" readonly="1" class="oe_inline"/>
                 </div>
             </xpath>
             <xpath expr="//label[@for='commitment_date']" position="before">
