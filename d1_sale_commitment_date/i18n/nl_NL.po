@@ -22,6 +22,25 @@ msgid "Computed Delivery Date"
 msgstr "Berekende leverdatum"
 
 #. module: d1_sale_commitment_date
+#: model:ir.model,name:d1_sale_commitment_date.model_res_partner
+msgid "Contact"
+msgstr "Contact"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_res_partner__d1_delivery_cutoff_hour
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_res_users__d1_delivery_cutoff_hour
+msgid ""
+"Cutoff time for the computed delivery date. If the computed delivery moment "
+"falls at or after this time, the delivery moves to the next working day. "
+"Leave 0:00 to use the system default (system parameter "
+"d1_sale_commitment_date.default_cutoff_hour)."
+msgstr ""
+"Cutoff-tijd voor de berekende leverdatum. Valt het berekende levermoment op "
+"of na deze tijd, dan verschuift de levering naar de eerstvolgende werkdag. "
+"Laat 0:00 staan om de systeemstandaard te gebruiken (systeemparameter "
+"d1_sale_commitment_date.default_cutoff_hour)."
+
+#. module: d1_sale_commitment_date
 #: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__d1_customer_request_date
 msgid "Customer Requested Date"
 msgstr "Gewenste leverdatum klant"
@@ -30,6 +49,12 @@ msgstr "Gewenste leverdatum klant"
 #: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__d1_delivery_date_warning
 msgid "D1 Delivery Date Warning"
 msgstr "D1 waarschuwing leverdatum"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_res_partner__d1_delivery_cutoff_hour
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_res_users__d1_delivery_cutoff_hour
+msgid "Delivery Cutoff Time"
+msgstr "Cutoff-tijd levering"
 
 #. module: d1_sale_commitment_date
 #: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__commitment_date

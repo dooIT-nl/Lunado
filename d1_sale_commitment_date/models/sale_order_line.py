@@ -73,7 +73,9 @@ class SaleOrderLine(models.Model):
     def _d1_get_product_expected_date(self, product, qty):
         """Bereken de vroegst mogelijke leverdatum voor een (product, aantal).
 
-        Zie _d1_get_expected_date voor de regels. Niet-voorraadgehouden
+        Zie _d1_get_expected_date voor de regels. Beschikbare voorraad =
+        fysieke voorraad minus alle bevestigde uitgaande vraag (gereserveerd
+        en ongereserveerd), conform klantbesluit LUN-1. Niet-voorraadgehouden
         producten (diensten e.d.) volgen enkel de sale_delay van het product.
 
         :param product: product.product record
@@ -85,10 +87,11 @@ class SaleOrderLine(models.Model):
         if not product.is_storable:
             return now + timedelta(days=product.sale_delay or 0.0)
         warehouse = self.order_id.warehouse_id
-        free_qty = product.with_context(
+        product_wh = product.with_context(
             warehouse=warehouse.id, warehouse_id=warehouse.id
-        ).free_qty
-        if free_qty >= qty:
+        )
+        available = product_wh.qty_available - product_wh.outgoing_qty
+        if available >= qty:
             return now
         picking = self.env["stock.picking"].search(
             [
@@ -102,5 +105,7 @@ class SaleOrderLine(models.Model):
             limit=1,
         )
         if picking:
-            return picking.scheduled_date
+            # LUN-3: receipts scheduled in the past (late, not yet processed)
+            # are clamped to now instead of promising a date in the past.
+            return max(picking.scheduled_date, now)
         return now + timedelta(days=product.sale_delay or 0.0)

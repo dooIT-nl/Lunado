@@ -6,16 +6,27 @@ verzonden).
 
 ## Berekening per orderregel
 
-1. **Voldoende vrije voorraad** (`free_qty` in het magazijn van de order):
-   levering is direct mogelijk — de `sale_delay` van het product wordt
-   genegeerd.
+1. **Voldoende beschikbare voorraad** (fysieke voorraad minus álle bevestigde
+   uitgaande vraag, in het magazijn van de order): levering is direct
+   mogelijk — de `sale_delay` van het product wordt genegeerd.
 2. **Onvoldoende voorraad**: de `scheduled_date` van de **eerstvolgende
    geplande ontvangst** (inkomende `stock.picking`, niet gereed/geannuleerd)
-   met dit product wordt gebruikt.
+   met dit product wordt gebruikt; een datum in het verleden wordt afgetopt
+   op vandaag.
 3. **Geen geplande ontvangst**: vandaag + `sale_delay` van het product.
 
 **Per order:** de laatste berekende regeldatum = eerst mogelijke leverdatum
 (uitgangspunt: geen deelleveringen).
+
+## Werkdag-afronding en cutoff-tijd
+
+Aan het einde van de berekening wordt de leverdatum afgerond op de
+eerstvolgende **werkdag** (za/zo -> maandag). Valt het berekende levermoment
+op of na de **cutoff-tijd** van de klant, dan schuift de levering een dag op.
+De cutoff is per klant instelbaar (veld *Cutoff-tijd levering* op de
+contactkaart, tabblad Verkoop & Inkoop); zonder klantwaarde geldt de
+systeemparameter `d1_sale_commitment_date.default_cutoff_hour`
+(default `0.0` = overgang om middernacht, effectief geen cutoff).
 
 ## Kit-/productieartikelen
 
@@ -41,6 +52,7 @@ Extra veld **Customer Requested Date** op de orderheader:
   voorraad).
 * Stuklijsten worden 1 niveau diep geexplodeerd (geen geneste stuklijsten).
 * Bevestigde orders worden niet meer herberekend.
+* Werkdag-afronding kent alleen za/zo, geen feestdagen.
 * Geen nieuwe modellen; daarom bevat de module geen `ir.model.access.csv`.
 
 ## Installatie
