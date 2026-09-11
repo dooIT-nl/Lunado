@@ -48,6 +48,13 @@ Extra veld **Customer Requested Date** op de orderheader:
 Standaard installatie via Apps (`d1_sale_commitment_date`). Afhankelijk van
 `sale_stock` en `mrp`.
 
+## Uitgebreide toelichting & ontwerpkeuzes
+
+Een uitgebreide toelichting voor de klant — inclusief alle ontwerpkeuzes,
+alternatieven en de beslislijst voor acceptatie — staat in de repo:
+[`docs/d1_sale_commitment_date_toelichting.md`](../docs/d1_sale_commitment_date_toelichting.md).
+(Online leesversie: https://claude.ai/code/artifact/a13a15db-4ed4-435c-beb6-6391c0bf9e3a)
+
 ## Contact
 
 dooIT B.V. — https://dooit.nl
