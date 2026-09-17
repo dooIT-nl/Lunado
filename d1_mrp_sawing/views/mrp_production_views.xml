@@ -6,11 +6,29 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='product_qty']" position="after">
+            <!-- Zelfde plek als de Studio-velden: naast Verantwoordelijke -->
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="d1_frame_nr" invisible="not d1_frame_nr"/>
                 <field name="d1_qty"/>
                 <field name="d1_length"/>
-                <field name="d1_frame_nr"/>
                 <field name="d1_production_time"/>
+            </xpath>
+            <!-- Productietijd eindproduct als kolom in de componentenlijst -->
+            <xpath expr="//field[@name='move_raw_ids']//list//field[@name='product_id']" position="after">
+                <field name="d1_production_time" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Hoeveelheid/lengte in de werkorderlijst (tabblad Bewerkingen) -->
+    <record id="d1_mrp_workorder_view_tree" model="ir.ui.view">
+        <field name="name">mrp.workorder.list.d1.sawing</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_editable_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='workcenter_id']" position="after">
+                <field name="d1_qty" optional="show"/>
+                <field name="d1_length" optional="show"/>
             </xpath>
         </field>
     </record>

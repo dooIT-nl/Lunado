@@ -1,7 +1,7 @@
 {
     "name": "MRP Sawing",
     "summary": "Sawing quantities, lengths, frames and production time on sales, manufacturing and stock (replaces Studio customizations)",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Manufacturing",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -17,10 +17,14 @@
     "installable": True,
     "application": False,
     "description": """
-        MRP Sawing 19.0.1.0.0
+        MRP Sawing 19.0.1.0.1
         =====================
         Cluster C6 van de Studio-conversie (zie docs/studio_conversie_plan.md).
 
+        * v1.0.1: velden op de productieorder op de oorspronkelijke
+          Studio-plekken gezet (naast Verantwoordelijke; productietijd in de
+          componentenlijst; hoeveelheid/lengte in de werkorderlijst en
+          zichtbaar op de picking)
         * v1.0: initiele versie — vervangt 7 Studio-automations en 18
           Studio-velden rond zagen/lengtes/frames:
           - product: gebruik hoeveelheid/lengte, zaagcapaciteit en -tijd,
