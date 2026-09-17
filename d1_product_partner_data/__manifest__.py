@@ -1,7 +1,7 @@
 {
     "name": "Product & Partner Master Data",
     "summary": "Master data fields from Studio (ABC code, availability, cost calc, packing slip URL) and final Studio cleanup",
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.0.2",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -20,6 +20,7 @@
         Cluster C7 (sluitstuk) van de Studio-conversie
         (zie docs/studio_conversie_plan.md).
 
+        * 1.0.2-fix: robuustere Studio-opschoning + x_studio_handling opgeruimd + migratie die de opschoning opnieuw draait
         * v1.0.1: productlijst-kolommen aantal verpakkingen en kostprijs calc (view-pariteit)
         * v1.0: initiele versie — stamdatavelden hernoemd:
           x_studio_abc_code -> d1_abc_code,

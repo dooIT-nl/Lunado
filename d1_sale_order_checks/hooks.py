@@ -107,36 +107,40 @@ def _remove_replaced_automations(env):
 
 
 def _strip_field_from_studio_views(env, model_name, field_name):
-    """Verwijder <field name='x_studio_...'>-nodes uit Studio-views zodat de
-    views geldig blijven nadat het veld is verwijderd."""
+    """Verwijder veld-verwijzingen uit Studio-views zodat die geldig blijven
+    nadat het veld is verwijderd. Blijft het veld ergens in attributen of
+    xpath-expressies staan (niet schoon te knippen), dan wordt de hele
+    Studio-view gedeactiveerd."""
     views = env["ir.ui.view"].search(
         [("model", "=", model_name), ("arch_db", "like", field_name)]
     )
     for view in views:
         xml_id = view.get_external_id().get(view.id) or ""
         if not xml_id.startswith("studio_customization."):
-            continue  # alleen Studio-views aanpassen, nooit module-views
+            continue
         try:
             arch = etree.fromstring(view.arch_db.encode("utf-8"))
             nodes = arch.xpath(
-                "//field[@name='%s'] | //label[@for='%s']"
-                % (field_name, field_name)
+                "//field[@name='%s'] | //label[@for='%s'] "
+                "| //xpath[contains(@expr, '%s')]"
+                % (field_name, field_name, field_name)
             )
-            if not nodes:
-                continue
             for node in nodes:
                 node.getparent().remove(node)
-            view.arch_db = etree.tostring(arch, encoding="unicode")
-            _logger.info(
-                "d1_sale_order_checks: stripped %s from view %s",
-                field_name, xml_id,
-            )
+            new_arch = etree.tostring(arch, encoding="unicode")
+            if field_name in new_arch:
+                view.active = False
+                _logger.info(
+                    "%s: view %s still references %s in attributes; "
+                    "deactivated the view", "d1_sale_order_checks", xml_id, field_name)
+            elif nodes:
+                view.arch_db = new_arch
+                _logger.info("%s: stripped %s from view %s",
+                             "d1_sale_order_checks", field_name, xml_id)
         except Exception:
             _logger.warning(
-                "d1_sale_order_checks: could not strip %s from view %s; "
-                "deactivating the view instead",
-                field_name, xml_id, exc_info=True,
-            )
+                "%s: could not strip %s from view %s; deactivating view",
+                "d1_sale_order_checks", field_name, xml_id, exc_info=True)
             view.active = False
 
 
