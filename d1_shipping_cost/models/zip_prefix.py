@@ -26,9 +26,10 @@ class D1ShippingZipPrefix(models.Model):
              "converted to uppercase.",
     )
 
-    _sql_constraints = [
-        ("name_unique", "unique(name)", "This prefix already exists."),
-    ]
+    _name_unique = models.Constraint(
+        "unique(name)",
+        "This prefix already exists.",
+    )
 
     @api.model_create_multi
     def create(self, vals_list):
