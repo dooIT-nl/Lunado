@@ -1,7 +1,7 @@
 {
     "name": "Sale Extra Service per Product Category",
     "summary": "Automatically add and sum an extra service line on sale orders based on the product category (replaces Studio automation)",
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.0.2",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -18,6 +18,8 @@
         ==================================================
         Cluster C4 van de Studio-conversie (zie docs/studio_conversie_plan.md).
 
+        * v1.0.2: opschoning van de Studio-automation matcht nu op ilike
+          (exacte naam bleek op staging net af te wijken)
         * v1.0.1: kolom Extra dienst op de categorielijst (view-pariteit)
         * v1.0: initiele versie — vervangt de Studio-automation
           'Verkooporderregel: Voeg dienst toe'. Veld hernoemd:

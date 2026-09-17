@@ -37,6 +37,7 @@ class D1ShippingClass(models.Model):
         default=10,
     )
 
-    _sql_constraints = [
-        ("code_unique", "unique(code)", "The shipping class code must be unique."),
-    ]
+    _code_unique = models.Constraint(
+        "unique(code)",
+        "The shipping class code must be unique.",
+    )
