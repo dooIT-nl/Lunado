@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- d1_qty / d1_length / gebruik-vlaggen staan al op de orderregel via
+         d1_shipping_cost; hier alleen frames en gewicht toevoegen. -->
+    <record id="d1_sale_order_view_form" model="ir.ui.view">
+        <field name="name">sale.order.form.d1.sawing</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_uom_qty']" position="after">
+                <field name="d1_frame_id" optional="hide"/>
+                <field name="d1_frame_nr" optional="hide"/>
+                <field name="d1_weight" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
