@@ -15,8 +15,10 @@ COLUMN_COPIES = [
      "d1_extra_service_product_id", "x_studio_extra_dienst"),
 ]
 
+# match op 'ilike' zodat kleine naamafwijkingen (spaties, hoofdletters)
+# de opschoning niet laten missen — bleek op staging het geval
 REPLACED_AUTOMATIONS = [
-    ("sale.order.line", "Verkooporderregel: Voeg dienst toe"),
+    ("sale.order.line", "Voeg dienst toe"),
 ]
 
 REPLACED_FIELDS = [
@@ -58,7 +60,7 @@ def _remove_replaced_automations(env):
         autos = env["base.automation"].search(
             [
                 ("model_id.model", "=", model_name),
-                ("name", "=", name),
+                ("name", "ilike", name),
                 "|", ("active", "=", True), ("active", "=", False),
             ]
         )
