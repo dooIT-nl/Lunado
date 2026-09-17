@@ -1,7 +1,7 @@
 {
     "name": "Purchase Partner Delivery Defaults",
     "summary": "Default operation type and incoterm from the vendor on purchase orders (replaces Studio automation)",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Purchases",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -19,6 +19,7 @@
         =============================================
         Cluster C3 van de Studio-conversie (zie docs/studio_conversie_plan.md).
 
+        * v1.0.1: optionele partnerlijst-kolom Type levering (view-pariteit)
         * v1.0: initiele versie — vervangt de Studio-automation 'Vul Leveren
           aan en Leverconditie'. Velden hernoemd:
           x_studio_type_levering -> d1_delivery_picking_type_id,

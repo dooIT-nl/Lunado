@@ -1,7 +1,7 @@
 {
     "name": "MRP Sawing",
     "summary": "Sawing quantities, lengths, frames and production time on sales, manufacturing and stock (replaces Studio customizations)",
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.0.2",
     "category": "Manufacturing",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -11,6 +11,7 @@
         "views/product_template_views.xml",
         "views/sale_order_views.xml",
         "views/mrp_production_views.xml",
+        "views/mrp_workorder_views.xml",
         "views/stock_picking_views.xml",
     ],
     "post_init_hook": "post_init_hook",
@@ -21,6 +22,8 @@
         =====================
         Cluster C6 van de Studio-conversie (zie docs/studio_conversie_plan.md).
 
+        * v1.0.2: view-pariteit met Studio hersteld (werkorderformulier,
+          productlijst-kolommen, qty-var-name op de orderregel)
         * v1.0.1: velden op de productieorder op de oorspronkelijke
           Studio-plekken gezet (naast Verantwoordelijke; productietijd in de
           componentenlijst; hoeveelheid/lengte in de werkorderlijst en

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="d1_mrp_workorder_view_form" model="ir.ui.view">
+        <field name="name">mrp.workorder.form.d1.sawing</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='workcenter_id']" position="after">
+                <field name="d1_qty"/>
+                <field name="d1_length"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

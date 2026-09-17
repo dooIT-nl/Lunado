@@ -12,6 +12,7 @@
                 <field name="d1_frame_id" optional="hide"/>
                 <field name="d1_frame_nr" optional="hide"/>
                 <field name="d1_weight" optional="hide"/>
+                <field name="d1_qty_var_name" optional="hide"/>
             </xpath>
         </field>
     </record>

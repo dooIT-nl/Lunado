@@ -12,4 +12,15 @@
         </field>
     </record>
 
+    <record id="d1_product_category_view_tree" model="ir.ui.view">
+        <field name="name">product.category.list.d1.extra.service</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_list_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="d1_extra_service_product_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

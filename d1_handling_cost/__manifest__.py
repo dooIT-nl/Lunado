@@ -1,7 +1,7 @@
 {
     "name": "Handling Cost",
     "summary": "Clean handling cost models replacing Studio x_handling, with automated order line sync",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -18,7 +18,7 @@
     "application": False,
     "post_init_hook": "_post_init_migrate_handling",
     "description": """
-        Handling Cost 19.0.1.0.0
+        Handling Cost 19.0.1.0.1
         ========================
         * v1.0.0: initial release — d1.handling / d1.handling.line models,
           partner link, automated handling line on draft sale orders,

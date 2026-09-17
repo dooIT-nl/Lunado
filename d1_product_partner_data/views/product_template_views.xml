@@ -25,6 +25,8 @@
                 <field name="d1_abc_code" optional="hide"/>
                 <field name="d1_courant" optional="hide"/>
                 <field name="d1_available" optional="hide"/>
+                <field name="d1_package_count" optional="hide"/>
+                <field name="d1_cost_calc" optional="hide"/>
             </xpath>
         </field>
     </record>

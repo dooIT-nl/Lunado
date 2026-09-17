@@ -1,7 +1,7 @@
 {
     "name": "Sale Combi Orders",
     "summary": "Combi orders across warehouses: route order lines via the configurable combi route of the order warehouse (replaces Studio automations)",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -20,6 +20,7 @@
         ============================
         Cluster C5 van de Studio-conversie (zie docs/studio_conversie_plan.md).
 
+        * v1.0.1: optionele productlijst-kolom Standaard magazijn (view-pariteit)
         * v1.0: initiele versie — vervangt de Studio-automations
           'Verkooporder: Combi order' en 'Verkooporderregel: Combi order'.
           Velden hernoemd: x_studio_combi -> d1_combi (order),
