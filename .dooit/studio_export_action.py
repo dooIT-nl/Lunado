@@ -146,6 +146,9 @@ for imd in env["ir.model.data"].search([
 for auto in env["base.automation"].search(["|", ("active", "=", True), ("active", "=", False)]):
     for sa in auto.action_server_ids:
         sa_ids.add(sa.id)
+# kinderen van multi-acties meenemen (max. 3 niveaus diep)
+for _pass in range(3):
+    for sa in env["ir.actions.server"].browse(list(sa_ids)).exists():
         for child in sa.child_ids:
             sa_ids.add(child.id)
 
@@ -224,7 +227,7 @@ for imd in env["ir.model.data"].search([
         "parent": menu.parent_id.complete_name if menu.parent_id else "",
         "action": str(menu.action) if menu.action else "",
         "sequence": menu.sequence or 0,
-        "groups": [g.full_name for g in menu.groups_id],
+        "groups": [g.full_name for g in menu.group_ids],
         "xml_id": imd.complete_name,
     })
 data["menus"] = menus_out
