@@ -6,6 +6,7 @@
 | Omvang | 3 modellen, 61 velden, 34 views, 18 automations, 18 server-acties, 6 defaults |
 | Doel | Alle Studio-maatwerk als versioned `d1_`-modules, x_studio-velden hernoemd naar `d1_` met datamigratie, Studio-onderdelen automatisch opgeruimd |
 | Aanpak | Gefaseerd per functioneel cluster (besluit 17 sep 2026) |
+| **Status** | **✅ Alle clusters C1–C7 opgeleverd op `development` (17 sep 2026)** — zie statusoverzicht onderaan |
 
 ---
 
@@ -74,5 +75,26 @@
 4. Smoke-tests per module; oplevering via development → staging (kopie productie = échte migratietest) → productie.
 
 ---
+
+## 5. Statusoverzicht oplevering (17 sep 2026)
+
+| Cluster | Module | Bijzonderheden |
+|---|---|---|
+| C1 | `d1_sale_order_checks` ✅ | Dubbele-referentiecheck geldt nu voor alle gebruikers (besluit) |
+| C2 | `d1_sale_dropshipment` ✅ | Hardcoded users [11,13] vervallen (besluit); stored compute dekt UI + API |
+| C3 | `d1_purchase_partner_delivery` ✅ | Dropship-uitsluiting = vinkje op operatietype; check vinkje bij deploy als het Dropship-type geen standaardtype is |
+| C4 | `d1_sale_extra_service` ✅ | Sommering per dienst-artikel (bugfix t.o.v. Studio) |
+| C5 | `d1_sale_combi` ✅ | Combi-route instelbaar per magazijn; Odoo 19 `route_ids` (oude automation schreef verwijderd veld) |
+| C6 | `d1_mrp_sawing` ✅ | qty×lengte-logica al aanwezig in `d1_shipping_cost` (afhankelijkheid, wijkt af van besluit "letterlijk" — gemeld); pleister `d1_fix_studio_fields` verwijderd |
+| C7 | `d1_product_partner_data` ✅ | Beschikbaar-bug gefixt (besluit); KvK → `company_registry` (besluit); eindschoonmaak: handling-automation/-menu weg, resterende Studio-views gedeactiveerd |
+
+**Deploy-checklist productie:**
+1. `development` → staging (kopie productie) mergen: hooks draaien daar de échte datamigratie — logs controleren op `could not remove`-meldingen.
+2. `d1_fix_studio_fields` deïnstalleren (indien daar geïnstalleerd).
+3. Dropship-operatietype: vinkje *Geen leverdefaults van leverancier* controleren.
+4. Combi-routes op de magazijnen Rotterdam/Wesseling controleren.
+5. Gedeactiveerde Studio-views nalopen; gewenste lay-out laten porten, rest verwijderen.
+6. Na verificatie: lege modellen `x_handling`/`x_handling_line_b0f2a` handmatig verwijderen.
+7. Maatwerk register vullen (na acceptatie, afspraak).
 
 *dooIT B.V. — 17 september 2026*
