@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Product: kolom 'Voorraad bijhouden' (Studio: product.template.list) -->
+    <record id="d1_product_template_view_tree" model="ir.ui.view">
+        <field name="name">product.template.list.d1.ui</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="is_storable" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Verkooporders: kolom 'Bron' (Studio: sale.order.tree (orders)) -->
+    <record id="d1_sale_order_view_tree" model="ir.ui.view">
+        <field name="name">sale.order.list.d1.ui</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="origin" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Locaties: extra kolommen (Studio: stock.location.tree) -->
+    <record id="d1_stock_location_view_tree" model="ir.ui.view">
+        <field name="name">stock.location.list.d1.ui</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_tree2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <!-- return_location/scrap_location bestaan niet meer in 19;
+                     replenish_location is de overgebleven vlag -->
+                <field name="warehouse_id" optional="hide"/>
+                <field name="replenish_location" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Routes: toepasbaarheidsvlaggen (Studio: stock.location.route.list) -->
+    <record id="d1_stock_route_view_tree" model="ir.ui.view">
+        <field name="name">stock.route.list.d1.ui</field>
+        <field name="model">stock.route</field>
+        <field name="inherit_id" ref="stock.stock_location_route_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="product_selectable" optional="hide"/>
+                <field name="product_categ_selectable" optional="hide"/>
+                <field name="warehouse_selectable" optional="hide"/>
+                <field name="sale_selectable" optional="hide"/>
+                <field name="package_type_selectable" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

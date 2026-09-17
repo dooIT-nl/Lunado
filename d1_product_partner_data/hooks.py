@@ -1,0 +1,214 @@
+"""Post-init hook: datamigratie + eindschoonmaak van de Studio-conversie.
+
+Naast het bekende patroon (datakopie, automation-/veldopschoning) doet dit
+sluitstuk-cluster de laatste veeg:
+* KvK-nummer (x_studio_coc) migreert naar het standaardveld
+  company_registry (besluit 17-09-2026);
+* de Studio-automation 'Verkoop: Voeg Handling toe' en het Handling-menu
+  worden verwijderd (functioneel vervangen door d1_handling_cost);
+* alle resterende studio_customization-views worden GEDEACTIVEERD (niet
+  verwijderd) zodat de consultant ze op staging kan nalopen en eventueel
+  gewenste lay-out alsnog als module-view kan (laten) porten.
+"""
+import logging
+
+from lxml import etree
+
+_logger = logging.getLogger(__name__)
+
+MODULE = "d1_product_partner_data"
+
+COLUMN_COPIES = [
+    ("product_template", "x_studio_abc_code", "d1_abc_code",
+     "x_studio_abc_code"),
+    ("product_template", "x_studio_courant", "d1_courant",
+     "x_studio_courant"),
+    ("product_template", "x_studio_kostprijs_calc", "d1_cost_calc",
+     "x_studio_kostprijs_calc"),
+    ("sale_order", "x_studio_url_pakbon", "d1_delivery_note_url",
+     "x_studio_url_pakbon"),
+    # KvK-nummer naar het standaardveld; bestaande waarden niet overschrijven
+    ("res_partner", "x_studio_coc", "company_registry", "x_studio_coc"),
+]
+
+REPLACED_AUTOMATIONS = [
+    # functioneel vervangen door d1_handling_cost
+    ("sale.order", "Verkoop: Voeg Handling toe"),
+]
+
+REPLACED_FIELDS = [
+    ("product.template", "x_studio_abc_code"),
+    ("product.template", "x_studio_courant"),
+    ("product.template", "x_studio_available"),
+    ("product.template", "x_studio_aantal_verpakkingen"),
+    ("product.template", "x_studio_kostprijs_calc"),
+    ("sale.order", "x_studio_url_pakbon"),
+    ("res.partner", "x_studio_coc"),
+]
+
+
+def _column_exists(cr, table, column):
+    """Controleer of een kolom bestaat (Studio-kolommen bestaan alleen op de
+    productiedatabase)."""
+    cr.execute(
+        "SELECT 1 FROM information_schema.columns "
+        "WHERE table_name = %s AND column_name = %s",
+        (table, column),
+    )
+    return bool(cr.fetchone())
+
+
+def _copy_columns(env):
+    """Kopieer data van de x_studio-kolommen naar de doelkolommen."""
+    for table, src, dest, expr in COLUMN_COPIES:
+        if not _column_exists(env.cr, table, src):
+            _logger.info("%s: %s.%s not present, skipping", MODULE, table, src)
+            continue
+        if not _column_exists(env.cr, table, dest):
+            _logger.warning("%s: target %s.%s not present, skipping",
+                            MODULE, table, dest)
+            continue
+        # Alleen kolomnamen/expressies uit de vaste lijst hierboven.
+        env.cr.execute(
+            "UPDATE {table} SET {dest} = {expr} "
+            "WHERE {src} IS NOT NULL AND ({dest} IS NULL "
+            "OR {dest}::text = '')".format(
+                table=table, dest=dest, expr=expr, src=src
+            )
+        )
+        _logger.info("%s: copied %s.%s -> %s (%s rows)",
+                     MODULE, table, src, dest, env.cr.rowcount)
+
+
+def _remove_replaced_automations(env):
+    """Verwijder de vervangen Studio-automations inclusief server-acties."""
+    for model_name, name in REPLACED_AUTOMATIONS:
+        autos = env["base.automation"].search(
+            [
+                ("model_id.model", "=", model_name),
+                ("name", "=", name),
+                "|", ("active", "=", True), ("active", "=", False),
+            ]
+        )
+        if not autos:
+            continue
+        actions = autos.action_server_ids
+        autos.unlink()
+        try:
+            actions.unlink()
+        except Exception:
+            _logger.warning("%s: could not remove server action(s) %s",
+                            MODULE, actions.mapped("name"), exc_info=True)
+        _logger.info("%s: removed automation '%s' (%s)", MODULE, name,
+                     model_name)
+
+
+def _strip_field_from_studio_views(env, model_name, field_name):
+    """Verwijder veld-verwijzingen uit Studio-views zodat die geldig blijven
+    nadat het veld is verwijderd."""
+    views = env["ir.ui.view"].search(
+        [("model", "=", model_name), ("arch_db", "like", field_name)]
+    )
+    for view in views:
+        xml_id = view.get_external_id().get(view.id) or ""
+        if not xml_id.startswith("studio_customization."):
+            continue
+        try:
+            arch = etree.fromstring(view.arch_db.encode("utf-8"))
+            nodes = arch.xpath(
+                "//field[@name='%s'] | //label[@for='%s']"
+                % (field_name, field_name)
+            )
+            if not nodes:
+                continue
+            for node in nodes:
+                node.getparent().remove(node)
+            view.arch_db = etree.tostring(arch, encoding="unicode")
+            _logger.info("%s: stripped %s from view %s",
+                         MODULE, field_name, xml_id)
+        except Exception:
+            _logger.warning(
+                "%s: could not strip %s from view %s; deactivating view",
+                MODULE, field_name, xml_id, exc_info=True)
+            view.active = False
+
+
+def _remove_replaced_fields(env):
+    """Verwijder de vervangen handmatige Studio-velden (na de datakopie);
+    fouten worden gelogd en overgeslagen zodat de installatie nooit
+    blokkeert."""
+    for model_name, field_name in REPLACED_FIELDS:
+        field = env["ir.model.fields"].search(
+            [
+                ("model", "=", model_name),
+                ("name", "=", field_name),
+                ("state", "=", "manual"),
+            ]
+        )
+        if not field:
+            continue
+        _strip_field_from_studio_views(env, model_name, field_name)
+        try:
+            field.unlink()
+            _logger.info("%s: removed studio field %s.%s",
+                         MODULE, model_name, field_name)
+        except Exception:
+            _logger.warning(
+                "%s: could not remove studio field %s.%s (still "
+                "referenced?); please clean up manually",
+                MODULE, model_name, field_name, exc_info=True)
+
+
+def _remove_handling_menu(env):
+    """Verwijder het Studio-menu en de vensteractie van Handling (vervangen
+    door d1_handling_cost)."""
+    imds = env["ir.model.data"].search(
+        [
+            ("module", "=", "studio_customization"),
+            ("model", "in", ("ir.ui.menu", "ir.actions.act_window")),
+        ]
+    )
+    # eerst verzamelen: unlink van het doelrecord verwijdert (cascade) ook
+    # het ir.model.data-record zelf
+    targets = [(imd.model, imd.res_id) for imd in imds]
+    for model_name, res_id in targets:
+        record = env[model_name].browse(res_id).exists()
+        if not record:
+            continue
+        try:
+            name = record.display_name
+            record.unlink()
+            _logger.info("%s: removed studio %s '%s'", MODULE, model_name,
+                         name)
+        except Exception:
+            _logger.warning("%s: could not remove studio %s (id %s)",
+                            MODULE, model_name, res_id, exc_info=True)
+
+
+def _deactivate_remaining_studio_views(env):
+    """Deactiveer alle resterende studio_customization-views (eindschoonmaak;
+    bewust niet verwijderen zodat gewenste lay-out op staging nog te
+    beoordelen is)."""
+    imds = env["ir.model.data"].search(
+        [
+            ("module", "=", "studio_customization"),
+            ("model", "=", "ir.ui.view"),
+        ]
+    )
+    views = env["ir.ui.view"].browse(imds.mapped("res_id")).exists()
+    active_views = views.filtered("active")
+    if active_views:
+        active_views.write({"active": False})
+        _logger.info(
+            "%s: deactivated %s remaining studio views: %s",
+            MODULE, len(active_views), active_views.mapped("name"),
+        )
+
+
+def post_init_hook(env):
+    """Migreer Studio-data en voer de eindschoonmaak van de conversie uit."""
+    _copy_columns(env)
+    _remove_replaced_automations(env)
+    _remove_replaced_fields(env)
+    _remove_handling_menu(env)
+    _deactivate_remaining_studio_views(env)

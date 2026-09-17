@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="d1_sale_order_view_form" model="ir.ui.view">
+        <field name="name">sale.order.form.d1.master.data</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="d1_delivery_note_url" widget="url"
+                       invisible="not d1_delivery_note_url"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

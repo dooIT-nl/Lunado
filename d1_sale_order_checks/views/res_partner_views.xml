@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- XPath extension: add d1_handling_id to partner form -->
     <record id="d1_res_partner_view_form" model="ir.ui.view">
-        <field name="name">res.partner.form.d1</field>
+        <field name="name">res.partner.form.d1.order.checks</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='property_product_pricelist']" position="after">
-                <field name="d1_handling_id"/>
+            <xpath expr="//group[@name='sale']//field[@name='user_id']" position="after">
+                <field name="d1_rel_type"/>
+                <field name="d1_credit_insurance"/>
+                <field name="d1_insured_amount"
+                       invisible="not d1_credit_insurance or d1_credit_insurance == 'not_insured'"/>
             </xpath>
         </field>
     </record>
 
-    <!-- XPath extension: optional handling column on the partner list
-         (Studio view parity) -->
     <record id="d1_res_partner_view_tree" model="ir.ui.view">
-        <field name="name">res.partner.list.d1</field>
+        <field name="name">res.partner.list.d1.order.checks</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//list" position="inside">
-                <field name="d1_handling_id" optional="hide"/>
+                <field name="d1_rel_type" optional="hide"/>
             </xpath>
         </field>
     </record>

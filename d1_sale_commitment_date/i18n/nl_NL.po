@@ -1,0 +1,125 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* d1_sale_commitment_date
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-10 15:26+0000\n"
+"PO-Revision-Date: 2026-09-10 15:26+0000\n"
+"Last-Translator: dooIT B.V.\n"
+"Language-Team: \n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__d1_computed_commitment_date
+msgid "Computed Delivery Date"
+msgstr "Berekende leverdatum"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model,name:d1_sale_commitment_date.model_res_partner
+msgid "Contact"
+msgstr "Contact"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_res_partner__d1_delivery_cutoff_hour
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_res_users__d1_delivery_cutoff_hour
+msgid ""
+"Cutoff time for the computed delivery date. If the computed delivery moment "
+"falls at or after this time, the delivery moves to the next working day. "
+"Leave 0:00 to use the system default (system parameter "
+"d1_sale_commitment_date.default_cutoff_hour)."
+msgstr ""
+"Cutoff-tijd voor de berekende leverdatum. Valt het berekende levermoment op "
+"of na deze tijd, dan verschuift de levering naar de eerstvolgende werkdag. "
+"Laat 0:00 staan om de systeemstandaard te gebruiken (systeemparameter "
+"d1_sale_commitment_date.default_cutoff_hour)."
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__d1_customer_request_date
+msgid "Customer Requested Date"
+msgstr "Gewenste leverdatum klant"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__d1_delivery_date_warning
+msgid "D1 Delivery Date Warning"
+msgstr "D1 waarschuwing leverdatum"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_res_partner__d1_delivery_cutoff_hour
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_res_users__d1_delivery_cutoff_hour
+msgid "Delivery Cutoff Time"
+msgstr "Cutoff-tijd levering"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__commitment_date
+msgid "Delivery Date"
+msgstr "Leverdatum"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_sale_order__d1_customer_request_date
+msgid ""
+"Delivery date requested by the customer. If it is later than the computed "
+"delivery date, it is used as the delivery date. If it is earlier, a warning "
+"is shown and the computed date is kept."
+msgstr ""
+"Door de klant gewenste leverdatum. Als deze later is dan de berekende "
+"leverdatum, wordt deze gebruikt als leverdatum. Als deze eerder is, wordt "
+"een waarschuwing getoond en blijft de berekende datum behouden."
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__display_name
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order_line__display_name
+msgid "Display Name"
+msgstr "Weergavenaam"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_sale_order__d1_computed_commitment_date
+msgid ""
+"Earliest possible delivery date computed from the order lines (free stock, "
+"next planned receipt or customer lead time)."
+msgstr ""
+"Vroegst mogelijke leverdatum, berekend uit de orderregels (vrije voorraad, "
+"eerstvolgende geplande ontvangst of levertijd van het product)."
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__id
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order_line__id
+msgid "ID"
+msgstr "ID"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model,name:d1_sale_commitment_date.model_sale_order
+msgid "Sales Order"
+msgstr "Verkooporder"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model,name:d1_sale_commitment_date.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Verkooporderregel"
+
+#. module: d1_sale_commitment_date
+#: model_terms:ir.ui.view,arch_db:d1_sale_commitment_date.d1_sale_order_view_form
+msgid ""
+"<span>The customer requested delivery date is earlier than the earliest "
+"possible delivery date. The computed date is kept as delivery date. Earliest"
+" possible delivery:</span>"
+msgstr ""
+"<span>De door de klant gewenste leverdatum is eerder dan de vroegst "
+"mogelijke leverdatum. De berekende datum blijft behouden als leverdatum. "
+"Vroegst mogelijke levering:</span>"
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_sale_order__commitment_date
+msgid ""
+"This is the delivery date promised to the customer. If set, the delivery "
+"order will be scheduled based on this date rather than product lead times."
+msgstr ""
+"Dit is de leverdatum die aan de klant is beloofd. Indien ingesteld, wordt "
+"de levering gepland op basis van deze datum in plaats van de levertijden "
+"van de producten."
