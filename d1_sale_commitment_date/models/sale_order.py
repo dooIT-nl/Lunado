@@ -143,6 +143,22 @@ class SaleOrder(models.Model):
             local += timedelta(days=1)
         return local.astimezone(pytz.utc).replace(tzinfo=None)
 
+    @api.onchange("commitment_date", "expected_date")
+    def _onchange_commitment_date(self):
+        """Onderdruk de standaard 'Gevraagde datum is te snel'-melding.
+
+        Standaard Odoo vergelijkt de leverdatum met expected_date (orderdatum
+        + sale_delay). Onze berekening negeert de sale_delay bewust bij
+        voldoende voorraad, waardoor die melding bij elk voorradig product
+        met een levertijd onterecht zou verschijnen. Zolang deze module de
+        leverdatum berekent (d1_computed_commitment_date gevuld) is de
+        standaardmelding daarom uitgeschakeld; de eigen waarschuwingsbanner
+        dekt het geval 'klant wil eerder dan haalbaar'.
+        """
+        if self.d1_computed_commitment_date:
+            return None
+        return super()._onchange_commitment_date()
+
     @api.depends("d1_customer_request_date", "d1_computed_commitment_date")
     def _compute_d1_delivery_date_warning(self):
         """Waarschuw als de klant eerder wil leveren dan mogelijk is."""
