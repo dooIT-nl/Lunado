@@ -2,6 +2,7 @@ import logging
 from datetime import timedelta
 
 import pytz
+from markupsafe import Markup, escape
 
 from odoo import api, fields, models
 
@@ -61,20 +62,74 @@ class SaleOrder(models.Model):
                     order.d1_computed_commitment_date
                 )
                 continue
-            dates = [
-                line._d1_get_expected_date() for line in order.order_line
-            ]
-            dates = [d for d in dates if d]
-            computed = max(dates) if dates else False
+            dates = []
+            explanations = []
+            for line in order.order_line:
+                date, expl = line._d1_get_expected_date_explained()
+                if date:
+                    dates.append(date)
+                explanations.extend(expl)
+            computed_raw = max(dates) if dates else False
             # LUN-9/10: round the final date to the next working day, taking
             # the (per-customer) cutoff time into account.
-            computed = order._d1_round_to_working_day(computed)
+            computed = order._d1_round_to_working_day(computed_raw)
+            if computed_raw and computed != computed_raw:
+                explanations.append(
+                    "Werkdag-/cutoff-afronding: %s → %s (cutoff %05.2f uur)"
+                    % (computed_raw, computed, order._d1_get_cutoff_hour())
+                )
             order.d1_computed_commitment_date = computed
             commitment = computed
             request = order.d1_customer_request_date
             if request and (not computed or request > computed):
                 commitment = order._d1_round_to_working_day(request)
+                explanations.append(
+                    "Gewenste klantdatum %s is later dan berekend → "
+                    "overgenomen als leverdatum" % request
+                )
+            elif request and computed and request < computed:
+                explanations.append(
+                    "Gewenste klantdatum %s is eerder dan berekend %s → "
+                    "berekende datum blijft (banner)" % (request, computed)
+                )
             order.commitment_date = commitment or order.commitment_date
+            order._d1_post_explanation(explanations)
+
+    def _d1_post_explanation(self, explanations):
+        """Plaats (tijdelijk, diagnostisch) een chatternotitie die uitlegt
+        hoe de leverdatum is berekend.
+
+        Alleen actief zolang de systeemparameter
+        d1_sale_commitment_date.explain op '1' staat; uitzetten = geen
+        meldingen meer, zonder code-wijziging. Wordt overgeslagen tijdens
+        onchange (record bestaat nog niet). Teksten bewust onvertaald
+        (tijdelijk diagnose-instrument).
+        """
+        self.ensure_one()
+        if not explanations or not isinstance(self.id, int):
+            return
+        # sudo: systeemparameter is niet leesbaar voor gewone gebruikers;
+        # read-only diagnosevlag.
+        if self.env["ir.config_parameter"].sudo().get_param(
+            "d1_sale_commitment_date.explain"
+        ) != "1":
+            return
+        body = Markup(
+            "<b>Leverdatum-berekening</b> (tijdelijke diagnose)<br/>%s"
+            "<br/><b>Leverdatum: %s</b>"
+        ) % (
+            Markup("<br/>").join(escape(e) for e in explanations),
+            self.commitment_date or "-",
+        )
+        try:
+            self.message_post(
+                body=body, subtype_xmlid="mail.mt_note",
+            )
+        except Exception:
+            _logger.warning(
+                "d1_sale_commitment_date: could not post explanation on %s",
+                self.display_name, exc_info=True,
+            )
 
     def _d1_get_cutoff_hour(self):
         """Bepaal de cutoff-tijd (in uren, bv. 16.5 = 16:30) voor deze order.

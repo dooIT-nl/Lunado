@@ -1,7 +1,7 @@
 {
     "name": "Sale Commitment Date from Order Lines",
     "summary": "Compute the sale order delivery date from stock, incoming receipts and customer lead time",
-    "version": "19.0.1.2.1",
+    "version": "19.0.1.3.0",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -17,6 +17,9 @@
     "description": """
         Sale Commitment Date from Order Lines 19.0.1.2.0
         ================================================
+        * v1.3: tijdelijke diagnose-chatternotitie die per regel uitlegt hoe
+          de leverdatum is berekend; aan/uit via systeemparameter
+          d1_sale_commitment_date.explain (geleverd op '1')
         * v1.2.1: standaardmelding 'Gevraagde datum is te snel' onderdrukt
           zolang de module de leverdatum berekent (expected_date telt
           sale_delay mee en spreekt de berekening onterecht tegen)
