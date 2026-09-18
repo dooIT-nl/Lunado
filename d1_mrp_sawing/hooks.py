@@ -158,7 +158,9 @@ def _remove_replaced_automations(env):
 
 def _strip_field_from_studio_views(env, model_name, field_name):
     """Verwijder veld-verwijzingen uit Studio-views zodat die geldig blijven
-    nadat het veld is verwijderd."""
+    nadat het veld is verwijderd. Blijft het veld ergens in attributen of
+    xpath-expressies staan (niet schoon te knippen), dan wordt de hele
+    Studio-view gedeactiveerd."""
     views = env["ir.ui.view"].search(
         [("model", "=", model_name), ("arch_db", "like", field_name)]
     )
@@ -169,16 +171,22 @@ def _strip_field_from_studio_views(env, model_name, field_name):
         try:
             arch = etree.fromstring(view.arch_db.encode("utf-8"))
             nodes = arch.xpath(
-                "//field[@name='%s'] | //label[@for='%s']"
-                % (field_name, field_name)
+                "//field[@name='%s'] | //label[@for='%s'] "
+                "| //xpath[contains(@expr, '%s')]"
+                % (field_name, field_name, field_name)
             )
-            if not nodes:
-                continue
             for node in nodes:
                 node.getparent().remove(node)
-            view.arch_db = etree.tostring(arch, encoding="unicode")
-            _logger.info("%s: stripped %s from view %s",
-                         MODULE, field_name, xml_id)
+            new_arch = etree.tostring(arch, encoding="unicode")
+            if field_name in new_arch:
+                view.active = False
+                _logger.info(
+                    "%s: view %s still references %s in attributes; "
+                    "deactivated the view", MODULE, xml_id, field_name)
+            elif nodes:
+                view.arch_db = new_arch
+                _logger.info("%s: stripped %s from view %s",
+                             MODULE, field_name, xml_id)
         except Exception:
             _logger.warning(
                 "%s: could not strip %s from view %s; deactivating view",

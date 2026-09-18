@@ -9,4 +9,13 @@
         <field name="value">0.0</field>
     </record>
 
+    <!-- Tijdelijke diagnose: '1' = plaats bij elke herberekening een
+         chatternotitie die uitlegt hoe de leverdatum tot stand kwam.
+         Uitzetten: waarde op '0' zetten (Instellingen > Technisch >
+         Systeemparameters). -->
+    <record id="d1_config_explain" model="ir.config_parameter">
+        <field name="key">d1_sale_commitment_date.explain</field>
+        <field name="value">1</field>
+    </record>
+
 </odoo>
