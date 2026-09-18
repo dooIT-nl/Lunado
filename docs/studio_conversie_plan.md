@@ -99,6 +99,7 @@
 8. Gedeactiveerde Studio-views nalopen; gewenste lay-out laten porten, rest verwijderen.
 9. Na verificatie: lege modellen `x_handling`/`x_handling_line_b0f2a` handmatig verwijderen.
 10. Diagnose-chatternotities leverdatum uitzetten zodra de acceptatie rond is (systeemparameter `d1_sale_commitment_date.explain` → `0`).
-11. Maatwerk register vullen (na acceptatie, afspraak).
+11. **API-venster afspreken**: blokkeer tijdens de merge + module-installatie de externe koppeling (Conneo-account tijdelijk archiveren of API-keys intrekken, of connector laten pauzeren) — continue API-writes houden locks vast en laten de build falen (les van 18-09 op staging). Na afronding weer activeren.
+12. Maatwerk register vullen (na acceptatie, afspraak).
 
 *dooIT B.V. — 17 september 2026*
