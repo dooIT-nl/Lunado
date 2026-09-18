@@ -24,7 +24,7 @@
         (zie docs/studio_conversie_plan.md).
 
         * v1.0: alias-velden met de oude x_studio_*-namen, gedelegeerd naar
-          de nieuwe d1_-velden, zodat externe koppelingen (json2 API) blijven
+          de nieuwe d1-velden, zodat externe koppelingen (json2 API) blijven
           werken totdat ze zijn omgezet naar de nieuwe veldnamen.
           LET OP: pas installeren nadat alle conversie-modules (incl.
           herstelmigraties) volledig zijn doorgevoerd — een achtergebleven

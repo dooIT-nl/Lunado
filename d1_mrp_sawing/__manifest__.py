@@ -34,19 +34,15 @@
           componentenlijst; hoeveelheid/lengte in de werkorderlijst en
           zichtbaar op de picking)
         * v1.0: initiele versie — vervangt 7 Studio-automations en 18
-          Studio-velden rond zagen/lengtes/frames:
-          - product: gebruik hoeveelheid/lengte, zaagcapaciteit en -tijd,
-            artikelcode gezaagd, framecalculator + controles (lengte vereist
-            hoeveelheid; zaagcap/zaagtijd > 0 bij productie-route)
-          - verkooporderregel: hoeveelheid x lengte -> orderhoeveelheid,
-            gewicht, frame-id/-nummer
-          - productieorder: hoeveelheid/lengte/framenummer vanuit de
-            verkoopregel, productietijd (zaagformule)
-          - werkorder: verwachte en werkelijke duur automatisch gevuld
-          - gerelateerde velden op werkorder en voorraadbewegingen
-          Route-check gekoppeld aan de standaard productie-route i.p.v. de
-          routenaam 'Productie'. Vervangt tevens de pleister-module
-          d1_fix_studio_fields. Datamigratie (incl. ir.default-waarden) en
+          Studio-velden rond zagen/lengtes/frames. Product: gebruik
+          hoeveelheid/lengte, zaagcapaciteit en -tijd, artikelcode gezaagd,
+          framecalculator, controles. Orderregel: hoeveelheid x lengte,
+          gewicht, frame-id/-nummer. Productieorder: waarden vanuit de
+          verkoopregel plus productietijd (zaagformule). Werkorder:
+          verwachte en werkelijke duur automatisch gevuld; gerelateerde
+          velden op werkorder en voorraadbewegingen. Route-check gekoppeld
+          aan de standaard productie-route. Vervangt tevens de
+          pleister-module d1_fix_studio_fields. Datamigratie en
           Studio-opschoning via post_init_hook.
     """,
 }
