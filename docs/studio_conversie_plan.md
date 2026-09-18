@@ -89,12 +89,16 @@
 | C7 | `d1_product_partner_data` ✅ | Beschikbaar-bug gefixt (besluit); KvK → `company_registry` (besluit); eindschoonmaak: handling-automation/-menu weg, resterende Studio-views gedeactiveerd |
 
 **Deploy-checklist productie:**
-1. `development` → staging (kopie productie) mergen: hooks draaien daar de échte datamigratie — logs controleren op `could not remove`-meldingen.
-2. `d1_fix_studio_fields` deïnstalleren (indien daar geïnstalleerd).
-3. Dropship-operatietype: vinkje *Geen leverdefaults van leverancier* controleren.
-4. Combi-routes op de magazijnen Rotterdam/Wesseling controleren.
-5. Gedeactiveerde Studio-views nalopen; gewenste lay-out laten porten, rest verwijderen.
-6. Na verificatie: lege modellen `x_handling`/`x_handling_line_b0f2a` handmatig verwijderen.
-7. Maatwerk register vullen (na acceptatie, afspraak).
+1. Vlak vóór de deploy: **export-serveractie nogmaals draaien** op productie en diffen tegen de export van 17-09 — vangt Studio-aanpassingen die ná de inventarisatie zijn gemaakt (les: de test-automation "Voeg volger toe" viel buiten de scope).
+2. `development` → staging (kopie productie) mergen: hooks + herstelmigraties draaien daar de échte datamigratie — logs controleren op `could not remove`-meldingen (les van 17/18-09: views met veld-verwijzingen in attributen worden nu gedeactiveerd; automation-matching op ilike).
+3. **`d1_studio_compat` installeren (ná stap 2!)** — tijdelijke aliassen voor de oude x_studio-veldnamen, anders breekt de externe koppeling (json2/Conneo) die de oude namen nog gebruikt (les van 18-09: `Invalid field 'x_studio_artikelcode_gezaagd'`). Bewust ná de migraties installeren: een achtergebleven handmatig x_studio-veld botst met de alias.
+4. **Integratiepartner (Conneo) de veldmapping oud→nieuw geven** met omschakel-deadline; na omschakeling `d1_studio_compat` deïnstalleren en later uit de repo verwijderen.
+5. `d1_fix_studio_fields` deïnstalleren (indien daar geïnstalleerd); map pas uit de repo als de module op álle databases weg is.
+6. Dropship-operatietype: vinkje *Geen leverdefaults van leverancier* controleren.
+7. Combi-routes op de magazijnen Rotterdam/Wesseling controleren.
+8. Gedeactiveerde Studio-views nalopen; gewenste lay-out laten porten, rest verwijderen.
+9. Na verificatie: lege modellen `x_handling`/`x_handling_line_b0f2a` handmatig verwijderen.
+10. Diagnose-chatternotities leverdatum uitzetten zodra de acceptatie rond is (systeemparameter `d1_sale_commitment_date.explain` → `0`).
+11. Maatwerk register vullen (na acceptatie, afspraak).
 
 *dooIT B.V. — 17 september 2026*
