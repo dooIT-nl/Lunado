@@ -1,7 +1,7 @@
 {
     "name": "MRP Sawing",
     "summary": "Sawing quantities, lengths, frames and production time on sales, manufacturing and stock (replaces Studio customizations)",
-    "version": "19.0.1.0.3",
+    "version": "19.0.1.0.4",
     "category": "Manufacturing",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -18,11 +18,15 @@
     "installable": True,
     "application": False,
     "description": """
-        MRP Sawing 19.0.1.0.1
+        MRP Sawing 19.0.1.0.4
         =====================
         Cluster C6 van de Studio-conversie (zie docs/studio_conversie_plan.md).
 
-        * 1.0.3-fix: robuustere Studio-opschoning (views met veld-verwijzingen in attributen worden gedeactiveerd) + migratie die de opschoning opnieuw draait
+        * v1.0.4: veld-opschoning in meerdere passes (afhankelijkheidsketens
+          zoals stock.move -> orderregel) en zonder tracebacks in het log;
+          migratie draait de opschoning opnieuw
+        * v1.0.3: robuustere Studio-opschoning (views met veld-verwijzingen
+          in attributen worden gedeactiveerd) + herstelmigratie
         * v1.0.2: view-pariteit met Studio hersteld (werkorderformulier,
           productlijst-kolommen, qty-var-name op de orderregel)
         * v1.0.1: velden op de productieorder op de oorspronkelijke

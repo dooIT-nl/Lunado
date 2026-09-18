@@ -195,29 +195,43 @@ def _strip_field_from_studio_views(env, model_name, field_name):
 
 
 def _remove_replaced_fields(env):
-    """Verwijder de vervangen handmatige Studio-velden (na de datakopie);
-    fouten worden gelogd en overgeslagen zodat de installatie nooit
-    blokkeert."""
-    for model_name, field_name in REPLACED_FIELDS:
-        field = env["ir.model.fields"].search(
-            [
-                ("model", "=", model_name),
-                ("name", "=", field_name),
-                ("state", "=", "manual"),
-            ]
-        )
-        if not field:
-            continue
-        _strip_field_from_studio_views(env, model_name, field_name)
-        try:
-            field.unlink()
-            _logger.info("%s: removed studio field %s.%s",
-                         MODULE, model_name, field_name)
-        except Exception:
-            _logger.warning(
-                "%s: could not remove studio field %s.%s (still "
-                "referenced?); please clean up manually",
-                MODULE, model_name, field_name, exc_info=True)
+    """Verwijder de vervangen handmatige Studio-velden (na de datakopie).
+
+    Meerdere passes: afhankelijkheidsketens (bv. een related veld op
+    stock.move dat naar de orderregel wijst) blokkeren de eerste poging maar
+    lossen op zodra de afhankelijke velden weg zijn. Definitief mislukte
+    velden worden zonder traceback gelogd (schoon buildlog) en kunnen
+    handmatig worden opgeruimd; de installatie blokkeert nooit.
+    """
+    remaining = list(REPLACED_FIELDS)
+    failures = []
+    for _pass in range(4):
+        failures = []
+        for model_name, field_name in remaining:
+            field = env["ir.model.fields"].search(
+                [
+                    ("model", "=", model_name),
+                    ("name", "=", field_name),
+                    ("state", "=", "manual"),
+                ]
+            )
+            if not field:
+                continue
+            _strip_field_from_studio_views(env, model_name, field_name)
+            try:
+                field.unlink()
+                _logger.info("%s: removed studio field %s.%s",
+                             MODULE, model_name, field_name)
+            except Exception as exc:
+                failures.append((model_name, field_name, str(exc)))
+        if not failures:
+            return
+        remaining = [(m, f) for m, f, _ in failures]
+    for model_name, field_name, reason in failures:
+        _logger.warning(
+            "%s: could not remove studio field %s.%s after multiple passes "
+            "(%s); please clean up manually",
+            MODULE, model_name, field_name, reason)
 
 
 def post_init_hook(env):
