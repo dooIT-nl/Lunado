@@ -93,7 +93,7 @@
 2. `development` → staging (kopie productie) mergen: hooks + herstelmigraties draaien daar de échte datamigratie — logs controleren op `could not remove`-meldingen (les van 17/18-09: views met veld-verwijzingen in attributen worden nu gedeactiveerd; automation-matching op ilike).
 3. **`d1_studio_compat` installeren (ná stap 2!)** — tijdelijke aliassen voor de oude x_studio-veldnamen, anders breekt de externe koppeling (json2/Conneo) die de oude namen nog gebruikt (les van 18-09: `Invalid field 'x_studio_artikelcode_gezaagd'`). Bewust ná de migraties installeren: een achtergebleven handmatig x_studio-veld botst met de alias.
 4. **Integratiepartner (Conneo) de veldmapping oud→nieuw geven** met omschakel-deadline; na omschakeling `d1_studio_compat` deïnstalleren en later uit de repo verwijderen.
-5. `d1_fix_studio_fields` deïnstalleren (indien daar geïnstalleerd); map pas uit de repo als de module op álle databases weg is.
+5. `d1_fix_studio_fields` deïnstalleren — **als eerste stap ná de merge, vóór het installeren van de andere modules** (vastgesteld 25-09: dit is op productie de enige geïnstalleerde d1-module; de variant-hulpvelden zouden anders de compat-aliassen overschaduwen). Map pas uit de repo als de module op álle databases weg is.
 6. Dropship-operatietype: vinkje *Geen leverdefaults van leverancier* controleren.
 7. Combi-routes op de magazijnen Rotterdam/Wesseling controleren.
 8. Gedeactiveerde Studio-views nalopen; gewenste lay-out laten porten, rest verwijderen.
