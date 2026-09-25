@@ -184,6 +184,77 @@ def _remove_replaced_fields(env):
             MODULE, model_name, field_name, reason)
 
 
+def _remove_stale_studio_field_rows(env):
+    """Verwijder wees-metadata van x_studio-velden: ir.model.fields-rijen
+    zonder bijbehorend veld in het register.
+
+    Achtergrond: product.product en res.users erven via _inherits van
+    product.template en res.partner. Voor elk Studio-veld op het oudermodel
+    maakt Odoo automatisch een gedelegeerd veld (state 'base') op het
+    kindmodel aan. Bij het verwijderen van het handmatige ouderveld verdwijnt
+    de delegatie uit het register, maar de metadata-rij blijft staan:
+    'base'-rijen worden alleen opgeruimd bij een update van de eigenaar-module
+    en die is er voor deze rijen niet. Ze zijn via de UI niet te verwijderen
+    (basisveld) en vervuilen de veldenlijst en toekomstige upgrades.
+
+    Criterium — bewust NIET via het register (tijdens het laden/migreren is
+    het register nog niet compleet; modules die later laden, zoals
+    d1_studio_compat, lijken dan ten onrechte afwezig): een gedelegeerde rij
+    op het kindmodel is wees zodra er geen veldrij met dezelfde naam meer op
+    het oudermodel bestaat. Dat is puur in de database te bepalen en dus
+    onafhankelijk van de laadvolgorde.
+
+    Veiligheidsregels:
+    * alleen de _inherits-kindmodellen (product.product, res.users) worden
+      geveegd; velden op andere modellen blijven ongemoeid (aliassen van
+      d1_studio_compat leven op de oudermodellen en hun delegaties op de
+      kindmodellen hebben een ouderrij — beide blijven staan);
+    * alleen state 'base' (delegaties); handmatige velden lopen via
+      _remove_replaced_fields;
+    * velden van de handmatige x_handling-modellen verdwijnen samen met het
+      model (deploy-checklist stap 9) en blijven hier bewust buiten schot.
+    """
+    # SQL i.p.v. ORM: ir.model.fields.unlink() weigert 'base'-rijen, en er
+    # valt hier niets anders op te ruimen dan de metadata zelf (geen kolom,
+    # geen registerveld). Geen gebruikersinvoer in de query.
+    delegations = [
+        ("product.product", "product.template"),
+        ("res.users", "res.partner"),
+    ]
+    removed = []
+    for child, parent in delegations:
+        env.cr.execute(
+            r"SELECT f.id, f.name FROM ir_model_fields f "
+            r"WHERE f.model = %s AND f.name LIKE 'x\_studio\_%%' "
+            r"AND f.state = 'base' "
+            r"AND NOT EXISTS (SELECT 1 FROM ir_model_fields p "
+            r"                WHERE p.model = %s AND p.name = f.name) "
+            r"ORDER BY f.name",
+            (child, parent),
+        )
+        for field_id, field_name in env.cr.fetchall():
+            try:
+                with env.cr.savepoint():
+                    env.cr.execute(
+                        "DELETE FROM ir_model_data "
+                        "WHERE model = 'ir.model.fields' AND res_id = %s",
+                        (field_id,))
+                    env.cr.execute(
+                        "DELETE FROM ir_model_fields WHERE id = %s",
+                        (field_id,))
+                removed.append("%s.%s" % (child, field_name))
+            except Exception as exc:
+                _logger.warning(
+                    "%s: could not remove stale field row %s.%s (%s); "
+                    "please clean up manually",
+                    MODULE, child, field_name, exc)
+    if removed:
+        env["ir.model.fields"].invalidate_model()
+        env.registry.clear_cache()
+        _logger.info("%s: removed %s stale x_studio field row(s): %s",
+                     MODULE, len(removed), ", ".join(removed))
+
+
 def _remove_handling_menu(env):
     """Verwijder het Studio-menu en de vensteractie van Handling (vervangen
     door d1_handling_cost)."""
@@ -235,5 +306,6 @@ def post_init_hook(env):
     _copy_columns(env)
     _remove_replaced_automations(env)
     _remove_replaced_fields(env)
+    _remove_stale_studio_field_rows(env)
     _remove_handling_menu(env)
     _deactivate_remaining_studio_views(env)

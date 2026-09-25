@@ -77,3 +77,52 @@ class TestD1ProductPartnerData(TransactionCase):
             }
         )
         self.assertTrue(order.d1_delivery_note_url.startswith("https://"))
+
+    def test_06_stale_studio_field_row_cleanup(self):
+        """De eindschoonmaak verwijdert wees-veldrijen (metadata zonder
+        registerveld) en laat levende registervelden ongemoeid."""
+        from odoo.addons.d1_product_partner_data import hooks
+
+        # simuleer een achtergebleven gedelegeerde veldrij (state 'base',
+        # geen veld in het register) zoals _inherits die achterlaat
+        model_id = self.env["ir.model"]._get_id("product.product")
+        self.env.cr.execute(
+            """
+            INSERT INTO ir_model_fields
+                (model_id, model, name, field_description, ttype, state,
+                 copied, store, required, readonly, index, translate,
+                 company_dependent)
+            VALUES (%s, 'product.product', 'x_studio_stale_test',
+                    '{"en_US": "Stale test"}', 'boolean', 'base',
+                    false, false, false, false, false, false, false)
+            RETURNING id
+            """,
+            (model_id,),
+        )
+        stale_id = self.env.cr.fetchone()[0]
+
+        hooks._remove_stale_studio_field_rows(self.env)
+
+        self.env.cr.execute(
+            "SELECT 1 FROM ir_model_fields WHERE id = %s", (stale_id,)
+        )
+        self.assertFalse(self.env.cr.fetchone(),
+                         "wees-veldrij moet verwijderd zijn")
+
+        # delegaties met een levende ouderrij (bv. d1_studio_compat-aliassen
+        # op product.template) mogen niet worden geraakt
+        self.env.cr.execute(
+            r"SELECT name FROM ir_model_fields "
+            r"WHERE model = 'product.template' AND name LIKE 'x\_studio\_%'"
+        )
+        for (name,) in self.env.cr.fetchall():
+            self.env.cr.execute(
+                "SELECT 1 FROM ir_model_fields "
+                "WHERE model = 'product.product' AND name = %s",
+                (name,),
+            )
+            self.assertTrue(
+                self.env.cr.fetchone(),
+                "delegatie %s met levende ouder mag niet verwijderd zijn"
+                % name,
+            )
