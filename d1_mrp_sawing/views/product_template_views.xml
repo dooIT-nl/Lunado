@@ -10,7 +10,7 @@
                 <group string="Sawing" name="d1_sawing">
                     <field name="d1_saw_capacity"/>
                     <field name="d1_saw_time"/>
-                    <field name="d1_sawn_product_id"/>
+                    <field name="d1_raw_product_id"/>
                     <field name="d1_framecalculator"/>
                 </group>
             </xpath>
@@ -27,7 +27,7 @@
                 <field name="d1_use_length" optional="hide"/>
                 <field name="d1_saw_capacity" optional="hide"/>
                 <field name="d1_saw_time" optional="hide"/>
-                <field name="d1_sawn_product_id" optional="hide"/>
+                <field name="d1_raw_product_id" optional="hide"/>
                 <field name="d1_framecalculator" optional="hide"/>
             </xpath>
         </field>

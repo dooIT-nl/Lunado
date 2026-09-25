@@ -116,8 +116,12 @@ msgstr "Produkt"
 #. module: d1_mrp_sawing
 #: model:ir.model.fields,help:d1_mrp_sawing.field_product_product__d1_sawn_product_id
 #: model:ir.model.fields,help:d1_mrp_sawing.field_product_template__d1_sawn_product_id
-msgid "Product code of the sawn variant of this product."
-msgstr "Artikelcode der gesaegten Variante dieses Produkts."
+msgid ""
+"Product code of the full-length article this product is sawn from "
+"(CIS20260922: the way of working was reversed; the field references the "
+"uncut, full-length article)."
+msgstr ""
+"Artikelcode des Artikels in voller Laenge, aus dem dieses Produkt gesaegt wird (CIS20260922)."
 
 #. module: d1_mrp_sawing
 #: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_production__d1_production_time
@@ -210,8 +214,8 @@ msgstr "Menge aus der verknuepften Verkaufsauftragszeile."
 #. module: d1_mrp_sawing
 #: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_product__d1_sawn_product_id
 #: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_template__d1_sawn_product_id
-msgid "Sawn Product Code"
-msgstr "Artikelcode gesaegt"
+msgid "Full-Length Product Code"
+msgstr "Artikelcode volle Laenge"
 
 #. module: d1_mrp_sawing
 #: model:ir.model,name:d1_mrp_sawing.model_stock_move
