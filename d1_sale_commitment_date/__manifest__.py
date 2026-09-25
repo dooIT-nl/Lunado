@@ -1,7 +1,7 @@
 {
     "name": "Sale Commitment Date from Order Lines",
     "summary": "Compute the sale order delivery date from stock, incoming receipts and customer lead time",
-    "version": "19.0.1.3.0",
+    "version": "19.0.1.3.1",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -17,6 +17,9 @@
     "description": """
         Sale Commitment Date from Order Lines 19.0.1.2.0
         ================================================
+        * v1.3.1: cutoff-tijd als optionele lijstkolom met tijdnotatie
+          (bevinding CIS20260925); migratie deactiveert de via Studio
+          toegevoegde kolom zonder widget
         * v1.3: tijdelijke diagnose-chatternotitie die per regel uitlegt hoe
           de leverdatum is berekend; aan/uit via systeemparameter
           d1_sale_commitment_date.explain (geleverd op '1')
