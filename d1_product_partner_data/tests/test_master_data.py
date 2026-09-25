@@ -160,18 +160,58 @@ class TestD1ProductPartnerData(TransactionCase):
              "relation": "res.currency", "state": "manual",
              "related": "x_handling_id.x_studio_currency_id"}
         )
+        # monetary hangt op x_currency_id; x_active + archiveerlint en de
+        # embedded regels zoals in de echte Studio-view
+        self.env["ir.model.fields"].create(
+            {"model_id": line.id, "name": "x_bedrag",
+             "field_description": "Bedrag", "ttype": "monetary",
+             "state": "manual"}
+        )
+        self.env["ir.model.fields"].create(
+            {"model_id": parent.id, "name": "x_active",
+             "field_description": "Actief", "ttype": "boolean",
+             "state": "manual"}
+        )
+        self.env["ir.model.fields"].create(
+            {"model_id": parent.id, "name": "x_line_ids",
+             "field_description": "Regels", "ttype": "one2many",
+             "relation": line_name, "relation_field": "x_handling_id",
+             "state": "manual"}
+        )
+        # veld op een ander model dat naar het matrix-model verwijst
+        # (zoals x_studio_handling op res.partner)
+        blocker = self.env["ir.model.fields"].create(
+            {"model_id": self.env["ir.model"]._get("res.partner").id,
+             "name": "x_d1_test_handling_ref",
+             "field_description": "Handling", "ttype": "many2one",
+             "relation": parent_name, "state": "manual"}
+        )
         view = self.env["ir.ui.view"].create(
             {"name": "d1 test handling form", "model": parent_name,
              "type": "form",
-             "arch": "<form><field name='x_name'/>"
-                     "<field name='x_studio_currency_id'/></form>"}
+             "arch": "<form><sheet string='Handling'>"
+                     "<widget name='web_ribbon' text='Gearchiveerd'"
+                     " bg_color='bg-danger' invisible='x_active == True'/>"
+                     "<field name='x_active' invisible='1'/>"
+                     "<field name='x_name'/>"
+                     "<field name='x_studio_currency_id'/>"
+                     "<field name='x_line_ids'><list>"
+                     "<field name='x_bedrag'/>"
+                     "<field name='x_currency_id' column_invisible='True'/>"
+                     "</list></field></sheet></form>"}
         )
-        rec = self.env[parent_name].create({"x_name": "staffel"})
+        self.env["ir.model.data"].create(
+            {"module": "studio_customization",
+             "name": "d1_test_handling_form",
+             "model": "ir.ui.view", "res_id": view.id}
+        )
+        rec = self.env[parent_name].create(
+            {"x_name": "staffel", "x_active": True}
+        )
         self.env[line_name].create(
             {"x_name": "regel", "x_handling_id": rec.id}
         )
 
-        # regels eerst, net als bij de echte modellen
         hooks._remove_handling_models(
             self.env, model_names=(line_name, parent_name)
         )
@@ -183,6 +223,13 @@ class TestD1ProductPartnerData(TransactionCase):
             "modellen moeten verwijderd zijn",
         )
         self.assertFalse(view.exists(), "view moet verwijderd zijn")
+        self.assertFalse(
+            blocker.exists(),
+            "verwijzend veld op res.partner moet mee verwijderd zijn",
+        )
+        # de view-deactivatie hierna mag nooit meer een validatiefout gooien
+        # ('Field x_active does not exist' — go-live-rehearsal 25-09)
+        hooks._deactivate_remaining_studio_views(self.env)
         for table in (parent_name, line_name):
             self.env.cr.execute(
                 "SELECT 1 FROM information_schema.tables "

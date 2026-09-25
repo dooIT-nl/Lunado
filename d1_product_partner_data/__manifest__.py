@@ -1,7 +1,7 @@
 {
     "name": "Product & Partner Master Data",
     "summary": "Master data fields from Studio (ABC code, availability, cost calc, packing slip URL) and final Studio cleanup",
-    "version": "19.0.1.0.6",
+    "version": "19.0.1.0.7",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -33,6 +33,14 @@
         Cluster C7 (sluitstuk) van de Studio-conversie
         (zie docs/studio_conversie_plan.md).
 
+        * v1.0.7: definitieve fix Handling-modelverwijdering — modellen
+          worden in een unlink met de uninstall-vlag verwijderd (Odoo's
+          eigen cascade voor afhankelijke velden/delegaties, zoals bij het
+          deinstalleren van studio_customization) i.p.v. veld-voor-veld;
+          register wordt na (mislukte) verwijdering herladen en de
+          view-deactivatie werkt per view met savepoint, zodat de
+          installatie nooit meer afbreekt op 'Field x_active does not
+          exist' (bevinding go-live-rehearsal 25-09)
         * v1.0.6: fix Handling-modelverwijdering — velden worden vooraf in
           meerdere passes verwijderd; de cascade blokkeerde op het
           related-veld x_currency_id dat op x_handling_id hangt (bevinding
