@@ -174,3 +174,65 @@ class TestD1Handling(TransactionCase):
             lambda l: l.product_template_id == self.product_template
         )
         self.assertEqual(len(handling_lines), 0)
+
+    # ------------------------------------------------------------------
+    # Regressietests bevinding: handling zonder handmatige sync-aanroep
+    # ------------------------------------------------------------------
+    def _handling_lines(self, order):
+        return order.order_line.filtered(
+            lambda l: l.product_template_id == self.product_template
+        )
+
+    def test_handling_applied_on_order_create(self):
+        """Order in een keer aangemaakt (UI/API) krijgt direct handling —
+        de bevinding was dat dit alleen gebeurde als een latere write
+        (bv. de zaagdienst-sync) de order nog eens aanraakte."""
+        order = self.env["sale.order"].create({
+            "partner_id": self.partner.id,
+            "order_line": [(0, 0, {
+                "product_id": self.regular_product.id,
+                "product_uom_qty": 2,
+                "price_unit": 100.0,
+            })],
+        })
+        handling_lines = self._handling_lines(order)
+        self.assertEqual(len(handling_lines), 1,
+                         "Handling moet direct bij create worden toegevoegd")
+        self.assertEqual(handling_lines.price_unit, 25.0)
+
+    def test_handling_resynced_on_line_write(self):
+        """Regel-wijziging (direct op de regel, bv. via API) past de
+        staffel aan."""
+        order = self.env["sale.order"].create({
+            "partner_id": self.partner.id,
+            "order_line": [(0, 0, {
+                "product_id": self.regular_product.id,
+                "product_uom_qty": 1,
+                "price_unit": 200.0,
+            })],
+        })
+        self.assertEqual(self._handling_lines(order).price_unit, 25.0)
+        regular = order.order_line.filtered(
+            lambda l: l.product_template_id != self.product_template
+        )
+        regular.write({"product_uom_qty": 5})  # 1000 -> hoge staffel
+        self.assertEqual(self._handling_lines(order).price_unit, 15.0)
+
+    def test_handling_resynced_on_line_unlink(self):
+        """Regel verwijderen laat de staffel terugvallen."""
+        order = self.env["sale.order"].create({
+            "partner_id": self.partner.id,
+            "order_line": [
+                (0, 0, {"product_id": self.regular_product.id,
+                        "product_uom_qty": 1, "price_unit": 200.0}),
+                (0, 0, {"product_id": self.regular_product.id,
+                        "product_uom_qty": 4, "price_unit": 200.0}),
+            ],
+        })
+        self.assertEqual(self._handling_lines(order).price_unit, 15.0)
+        big_line = order.order_line.filtered(
+            lambda l: l.product_uom_qty == 4
+        )
+        big_line.unlink()  # 1000 -> 200: terug naar lage staffel
+        self.assertEqual(self._handling_lines(order).price_unit, 25.0)
+

@@ -1,6 +1,6 @@
 import logging
 
-from odoo import models
+from odoo import api, models
 from odoo.fields import Command
 
 _logger = logging.getLogger(__name__)
@@ -15,6 +15,20 @@ class SaleOrder(models.Model):
     _D1_HANDLING_TRIGGER_FIELDS = {
         "partner_id", "order_line", "amount_untaxed", "amount_total", "state",
     }
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Apply the handling cost line on newly created orders.
+
+        Fix voor de bevinding dat handling alleen verscheen wanneer een
+        latere order-write (bv. de zaagdienst-sync) de regel alsnog
+        triggerde: bij een order die in een keer met regels wordt aangemaakt
+        (UI of API) wordt write() nooit aangeroepen.
+        """
+        orders = super().create(vals_list)
+        if not self.env.context.get("d1_skip_handling"):
+            orders.filtered(lambda o: o.state == "draft")._d1_apply_handling()
+        return orders
 
     def write(self, vals):
         """Apply handling cost line when relevant fields change."""
@@ -52,7 +66,7 @@ class SaleOrder(models.Model):
 
             if not handling or not handling_product:
                 if existing:
-                    existing.unlink()
+                    existing.with_context(d1_skip_handling=True).unlink()
                 continue
 
             # Calculate base amount excluding the handling product itself
@@ -97,4 +111,4 @@ class SaleOrder(models.Model):
                         order.name,
                     )
             elif existing:
-                existing.unlink()
+                existing.with_context(d1_skip_handling=True).unlink()
