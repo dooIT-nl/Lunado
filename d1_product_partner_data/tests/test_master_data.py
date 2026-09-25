@@ -126,3 +126,39 @@ class TestD1ProductPartnerData(TransactionCase):
                 "delegatie %s met levende ouder mag niet verwijderd zijn"
                 % name,
             )
+
+    def test_07_handling_model_cleanup(self):
+        """De eindschoonmaak verwijdert een handmatig Studio-model inclusief
+        velden, views en tabel (zoals x_handling/x_handling_line_b0f2a)."""
+        from odoo.addons.d1_product_partner_data import hooks
+
+        model_name = "x_d1_test_handling"
+        model = self.env["ir.model"].create(
+            {"name": "D1 Test Handling", "model": model_name,
+             "state": "manual"}
+        )
+        self.env["ir.model.fields"].create(
+            {"model_id": model.id, "name": "x_value",
+             "field_description": "Waarde", "ttype": "float",
+             "state": "manual"}
+        )
+        view = self.env["ir.ui.view"].create(
+            {"name": "d1 test handling form", "model": model_name,
+             "type": "form",
+             "arch": "<form><field name='x_name'/>"
+                     "<field name='x_value'/></form>"}
+        )
+        self.env[model_name].create({"x_name": "staffel", "x_value": 1.5})
+
+        hooks._remove_handling_models(self.env, model_names=(model_name,))
+
+        self.assertFalse(
+            self.env["ir.model"].search([("model", "=", model_name)]),
+            "model moet verwijderd zijn",
+        )
+        self.assertFalse(view.exists(), "view moet verwijderd zijn")
+        self.env.cr.execute(
+            "SELECT 1 FROM information_schema.tables WHERE table_name = %s",
+            (model_name,),
+        )
+        self.assertFalse(self.env.cr.fetchone(), "tabel moet verwijderd zijn")

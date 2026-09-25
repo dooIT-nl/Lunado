@@ -1,7 +1,7 @@
 {
     "name": "Product & Partner Master Data",
     "summary": "Master data fields from Studio (ABC code, availability, cost calc, packing slip URL) and final Studio cleanup",
-    "version": "19.0.1.0.4",
+    "version": "19.0.1.0.5",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -33,6 +33,11 @@
         Cluster C7 (sluitstuk) van de Studio-conversie
         (zie docs/studio_conversie_plan.md).
 
+        * v1.0.5: eindschoonmaak verwijdert nu ook de handmatige
+          Handling-modellen x_handling en x_handling_line_b0f2a inclusief
+          hun velden, views en tabellen (data al gemigreerd door
+          d1_handling_cost; besluit 25-09-2026 — de handmatige verwijderstap
+          uit de deploy-checklist vervalt)
         * v1.0.4: eindschoonmaak verwijdert nu ook wees-veldrijen — de
           automatisch gedelegeerde x_studio-velden op product.product en
           res.users (_inherits) die als 'basisveld' achterbleven nadat het

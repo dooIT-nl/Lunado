@@ -4,7 +4,8 @@ Naast het bekende patroon (datakopie, automation-/veldopschoning) doet dit
 sluitstuk-cluster de laatste veeg:
 * KvK-nummer (x_studio_coc) migreert naar het standaardveld
   company_registry (besluit 17-09-2026);
-* de Studio-automation 'Verkoop: Voeg Handling toe' en het Handling-menu
+* de Studio-automation 'Verkoop: Voeg Handling toe', het Handling-menu en
+  de handmatige Handling-modellen (x_handling, x_handling_line_b0f2a)
   worden verwijderd (functioneel vervangen door d1_handling_cost);
 * alle resterende studio_customization-views worden GEDEACTIVEERD (niet
   verwijderd) zodat de consultant ze op staging kan nalopen en eventueel
@@ -212,7 +213,7 @@ def _remove_stale_studio_field_rows(env):
     * alleen state 'base' (delegaties); handmatige velden lopen via
       _remove_replaced_fields;
     * velden van de handmatige x_handling-modellen verdwijnen samen met het
-      model (deploy-checklist stap 9) en blijven hier bewust buiten schot.
+      model (zie _remove_handling_models) en blijven hier buiten schot.
     """
     # SQL i.p.v. ORM: ir.model.fields.unlink() weigert 'base'-rijen, en er
     # valt hier niets anders op te ruimen dan de metadata zelf (geen kolom,
@@ -281,6 +282,51 @@ def _remove_handling_menu(env):
                             MODULE, model_name, res_id, exc_info=True)
 
 
+# handmatige Studio-modellen van de oude Handling-matrix (vervangen door
+# d1_handling_cost); de regels eerst — die verwijzen met een m2o naar
+# x_handling
+HANDLING_MODELS = ("x_handling_line_b0f2a", "x_handling")
+
+
+def _remove_handling_models(env, model_names=HANDLING_MODELS):
+    """Verwijder de handmatige Studio-modellen van de oude Handling-matrix.
+
+    De data is al gemigreerd door d1_handling_cost; het menu en de automation
+    zijn eerder in deze hook opgeruimd. Unlink van het ir.model-record
+    verwijdert (cascade) ook de velden, toegangsregels en de databasetabel;
+    views op het model gaan eerst. Besluit 25-09-2026: de handmatige
+    verwijderstap na verificatie (deploy-checklist stap 9) vervalt hiermee.
+    """
+    for model_name in model_names:
+        model = env["ir.model"].search(
+            [("model", "=", model_name), ("state", "=", "manual")]
+        )
+        if not model:
+            continue
+        try:
+            with env.cr.savepoint():
+                views = env["ir.ui.view"].with_context(
+                    active_test=False
+                ).search([("model", "=", model_name)])
+                view_count = len(views)
+                views.unlink()
+                # aantal datarijen loggen vóór de tabel (cascade) verdwijnt;
+                # tabelnaam komt uit de vaste lijst hierboven
+                table = model_name.replace(".", "_")
+                env.cr.execute('SELECT COUNT(*) FROM "%s"' % table)
+                row_count = env.cr.fetchone()[0]
+                model.unlink()
+            _logger.info(
+                "%s: removed studio model %s (%s view(s), %s data row(s))",
+                MODULE, model_name, view_count, row_count,
+            )
+        except Exception as exc:
+            _logger.warning(
+                "%s: could not remove studio model %s (%s); "
+                "please clean up manually", MODULE, model_name, exc,
+            )
+
+
 def _deactivate_remaining_studio_views(env):
     """Deactiveer alle resterende studio_customization-views (eindschoonmaak;
     bewust niet verwijderen zodat gewenste lay-out op staging nog te
@@ -308,4 +354,5 @@ def post_init_hook(env):
     _remove_replaced_fields(env)
     _remove_stale_studio_field_rows(env)
     _remove_handling_menu(env)
+    _remove_handling_models(env)
     _deactivate_remaining_studio_views(env)
