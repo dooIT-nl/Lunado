@@ -128,37 +128,66 @@ class TestD1ProductPartnerData(TransactionCase):
             )
 
     def test_07_handling_model_cleanup(self):
-        """De eindschoonmaak verwijdert een handmatig Studio-model inclusief
-        velden, views en tabel (zoals x_handling/x_handling_line_b0f2a)."""
+        """De eindschoonmaak verwijdert handmatige Studio-modellen inclusief
+        velden, views en tabellen — ook met de afhankelijkheidsketen van de
+        echte Handling-matrix (related x_currency_id via x_handling_id naar
+        de valuta van het hoofdmodel, bevinding go-live-rehearsal 25-09)."""
         from odoo.addons.d1_product_partner_data import hooks
 
-        model_name = "x_d1_test_handling"
-        model = self.env["ir.model"].create(
-            {"name": "D1 Test Handling", "model": model_name,
+        parent_name = "x_d1_test_handling"
+        line_name = "x_d1_test_handling_line"
+        parent = self.env["ir.model"].create(
+            {"name": "D1 Test Handling", "model": parent_name,
+             "state": "manual"}
+        )
+        line = self.env["ir.model"].create(
+            {"name": "D1 Test Handling Line", "model": line_name,
              "state": "manual"}
         )
         self.env["ir.model.fields"].create(
-            {"model_id": model.id, "name": "x_value",
-             "field_description": "Waarde", "ttype": "float",
-             "state": "manual"}
+            {"model_id": parent.id, "name": "x_studio_currency_id",
+             "field_description": "Valuta", "ttype": "many2one",
+             "relation": "res.currency", "state": "manual"}
+        )
+        self.env["ir.model.fields"].create(
+            {"model_id": line.id, "name": "x_handling_id",
+             "field_description": "Handling", "ttype": "many2one",
+             "relation": parent_name, "state": "manual"}
+        )
+        self.env["ir.model.fields"].create(
+            {"model_id": line.id, "name": "x_currency_id",
+             "field_description": "Valuta", "ttype": "many2one",
+             "relation": "res.currency", "state": "manual",
+             "related": "x_handling_id.x_studio_currency_id"}
         )
         view = self.env["ir.ui.view"].create(
-            {"name": "d1 test handling form", "model": model_name,
+            {"name": "d1 test handling form", "model": parent_name,
              "type": "form",
              "arch": "<form><field name='x_name'/>"
-                     "<field name='x_value'/></form>"}
+                     "<field name='x_studio_currency_id'/></form>"}
         )
-        self.env[model_name].create({"x_name": "staffel", "x_value": 1.5})
+        rec = self.env[parent_name].create({"x_name": "staffel"})
+        self.env[line_name].create(
+            {"x_name": "regel", "x_handling_id": rec.id}
+        )
 
-        hooks._remove_handling_models(self.env, model_names=(model_name,))
+        # regels eerst, net als bij de echte modellen
+        hooks._remove_handling_models(
+            self.env, model_names=(line_name, parent_name)
+        )
 
         self.assertFalse(
-            self.env["ir.model"].search([("model", "=", model_name)]),
-            "model moet verwijderd zijn",
+            self.env["ir.model"].search(
+                [("model", "in", (parent_name, line_name))]
+            ),
+            "modellen moeten verwijderd zijn",
         )
         self.assertFalse(view.exists(), "view moet verwijderd zijn")
-        self.env.cr.execute(
-            "SELECT 1 FROM information_schema.tables WHERE table_name = %s",
-            (model_name,),
-        )
-        self.assertFalse(self.env.cr.fetchone(), "tabel moet verwijderd zijn")
+        for table in (parent_name, line_name):
+            self.env.cr.execute(
+                "SELECT 1 FROM information_schema.tables "
+                "WHERE table_name = %s", (table,),
+            )
+            self.assertFalse(
+                self.env.cr.fetchone(), "tabel %s moet verwijderd zijn" % table
+            )

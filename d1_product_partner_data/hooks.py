@@ -288,6 +288,41 @@ def _remove_handling_menu(env):
 HANDLING_MODELS = ("x_handling_line_b0f2a", "x_handling")
 
 
+def _remove_model_fields_multipass(env, model_name):
+    """Verwijder de handmatige velden van een model in meerdere passes.
+
+    De cascade van ir.model.unlink weigert een veld te verwijderen zolang een
+    ander veld van hetzelfde model ervan afhangt (bv. het related-veld
+    x_currency_id dat via x_handling_id naar x_handling.x_studio_currency_id
+    wijst — bevinding go-live-rehearsal 25-09-2026). Door de velden vooraf
+    per stuk te verwijderen valt in pass 1 het afhankelijke veld weg, waarna
+    het geblokkeerde veld in de volgende pass vrijkomt. x_name blijft staan
+    (rec_name); die verdwijnt met het model zelf.
+    """
+    for _pass in range(4):
+        fields = env["ir.model.fields"].search(
+            [
+                ("model", "=", model_name),
+                ("state", "=", "manual"),
+                ("name", "!=", "x_name"),
+            ]
+        )
+        if not fields:
+            return
+        progress = False
+        for field in fields:
+            try:
+                with env.cr.savepoint():
+                    field.unlink()
+                progress = True
+            except Exception:
+                # volgende pass opnieuw proberen; definitieve blokkades
+                # meldt de model-unlink zelf
+                continue
+        if not progress:
+            return
+
+
 def _remove_handling_models(env, model_names=HANDLING_MODELS):
     """Verwijder de handmatige Studio-modellen van de oude Handling-matrix.
 
@@ -315,6 +350,7 @@ def _remove_handling_models(env, model_names=HANDLING_MODELS):
                 table = model_name.replace(".", "_")
                 env.cr.execute('SELECT COUNT(*) FROM "%s"' % table)
                 row_count = env.cr.fetchone()[0]
+                _remove_model_fields_multipass(env, model_name)
                 model.unlink()
             _logger.info(
                 "%s: removed studio model %s (%s view(s), %s data row(s))",
