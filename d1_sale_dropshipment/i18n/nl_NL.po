@@ -1,0 +1,64 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* d1_sale_dropshipment
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-17 09:59+0000\n"
+"PO-Revision-Date: 2026-09-17 09:59+0000\n"
+"Last-Translator: dooIT B.V.\n"
+"Language-Team: \n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: d1_sale_dropshipment
+#: model:ir.model,name:d1_sale_dropshipment.model_res_partner
+msgid "Contact"
+msgstr "Contact"
+
+#. module: d1_sale_dropshipment
+#: model:ir.model.fields,help:d1_sale_dropshipment.field_sale_order__d1_dropshipment
+msgid ""
+"Copied from the customer when the customer is set or changed; can be "
+"overridden per order."
+msgstr ""
+"Overgenomen van de klant zodra de klant wordt gezet of gewijzigd; per order "
+"aan te passen."
+
+#. module: d1_sale_dropshipment
+#: model:ir.model.fields,field_description:d1_sale_dropshipment.field_res_partner__display_name
+#: model:ir.model.fields,field_description:d1_sale_dropshipment.field_sale_order__display_name
+msgid "Display Name"
+msgstr "Weergavenaam"
+
+#. module: d1_sale_dropshipment
+#: model:ir.model.fields,field_description:d1_sale_dropshipment.field_res_partner__d1_dropshipment
+#: model:ir.model.fields,field_description:d1_sale_dropshipment.field_res_users__d1_dropshipment
+#: model:ir.model.fields,field_description:d1_sale_dropshipment.field_sale_order__d1_dropshipment
+msgid "Dropshipment"
+msgstr "Dropshipment"
+
+#. module: d1_sale_dropshipment
+#: model:ir.model.fields,field_description:d1_sale_dropshipment.field_res_partner__id
+#: model:ir.model.fields,field_description:d1_sale_dropshipment.field_sale_order__id
+msgid "ID"
+msgstr "ID"
+
+#. module: d1_sale_dropshipment
+#: model:ir.model.fields,help:d1_sale_dropshipment.field_res_partner__d1_dropshipment
+#: model:ir.model.fields,help:d1_sale_dropshipment.field_res_users__d1_dropshipment
+msgid ""
+"New sale orders for this customer are flagged as dropshipment by default."
+msgstr ""
+"Nieuwe verkooporders voor deze klant worden standaard gemarkeerd als "
+"dropshipment."
+
+#. module: d1_sale_dropshipment
+#: model:ir.model,name:d1_sale_dropshipment.model_sale_order
+msgid "Sales Order"
+msgstr "Verkooporder"

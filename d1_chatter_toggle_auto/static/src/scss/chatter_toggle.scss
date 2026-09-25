@@ -1,0 +1,31 @@
+/* Subtiele fade animatie */
+.o-mail-Form-chatter {
+    transition: opacity 0.2s ease;
+}
+
+/* Verberg chatter */
+.o_chatter_hidden .o-mail-Form-chatter {
+    opacity: 0;
+    display: none !important;
+}
+
+/* Form full width zonder layout te breken */
+.o_chatter_hidden .o_form_renderer,
+.o_chatter_hidden .o_form_sheet_bg {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Button styling */
+.o_toggle_chatter_btn {
+    padding: 3px 8px !important;
+    font-size: 13px !important;
+}
+
+/* Mobile uitsluiten */
+@media (max-width: 991px) {
+    .o_toggle_chatter_btn {
+        display: none !important;
+    }
+}
+

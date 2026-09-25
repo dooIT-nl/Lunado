@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- System-wide default cutoff hour (float, e.g. 16.5 = 16:30).
+         0.0 = no cutoff: the day rolls over to the next working day at
+         midnight. Can be overridden per customer on res.partner. -->
+    <record id="d1_config_default_cutoff_hour" model="ir.config_parameter">
+        <field name="key">d1_sale_commitment_date.default_cutoff_hour</field>
+        <field name="value">0.0</field>
+    </record>
+
+    <!-- Tijdelijke diagnose: '1' = plaats bij elke herberekening een
+         chatternotitie die uitlegt hoe de leverdatum tot stand kwam.
+         Uitzetten: waarde op '0' zetten (Instellingen > Technisch >
+         Systeemparameters). -->
+    <record id="d1_config_explain" model="ir.config_parameter">
+        <field name="key">d1_sale_commitment_date.explain</field>
+        <field name="value">1</field>
+    </record>
+
+</odoo>

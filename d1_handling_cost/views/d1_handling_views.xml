@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- d1.handling — List                                            -->
+    <!-- ============================================================ -->
+    <record id="d1_handling_view_list" model="ir.ui.view">
+        <field name="name">d1.handling.list</field>
+        <field name="model">d1.handling</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- d1.handling — Form                                            -->
+    <!-- ============================================================ -->
+    <record id="d1_handling_view_form" model="ir.ui.view">
+        <field name="name">d1.handling.form</field>
+        <field name="model">d1.handling</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="active" invisible="1"/>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Description"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                        </group>
+                        <group>
+                            <field name="currency_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="value_from"/>
+                                    <field name="total"/>
+                                    <field name="amount"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- d1.handling — Search                                          -->
+    <!-- ============================================================ -->
+    <record id="d1_handling_view_search" model="ir.ui.view">
+        <field name="name">d1.handling.search</field>
+        <field name="model">d1.handling</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="product_id"/>
+                <filter name="active" string="Archived" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Window action                                                 -->
+    <!-- ============================================================ -->
+    <record id="d1_handling_action" model="ir.actions.act_window">
+        <field name="name">Handling</field>
+        <field name="res_model">d1.handling</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Menu under Sales > Catalog                                    -->
+    <!-- ============================================================ -->
+    <menuitem id="d1_handling_menu"
+              name="Handling"
+              parent="sale.product_menu_catalog"
+              action="d1_handling_action"
+              sequence="30"/>
+
+</odoo>

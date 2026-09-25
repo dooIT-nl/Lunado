@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="d1_sale_order_view_form" model="ir.ui.view">
+        <field name="name">sale.order.form.d1.commitment.date</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning" role="alert"
+                     invisible="not d1_delivery_date_warning">
+                    <span>The customer requested delivery date is earlier than the earliest possible delivery date. The computed date is kept as delivery date. Earliest possible delivery:</span>
+                    <field name="d1_computed_commitment_date" readonly="1" class="oe_inline"/>
+                </div>
+            </xpath>
+            <xpath expr="//label[@for='commitment_date']" position="before">
+                <field name="d1_customer_request_date"/>
+                <field name="d1_computed_commitment_date" readonly="1"/>
+                <field name="d1_delivery_date_warning" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

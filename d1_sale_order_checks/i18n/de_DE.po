@@ -1,0 +1,169 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* d1_sale_order_checks
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-17 09:44+0000\n"
+"PO-Revision-Date: 2026-09-17 09:44+0000\n"
+"Last-Translator: dooIT B.V.\n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: d1_sale_order_checks
+#: model_terms:ir.ui.view,arch_db:d1_sale_order_checks.d1_sale_order_view_form
+msgid ""
+"<span>The customer's credit limit has been exceeded. Confirming is blocked "
+"unless 'Allow Exceeding Credit Limit' is checked.</span>"
+msgstr ""
+"<span>Das Kreditlimit des Kunden wurde überschritten. Die Bestätigung ist "
+"blockiert, es sei denn, 'Überschreitung des Kreditlimits zulassen' ist "
+"aktiviert.</span>"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_sale_order__d1_exceed_credit_limit
+msgid "Allow Exceeding Credit Limit"
+msgstr "Überschreitung des Kreditlimits zulassen"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields,help:d1_sale_order_checks.field_sale_order__d1_exceed_credit_limit
+msgid ""
+"Allow confirming this order even though the customer's credit limit is "
+"exceeded."
+msgstr ""
+"Erlaubt die Bestätigung dieses Auftrags, obwohl das Kreditlimit des Kunden "
+"überschritten ist."
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields,help:d1_sale_order_checks.field_res_partner__d1_insured_amount
+#: model:ir.model.fields,help:d1_sale_order_checks.field_res_users__d1_insured_amount
+msgid "Amount covered by the credit insurance (company currency)."
+msgstr "Durch die Kreditversicherung gedeckter Betrag (Unternehmenswährung)."
+
+#. module: d1_sale_order_checks
+#: model:ir.model,name:d1_sale_order_checks.model_res_partner
+msgid "Contact"
+msgstr "Kontakt"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_res_partner__d1_credit_insurance
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_res_users__d1_credit_insurance
+msgid "Credit Insurance"
+msgstr "Kreditversicherung"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_sale_order__d1_credit_limit_exceeded
+msgid "Credit Limit Exceeded"
+msgstr "Kreditlimit überschritten"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields.selection,name:d1_sale_order_checks.selection__res_partner__d1_rel_type__customer
+msgid "Customer"
+msgstr "Kunde"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_res_partner__display_name
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_sale_order__display_name
+msgid "Display Name"
+msgstr "Anzeigename"
+
+#. module: d1_sale_order_checks
+#. odoo-python
+#: code:addons/d1_sale_order_checks/models/sale_order.py:0
+msgid "Duplicate customer reference"
+msgstr "Doppelte Kundenreferenz"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_res_partner__id
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_sale_order__id
+msgid "ID"
+msgstr "ID"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_res_partner__d1_insured_amount
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_res_users__d1_insured_amount
+msgid "Insured Amount"
+msgstr "Versicherter Betrag"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields.selection,name:d1_sale_order_checks.selection__res_partner__d1_credit_insurance__insured_insurer
+msgid "Insured, insurer assessment"
+msgstr "Versichert, Beurteilung Versicherer"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields.selection,name:d1_sale_order_checks.selection__res_partner__d1_credit_insurance__insured_own
+msgid "Insured, own assessment"
+msgstr "Versichert, eigene Beurteilung"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields.selection,name:d1_sale_order_checks.selection__res_partner__d1_credit_insurance__not_insured
+msgid "Not insured"
+msgstr "Nicht versichert"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields.selection,name:d1_sale_order_checks.selection__res_partner__d1_rel_type__prospect
+msgid "Prospect"
+msgstr "Interessent"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_res_partner__d1_rel_type
+#: model:ir.model.fields,field_description:d1_sale_order_checks.field_res_users__d1_rel_type
+msgid "Relation Type"
+msgstr "Beziehungstyp"
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields,help:d1_sale_order_checks.field_res_partner__d1_rel_type
+#: model:ir.model.fields,help:d1_sale_order_checks.field_res_users__d1_rel_type
+msgid "Sale orders cannot be created for partners of type Prospect."
+msgstr ""
+"Für Partner vom Typ Interessent können keine Verkaufsaufträge angelegt "
+"werden."
+
+#. module: d1_sale_order_checks
+#: model:ir.model,name:d1_sale_order_checks.model_sale_order
+msgid "Sales Order"
+msgstr "Verkaufsauftrag"
+
+#. module: d1_sale_order_checks
+#. odoo-python
+#: code:addons/d1_sale_order_checks/models/sale_order.py:0
+msgid ""
+"The entered customer reference is already registered for this customer "
+"(order %s)."
+msgstr ""
+"Die eingegebene Kundenreferenz ist für diesen Kunden bereits registriert "
+"(Auftrag %s)."
+
+#. module: d1_sale_order_checks
+#: model:ir.model.fields,help:d1_sale_order_checks.field_sale_order__d1_credit_limit_exceeded
+msgid "The invoice partner's total receivable exceeds their credit limit."
+msgstr ""
+"Der offene Saldo des Rechnungskunden übersteigt dessen Kreditlimit."
+
+#. module: d1_sale_order_checks
+#. odoo-python
+#: code:addons/d1_sale_order_checks/models/sale_order.py:0
+msgid ""
+"Warning: the credit limit of %(partner)s has been exceeded (outstanding "
+"%(credit).2f, limit %(limit).2f). Check 'Allow Exceeding Credit Limit' to "
+"confirm anyway."
+msgstr ""
+"Achtung: Das Kreditlimit von %(partner)s wurde überschritten (offen "
+"%(credit).2f, Limit %(limit).2f). Aktivieren Sie 'Überschreitung des "
+"Kreditlimits zulassen', um dennoch zu bestätigen."
+
+#. module: d1_sale_order_checks
+#. odoo-python
+#: code:addons/d1_sale_order_checks/models/sale_order.py:0
+msgid ""
+"Warning: the selected customer %s is of type Prospect! Change the relation "
+"type to Customer before creating a sale order."
+msgstr ""
+"Achtung: Der ausgewählte Kunde %s ist vom Typ Interessent! Ändern Sie den "
+"Beziehungstyp auf Kunde, bevor Sie einen Verkaufsauftrag anlegen."

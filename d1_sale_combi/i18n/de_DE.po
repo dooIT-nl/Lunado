@@ -1,0 +1,111 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* d1_sale_combi
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-17 11:25+0000\n"
+"PO-Revision-Date: 2026-09-17 11:25+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: d1_sale_combi
+#: model:ir.model.fields,field_description:d1_sale_combi.field_sale_order__d1_combi
+#: model_terms:ir.ui.view,arch_db:d1_sale_combi.d1_product_template_view_form
+msgid "Combi"
+msgstr "Kombi"
+
+#. module: d1_sale_combi
+#: model:ir.model.fields,field_description:d1_sale_combi.field_stock_warehouse__d1_combi_route_id
+msgid "Combi Route"
+msgstr "Kombi-Route"
+
+#. module: d1_sale_combi
+#: model:ir.model.fields,help:d1_sale_combi.field_sale_order__d1_combi
+msgid ""
+"Combi order: lines whose product has a different default warehouse than the "
+"order warehouse are routed via the combi route of the order warehouse."
+msgstr ""
+"Kombi-Auftrag: Positionen, deren Produkt ein anderes Standardlager hat als das Auftragslager, werden über die Kombi-Route des Auftragslagers geliefert."
+
+#. module: d1_sale_combi
+#. odoo-python
+#: code:addons/d1_sale_combi/models/sale_order_line.py:0
+msgid ""
+"Combi orders for warehouse %s are not active yet: no Combi Route is "
+"configured on the warehouse."
+msgstr ""
+"Kombi-Auftraege fuer Lager %s sind noch nicht aktiv: Auf dem Lager ist keine Kombi-Route konfiguriert."
+
+#. module: d1_sale_combi
+#: model:ir.model.fields,field_description:d1_sale_combi.field_product_product__d1_default_warehouse_id
+#: model:ir.model.fields,field_description:d1_sale_combi.field_product_template__d1_default_warehouse_id
+msgid "Default Warehouse"
+msgstr "Standardlager"
+
+#. module: d1_sale_combi
+#: model:ir.model.fields,field_description:d1_sale_combi.field_product_template__display_name
+#: model:ir.model.fields,field_description:d1_sale_combi.field_sale_order__display_name
+#: model:ir.model.fields,field_description:d1_sale_combi.field_sale_order_line__display_name
+#: model:ir.model.fields,field_description:d1_sale_combi.field_stock_warehouse__display_name
+msgid "Display Name"
+msgstr "Anzeigename"
+
+#. module: d1_sale_combi
+#: model:ir.model.fields,field_description:d1_sale_combi.field_product_template__id
+#: model:ir.model.fields,field_description:d1_sale_combi.field_sale_order__id
+#: model:ir.model.fields,field_description:d1_sale_combi.field_sale_order_line__id
+#: model:ir.model.fields,field_description:d1_sale_combi.field_stock_warehouse__id
+msgid "ID"
+msgstr "ID"
+
+#. module: d1_sale_combi
+#: model:ir.model,name:d1_sale_combi.model_product_template
+msgid "Product"
+msgstr "Produkt"
+
+#. module: d1_sale_combi
+#: model:ir.model.fields,help:d1_sale_combi.field_stock_warehouse__d1_combi_route_id
+msgid ""
+"Route applied to combi order lines when the product's default warehouse "
+"differs from this (order) warehouse. Without a combi route, combi orders for"
+" this warehouse are blocked."
+msgstr ""
+"Route, die Kombi-Auftragspositionen erhalten, wenn das Standardlager des Produkts von diesem (Auftrags-)Lager abweicht. Ohne Kombi-Route werden Kombi-Auftraege fuer dieses Lager blockiert."
+
+#. module: d1_sale_combi
+#: model:ir.model,name:d1_sale_combi.model_sale_order
+msgid "Sales Order"
+msgstr "Verkaufsauftrag"
+
+#. module: d1_sale_combi
+#: model:ir.model,name:d1_sale_combi.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Verkaufsauftragszeile"
+
+#. module: d1_sale_combi
+#. odoo-python
+#: code:addons/d1_sale_combi/models/sale_order_line.py:0
+msgid "The field Default Warehouse is not set for product %s."
+msgstr "Das Feld Standardlager ist fuer Produkt %s nicht ausgefuellt."
+
+#. module: d1_sale_combi
+#: model:ir.model,name:d1_sale_combi.model_stock_warehouse
+msgid "Warehouse"
+msgstr "Lager"
+
+#. module: d1_sale_combi
+#: model:ir.model.fields,help:d1_sale_combi.field_product_product__d1_default_warehouse_id
+#: model:ir.model.fields,help:d1_sale_combi.field_product_template__d1_default_warehouse_id
+msgid ""
+"Warehouse this product is normally shipped from. Required for goods on combi"
+" orders: lines whose default warehouse differs from the order warehouse get "
+"the combi route of the order warehouse."
+msgstr ""
+"Lager, aus dem dieses Produkt normalerweise geliefert wird. Erforderlich fuer Waren auf Kombi-Auftraegen: Positionen, deren Standardlager vom Auftragslager abweicht, erhalten die Kombi-Route des Auftragslagers."

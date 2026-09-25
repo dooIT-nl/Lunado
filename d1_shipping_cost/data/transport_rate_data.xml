@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+            Placeholder transport rates for testing.
+            TODO: Replace with actual tariffs once confirmed by business.
+            These are EXAMPLE rates only and should not be used in production.
+        -->
+
+        <!-- TK1 — Bundles, Netherlands, < 1.65m -->
+        <record id="rate_tk1_nl_lt165_1" model="d1.shipping.rate">
+            <field name="name">TK1 NL &lt;1,65m 1-5 bundels (TODO)</field>
+            <field name="shipping_class_id" ref="shipping_class_tk1"/>
+            <field name="country_ids" eval="[(6, 0, [ref('base.nl')])]"/>
+            <field name="length_bracket_id" ref="length_bracket_lt_165"/>
+            <field name="unit_type">bundle</field>
+            <field name="qty_from">1</field>
+            <field name="qty_to">5</field>
+            <field name="price">25.00</field>
+        </record>
+        <record id="rate_tk1_nl_lt165_2" model="d1.shipping.rate">
+            <field name="name">TK1 NL &lt;1,65m 6-10 bundels (TODO)</field>
+            <field name="shipping_class_id" ref="shipping_class_tk1"/>
+            <field name="country_ids" eval="[(6, 0, [ref('base.nl')])]"/>
+            <field name="length_bracket_id" ref="length_bracket_lt_165"/>
+            <field name="unit_type">bundle</field>
+            <field name="qty_from">6</field>
+            <field name="qty_to">10</field>
+            <field name="price">40.00</field>
+        </record>
+
+        <!-- TK1 — Bundles, Netherlands, 1.65 - 2.14m -->
+        <record id="rate_tk1_nl_lt215_1" model="d1.shipping.rate">
+            <field name="name">TK1 NL 1,65–2,14m 1-5 bundels (TODO)</field>
+            <field name="shipping_class_id" ref="shipping_class_tk1"/>
+            <field name="country_ids" eval="[(6, 0, [ref('base.nl')])]"/>
+            <field name="length_bracket_id" ref="length_bracket_lt_215"/>
+            <field name="unit_type">bundle</field>
+            <field name="qty_from">1</field>
+            <field name="qty_to">5</field>
+            <field name="price">35.00</field>
+        </record>
+
+        <!-- TK1 — Bundles, Netherlands, >= 2.15m -->
+        <record id="rate_tk1_nl_gte215_1" model="d1.shipping.rate">
+            <field name="name">TK1 NL >=2,15m 1-5 bundels (TODO)</field>
+            <field name="shipping_class_id" ref="shipping_class_tk1"/>
+            <field name="country_ids" eval="[(6, 0, [ref('base.nl')])]"/>
+            <field name="length_bracket_id" ref="length_bracket_gte_215"/>
+            <field name="unit_type">bundle</field>
+            <field name="qty_from">1</field>
+            <field name="qty_to">5</field>
+            <field name="price">50.00</field>
+        </record>
+
+        <!-- TK2 — Boxes, Netherlands -->
+        <record id="rate_tk2_nl_1" model="d1.shipping.rate">
+            <field name="name">TK2 NL 1-3 dozen (TODO)</field>
+            <field name="shipping_class_id" ref="shipping_class_tk2"/>
+            <field name="country_ids" eval="[(6, 0, [ref('base.nl')])]"/>
+            <field name="unit_type">box</field>
+            <field name="qty_from">1</field>
+            <field name="qty_to">3</field>
+            <field name="price">15.00</field>
+        </record>
+        <record id="rate_tk2_nl_2" model="d1.shipping.rate">
+            <field name="name">TK2 NL 4-10 dozen (TODO)</field>
+            <field name="shipping_class_id" ref="shipping_class_tk2"/>
+            <field name="country_ids" eval="[(6, 0, [ref('base.nl')])]"/>
+            <field name="unit_type">box</field>
+            <field name="qty_from">4</field>
+            <field name="qty_to">10</field>
+            <field name="price">25.00</field>
+        </record>
+
+        <!-- TK3 — Boxes, Netherlands -->
+        <record id="rate_tk3_nl_1" model="d1.shipping.rate">
+            <field name="name">TK3 NL 1-3 dozen (TODO)</field>
+            <field name="shipping_class_id" ref="shipping_class_tk3"/>
+            <field name="country_ids" eval="[(6, 0, [ref('base.nl')])]"/>
+            <field name="unit_type">box</field>
+            <field name="qty_from">1</field>
+            <field name="qty_to">3</field>
+            <field name="price">20.00</field>
+        </record>
+        <record id="rate_tk3_nl_2" model="d1.shipping.rate">
+            <field name="name">TK3 NL 4-10 dozen (TODO)</field>
+            <field name="shipping_class_id" ref="shipping_class_tk3"/>
+            <field name="country_ids" eval="[(6, 0, [ref('base.nl')])]"/>
+            <field name="unit_type">box</field>
+            <field name="qty_from">4</field>
+            <field name="qty_to">10</field>
+            <field name="price">35.00</field>
+        </record>
+    </data>
+</odoo>
