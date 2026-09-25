@@ -1,7 +1,7 @@
 {
     "name": "MRP Sawing",
     "summary": "Sawing quantities, lengths, frames and production time on sales, manufacturing and stock (replaces Studio customizations)",
-    "version": "19.0.1.0.5",
+    "version": "19.0.1.0.6",
     "category": "Manufacturing",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -22,6 +22,9 @@
         =====================
         Cluster C6 van de Studio-conversie (zie docs/studio_conversie_plan.md).
 
+        * v1.0.6: view-strip zoekt nu over alle Studio-views heen (regelvelden staan
+          embedded in sale.order-/stock.picking-views); herstelmigratie
+          draait de opschoning opnieuw
         * v1.0.5: veld d1_sawn_product_id hernoemd naar d1_raw_product_id
           met label 'Artikelcode hele lengte' (CIS20260922: werkwijze
           omgedraaid — het veld verwijst naar het hele-lengte-artikel);

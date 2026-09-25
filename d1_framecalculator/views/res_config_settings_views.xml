@@ -13,11 +13,11 @@
                              help="External frame calculator opened from the sale order">
                         <div class="content-group">
                             <div class="row mt8">
-                                <label for="d1_framecalculator_url" class="col-lg-4 o_light_label"/>
+                                <label for="d1_framecalculator_url" string="URL" class="col-lg-4 o_light_label"/>
                                 <field name="d1_framecalculator_url"/>
                             </div>
                             <div class="row">
-                                <label for="d1_framecalculator_api_key" class="col-lg-4 o_light_label"/>
+                                <label for="d1_framecalculator_api_key" string="API Key" class="col-lg-4 o_light_label"/>
                                 <field name="d1_framecalculator_api_key" password="True"/>
                             </div>
                         </div>

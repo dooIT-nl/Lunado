@@ -82,9 +82,10 @@ def _strip_field_from_studio_views(env, model_name, field_name):
     nadat het veld is verwijderd. Blijft het veld ergens in attributen of
     xpath-expressies staan (niet schoon te knippen), dan wordt de hele
     Studio-view gedeactiveerd."""
-    views = env["ir.ui.view"].search(
-        [("model", "=", model_name), ("arch_db", "like", field_name)]
-    )
+    # BEWUST geen modelfilter: regelvelden staan embedded in views van het
+    # oudermodel (orderregels in de sale.order-form, moves in de
+    # stock.picking-form) — Odoo's verwijdercheck valideert al die views.
+    views = env["ir.ui.view"].search([("arch_db", "like", field_name)])
     for view in views:
         xml_id = view.get_external_id().get(view.id) or ""
         if not xml_id.startswith("studio_customization."):

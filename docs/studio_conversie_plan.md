@@ -88,18 +88,26 @@
 | C6 | `d1_mrp_sawing` ✅ | qty×lengte-logica al aanwezig in `d1_shipping_cost` (afhankelijkheid, wijkt af van besluit "letterlijk" — gemeld); pleister `d1_fix_studio_fields` verwijderd |
 | C7 | `d1_product_partner_data` ✅ | Beschikbaar-bug gefixt (besluit); KvK → `company_registry` (besluit); eindschoonmaak: handling-automation/-menu weg, resterende Studio-views gedeactiveerd |
 
+> **✅ Generale repetitie geslaagd (25-09-2026, staging-golive):** rebuild
+> (verse productiekopie) → merge `development` → `d1_fix_studio_fields`
+> gedeïnstalleerd → alle d1-modules geïnstalleerd behalve
+> `d1_studio_compat`. Resultaat: geen warnings, geen x_studio-velden meer
+> (wees-veldrijen en de Handling-modellen automatisch opgeruimd,
+> `d1_product_partner_data` v1.0.7). Deze volgorde is 1-op-1 het draaiboek
+> voor productie.
+
 **Deploy-checklist productie:**
 1. Vlak vóór de deploy: **export-serveractie nogmaals draaien** op productie en diffen tegen de export van 17-09 — vangt Studio-aanpassingen die ná de inventarisatie zijn gemaakt (les: de test-automation "Voeg volger toe" viel buiten de scope).
-2. `development` → staging (kopie productie) mergen: hooks + herstelmigraties draaien daar de échte datamigratie — logs controleren op `could not remove`-meldingen (les van 17/18-09: views met veld-verwijzingen in attributen worden nu gedeactiveerd; automation-matching op ilike).
-3. **`d1_studio_compat` installeren (ná stap 2!)** — tijdelijke aliassen voor de oude x_studio-veldnamen, anders breekt de externe koppeling (json2/Conneo) die de oude namen nog gebruikt (les van 18-09: `Invalid field 'x_studio_artikelcode_gezaagd'`). Bewust ná de migraties installeren: een achtergebleven handmatig x_studio-veld botst met de alias.
+2. `development` → staging (kopie productie) mergen: hooks + herstelmigraties draaien daar de échte datamigratie — logs controleren op `could not remove`-meldingen (les van 17/18-09: views met veld-verwijzingen in attributen worden nu gedeactiveerd; automation-matching op ilike). **Mergen altijd als merge-commit** — via Odoo.sh (branch slepen) of op GitHub met *Create a merge commit*; **nooit** *Rebase and merge* of *Squash and merge*: die herschrijven de commits, waarna elke volgende merge op conflicten loopt (les 25-09 op staging-golive).
+3. **`d1_studio_compat` NIET installeren op productie** (besluit 25-09: Conneo wordt pas tot productie toegelaten zodra de koppeling de d1_-veldnamen gebruikt; de module blijft in de repo als verzekering en blijft op de reguliere staging geïnstalleerd voor de Conneo-tests). Zou installatie ooit tóch nodig zijn: altijd ná de migraties — een achtergebleven handmatig x_studio-veld botst met de alias. *Controleer vóór elke merge ook of er geen modules in status 'te installeren/upgraden' hangen: de build maakt pending installaties automatisch af.*
 4. **Integratiepartner (Conneo) de veldmapping oud→nieuw geven** met omschakel-deadline; na omschakeling `d1_studio_compat` deïnstalleren en later uit de repo verwijderen.
-5. `d1_fix_studio_fields` deïnstalleren (indien daar geïnstalleerd); map pas uit de repo als de module op álle databases weg is.
+5. `d1_fix_studio_fields` deïnstalleren — **als eerste stap ná de merge, vóór het installeren van de andere modules** (vastgesteld 25-09: dit is op productie de enige geïnstalleerde d1-module; de variant-hulpvelden zouden anders de compat-aliassen overschaduwen). Map pas uit de repo als de module op álle databases weg is.
 6. Dropship-operatietype: vinkje *Geen leverdefaults van leverancier* controleren.
 7. Combi-routes op de magazijnen Rotterdam/Wesseling controleren.
 8. Gedeactiveerde Studio-views nalopen; gewenste lay-out laten porten, rest verwijderen.
-9. Na verificatie: lege modellen `x_handling`/`x_handling_line_b0f2a` handmatig verwijderen.
+9. ~~Na verificatie: lege modellen `x_handling`/`x_handling_line_b0f2a` handmatig verwijderen.~~ **Vervallen (besluit 25-09):** de eindschoonmaak van `d1_product_partner_data` v1.0.5 verwijdert deze modellen (velden, views, tabellen) automatisch — controleer in het log op `removed studio model x_handling`. Wees-veldrijen (gedelegeerde x_studio-velden op product.product/res.users) worden sinds v1.0.4 ook automatisch opgeruimd; de veldenlijst (filter x_studio) hoort na de update leeg te zijn.
 10. Diagnose-chatternotities leverdatum uitzetten zodra de acceptatie rond is (systeemparameter `d1_sale_commitment_date.explain` → `0`).
-11. **API-venster afspreken**: blokkeer tijdens de merge + module-installatie de externe koppeling (Conneo-account tijdelijk archiveren of API-keys intrekken, of connector laten pauzeren) — continue API-writes houden locks vast en laten de build falen (les van 18-09 op staging). Na afronding weer activeren.
+11. **API-venster** (alleen indien de koppeling actief is op de doelomgeving): blokkeer tijdens de merge + module-installatie de externe koppeling (Conneo-account tijdelijk archiveren of API-keys intrekken, of connector laten pauzeren) — continue API-writes houden locks vast en laten de build falen (les van 18-09 op staging). *Stand 25-09: Conneo draait nog níet op productie — voor de productie-go-live is geen venster nodig. Zodra Conneo live gaat op productie: omschakeldatum naar de d1_-veldnamen afspreken met de integratiepartner; daarna d1_studio_compat deïnstalleren.*
 12. Maatwerk register vullen (na acceptatie, afspraak).
 
 *dooIT B.V. — 17 september 2026*

@@ -82,3 +82,13 @@ msgid ""
 "Configuration > Settings, section 'Framecalculator'."
 msgstr ""
 "Der Rahmenkalkulator ist nicht konfiguriert. Hinterlegen Sie URL und API-Schluessel unter Verkauf > Konfiguration > Einstellungen, Abschnitt 'Framecalculator'."
+
+#. module: d1_framecalculator
+#: model_terms:ir.ui.view,arch_db:d1_framecalculator.d1_res_config_settings_view_form
+msgid "API Key"
+msgstr "API-Schluessel"
+
+#. module: d1_framecalculator
+#: model_terms:ir.ui.view,arch_db:d1_framecalculator.d1_res_config_settings_view_form
+msgid "URL"
+msgstr "URL"

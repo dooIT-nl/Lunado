@@ -4,7 +4,8 @@ Naast het bekende patroon (datakopie, automation-/veldopschoning) doet dit
 sluitstuk-cluster de laatste veeg:
 * KvK-nummer (x_studio_coc) migreert naar het standaardveld
   company_registry (besluit 17-09-2026);
-* de Studio-automation 'Verkoop: Voeg Handling toe' en het Handling-menu
+* de Studio-automation 'Verkoop: Voeg Handling toe', het Handling-menu en
+  de handmatige Handling-modellen (x_handling, x_handling_line_b0f2a)
   worden verwijderd (functioneel vervangen door d1_handling_cost);
 * alle resterende studio_customization-views worden GEDEACTIVEERD (niet
   verwijderd) zodat de consultant ze op staging kan nalopen en eventueel
@@ -110,9 +111,10 @@ def _strip_field_from_studio_views(env, model_name, field_name):
     nadat het veld is verwijderd. Blijft het veld ergens in attributen of
     xpath-expressies staan (niet schoon te knippen), dan wordt de hele
     Studio-view gedeactiveerd."""
-    views = env["ir.ui.view"].search(
-        [("model", "=", model_name), ("arch_db", "like", field_name)]
-    )
+    # BEWUST geen modelfilter: regelvelden staan embedded in views van het
+    # oudermodel (orderregels in de sale.order-form, moves in de
+    # stock.picking-form) — Odoo's verwijdercheck valideert al die views.
+    views = env["ir.ui.view"].search([("arch_db", "like", field_name)])
     for view in views:
         xml_id = view.get_external_id().get(view.id) or ""
         if not xml_id.startswith("studio_customization."):
@@ -183,6 +185,77 @@ def _remove_replaced_fields(env):
             MODULE, model_name, field_name, reason)
 
 
+def _remove_stale_studio_field_rows(env):
+    """Verwijder wees-metadata van x_studio-velden: ir.model.fields-rijen
+    zonder bijbehorend veld in het register.
+
+    Achtergrond: product.product en res.users erven via _inherits van
+    product.template en res.partner. Voor elk Studio-veld op het oudermodel
+    maakt Odoo automatisch een gedelegeerd veld (state 'base') op het
+    kindmodel aan. Bij het verwijderen van het handmatige ouderveld verdwijnt
+    de delegatie uit het register, maar de metadata-rij blijft staan:
+    'base'-rijen worden alleen opgeruimd bij een update van de eigenaar-module
+    en die is er voor deze rijen niet. Ze zijn via de UI niet te verwijderen
+    (basisveld) en vervuilen de veldenlijst en toekomstige upgrades.
+
+    Criterium — bewust NIET via het register (tijdens het laden/migreren is
+    het register nog niet compleet; modules die later laden, zoals
+    d1_studio_compat, lijken dan ten onrechte afwezig): een gedelegeerde rij
+    op het kindmodel is wees zodra er geen veldrij met dezelfde naam meer op
+    het oudermodel bestaat. Dat is puur in de database te bepalen en dus
+    onafhankelijk van de laadvolgorde.
+
+    Veiligheidsregels:
+    * alleen de _inherits-kindmodellen (product.product, res.users) worden
+      geveegd; velden op andere modellen blijven ongemoeid (aliassen van
+      d1_studio_compat leven op de oudermodellen en hun delegaties op de
+      kindmodellen hebben een ouderrij — beide blijven staan);
+    * alleen state 'base' (delegaties); handmatige velden lopen via
+      _remove_replaced_fields;
+    * velden van de handmatige x_handling-modellen verdwijnen samen met het
+      model (zie _remove_handling_models) en blijven hier buiten schot.
+    """
+    # SQL i.p.v. ORM: ir.model.fields.unlink() weigert 'base'-rijen, en er
+    # valt hier niets anders op te ruimen dan de metadata zelf (geen kolom,
+    # geen registerveld). Geen gebruikersinvoer in de query.
+    delegations = [
+        ("product.product", "product.template"),
+        ("res.users", "res.partner"),
+    ]
+    removed = []
+    for child, parent in delegations:
+        env.cr.execute(
+            r"SELECT f.id, f.name FROM ir_model_fields f "
+            r"WHERE f.model = %s AND f.name LIKE 'x\_studio\_%%' "
+            r"AND f.state = 'base' "
+            r"AND NOT EXISTS (SELECT 1 FROM ir_model_fields p "
+            r"                WHERE p.model = %s AND p.name = f.name) "
+            r"ORDER BY f.name",
+            (child, parent),
+        )
+        for field_id, field_name in env.cr.fetchall():
+            try:
+                with env.cr.savepoint():
+                    env.cr.execute(
+                        "DELETE FROM ir_model_data "
+                        "WHERE model = 'ir.model.fields' AND res_id = %s",
+                        (field_id,))
+                    env.cr.execute(
+                        "DELETE FROM ir_model_fields WHERE id = %s",
+                        (field_id,))
+                removed.append("%s.%s" % (child, field_name))
+            except Exception as exc:
+                _logger.warning(
+                    "%s: could not remove stale field row %s.%s (%s); "
+                    "please clean up manually",
+                    MODULE, child, field_name, exc)
+    if removed:
+        env["ir.model.fields"].invalidate_model()
+        env.registry.clear_cache()
+        _logger.info("%s: removed %s stale x_studio field row(s): %s",
+                     MODULE, len(removed), ", ".join(removed))
+
+
 def _remove_handling_menu(env):
     """Verwijder het Studio-menu en de vensteractie van Handling (vervangen
     door d1_handling_cost)."""
@@ -209,6 +282,78 @@ def _remove_handling_menu(env):
                             MODULE, model_name, res_id, exc_info=True)
 
 
+# handmatige Studio-modellen van de oude Handling-matrix (vervangen door
+# d1_handling_cost); de regels eerst — die verwijzen met een m2o naar
+# x_handling
+HANDLING_MODELS = ("x_handling_line_b0f2a", "x_handling")
+
+
+def _remove_handling_models(env, model_names=HANDLING_MODELS):
+    """Verwijder de handmatige Studio-modellen van de oude Handling-matrix.
+
+    De data is al gemigreerd door d1_handling_cost; het menu en de automation
+    zijn eerder in deze hook opgeruimd. Views op de modellen gaan eerst; de
+    modellen zelf worden in EEN unlink verwijderd met de uninstall-vlag
+    (_force_unlink). Daarmee laat Odoo's eigen cascade de interne
+    afhankelijkheden toe (het related-veld x_currency_id op x_handling_id,
+    het monetary-veld dat op x_currency_id hangt) en neemt het ook velden op
+    andere modellen die naar deze modellen verwijzen en hun delegaties mee —
+    hetzelfde mechanisme als bij het deinstalleren van studio_customization.
+    Bewust en beperkt tot deze twee vervangen matrix-modellen (bevinding
+    go-live-rehearsal 25-09-2026: losse veldverwijdering blokkeerde en liet
+    het register vervuild achter, waarna de view-deactivatie de installatie
+    liet afbreken op 'Field x_active does not exist').
+
+    Besluit 25-09-2026: de handmatige verwijderstap na verificatie
+    (deploy-checklist stap 9) vervalt hiermee.
+    """
+    from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
+
+    models = env["ir.model"].search(
+        [("model", "in", list(model_names)), ("state", "=", "manual")]
+    )
+    if not models:
+        return
+    names = models.mapped("model")
+    try:
+        with env.cr.savepoint():
+            views = env["ir.ui.view"].with_context(
+                active_test=False
+            ).search([("model", "in", names)])
+            view_count = len(views)
+            views.unlink()
+            # aantal datarijen loggen vóór de tabellen (cascade) verdwijnen;
+            # tabelnamen komen uit de vaste lijst hierboven
+            row_counts = []
+            for name in names:
+                env.cr.execute(
+                    'SELECT COUNT(*) FROM "%s"' % name.replace(".", "_"))
+                row_counts.append("%s: %s" % (name, env.cr.fetchone()[0]))
+            models.with_context(**{MODULE_UNINSTALL_FLAG: True}).unlink()
+        # de uninstall-vlag slaat de registry-herlaad over (die doet normaal
+        # de module-loader); hier zelf doen zodat views hierna tegen een
+        # kloppend register valideren
+        env.flush_all()
+        env.registry._setup_models__(env.cr)
+        _logger.info(
+            "%s: removed studio models %s (%s view(s); data rows %s)",
+            MODULE, ", ".join(names), view_count, "; ".join(row_counts),
+        )
+    except Exception as exc:
+        # register kan velden kwijt zijn die de rollback in de database wél
+        # terugzette — herladen, anders breekt een latere view-validatie
+        env.invalidate_all()
+        try:
+            env.registry._setup_models__(env.cr)
+        except Exception:
+            _logger.warning("%s: could not reload registry", MODULE,
+                            exc_info=True)
+        _logger.warning(
+            "%s: could not remove studio models %s (%s); "
+            "please clean up manually", MODULE, ", ".join(names), exc,
+        )
+
+
 def _deactivate_remaining_studio_views(env):
     """Deactiveer alle resterende studio_customization-views (eindschoonmaak;
     bewust niet verwijderen zodat gewenste lay-out op staging nog te
@@ -220,12 +365,24 @@ def _deactivate_remaining_studio_views(env):
         ]
     )
     views = env["ir.ui.view"].browse(imds.mapped("res_id")).exists()
-    active_views = views.filtered("active")
-    if active_views:
-        active_views.write({"active": False})
+    deactivated = []
+    for view in views.filtered("active"):
+        # per view een savepoint: de write valideert de arch, en één
+        # niet-valideerbare view mag de installatie nooit afbreken
+        # (bevinding go-live-rehearsal 25-09-2026)
+        try:
+            with env.cr.savepoint():
+                view.active = False
+            deactivated.append(view.name)
+        except Exception as exc:
+            _logger.warning(
+                "%s: could not deactivate studio view %s (%s); "
+                "please review manually", MODULE, view.name, exc,
+            )
+    if deactivated:
         _logger.info(
             "%s: deactivated %s remaining studio views: %s",
-            MODULE, len(active_views), active_views.mapped("name"),
+            MODULE, len(deactivated), deactivated,
         )
 
 
@@ -234,5 +391,7 @@ def post_init_hook(env):
     _copy_columns(env)
     _remove_replaced_automations(env)
     _remove_replaced_fields(env)
+    _remove_stale_studio_field_rows(env)
     _remove_handling_menu(env)
+    _remove_handling_models(env)
     _deactivate_remaining_studio_views(env)

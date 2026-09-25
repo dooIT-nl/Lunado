@@ -6,14 +6,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 08:54+0000\n"
-"PO-Revision-Date: 2026-09-25 08:54+0000\n"
+"POT-Creation-Date: 2026-09-25 10:26+0000\n"
+"PO-Revision-Date: 2026-09-25 10:26+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: d1_framecalculator
+#: model_terms:ir.ui.view,arch_db:d1_framecalculator.d1_res_config_settings_view_form
+msgid "API Key"
+msgstr ""
 
 #. module: d1_framecalculator
 #: model:ir.model.fields,help:d1_framecalculator.field_res_config_settings__d1_framecalculator_url
@@ -78,4 +83,9 @@ msgstr ""
 msgid ""
 "The frame calculator is not configured. Set the URL and API key in Sales > "
 "Configuration > Settings, section 'Framecalculator'."
+msgstr ""
+
+#. module: d1_framecalculator
+#: model_terms:ir.ui.view,arch_db:d1_framecalculator.d1_res_config_settings_view_form
+msgid "URL"
 msgstr ""
