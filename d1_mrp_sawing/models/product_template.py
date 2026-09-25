@@ -21,10 +21,12 @@ class ProductTemplate(models.Model):
         help="Saw time per operation in seconds. Required (> 0) for "
         "products with the Manufacture route.",
     )
-    d1_sawn_product_id = fields.Many2one(
+    d1_raw_product_id = fields.Many2one(
         comodel_name="product.template",
-        string="Sawn Product Code",
-        help="Product code of the sawn variant of this product.",
+        string="Full-Length Product Code",
+        help="Product code of the full-length article this product is sawn "
+        "from (CIS20260922: the way of working was reversed; the field "
+        "references the uncut, full-length article).",
     )
     d1_framecalculator = fields.Boolean(
         string="Frame Calculator",

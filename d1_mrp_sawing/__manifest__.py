@@ -1,7 +1,7 @@
 {
     "name": "MRP Sawing",
     "summary": "Sawing quantities, lengths, frames and production time on sales, manufacturing and stock (replaces Studio customizations)",
-    "version": "19.0.1.0.4",
+    "version": "19.0.1.0.5",
     "category": "Manufacturing",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -18,10 +18,14 @@
     "installable": True,
     "application": False,
     "description": """
-        MRP Sawing 19.0.1.0.4
+        MRP Sawing 19.0.1.0.5
         =====================
         Cluster C6 van de Studio-conversie (zie docs/studio_conversie_plan.md).
 
+        * v1.0.5: veld d1_sawn_product_id hernoemd naar d1_raw_product_id
+          met label 'Artikelcode hele lengte' (CIS20260922: werkwijze
+          omgedraaid — het veld verwijst naar het hele-lengte-artikel);
+          kolom-rename-migratie behoudt bestaande data
         * v1.0.4: veld-opschoning in meerdere passes (afhankelijkheidsketens
           zoals stock.move -> orderregel) en zonder tracebacks in het log;
           migratie draait de opschoning opnieuw

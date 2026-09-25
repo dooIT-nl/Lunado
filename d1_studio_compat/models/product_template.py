@@ -25,8 +25,8 @@ class ProductTemplate(models.Model):
     x_studio_zaagtijd_per_bew = fields.Integer(
         related="d1_saw_time", readonly=False, string="Saw Time (compat)")
     x_studio_artikelcode_gezaagd = fields.Many2one(
-        related="d1_sawn_product_id", readonly=False,
-        string="Sawn Product (compat)")
+        related="d1_raw_product_id", readonly=False,
+        string="Full-Length Product (compat)")
     x_studio_framecalculator_janee = fields.Boolean(
         related="d1_framecalculator", readonly=False,
         string="Frame Calculator (compat)")

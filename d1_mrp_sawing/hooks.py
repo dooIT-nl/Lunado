@@ -20,7 +20,7 @@ COLUMN_COPIES = [
      "x_studio_zaagcap_bew"),
     ("product_template", "x_studio_zaagtijd_per_bew", "d1_saw_time",
      "x_studio_zaagtijd_per_bew"),
-    ("product_template", "x_studio_artikelcode_gezaagd", "d1_sawn_product_id",
+    ("product_template", "x_studio_artikelcode_gezaagd", "d1_raw_product_id",
      "x_studio_artikelcode_gezaagd"),
     ("product_template", "x_studio_framecalculator_janee", "d1_framecalculator",
      "x_studio_framecalculator_janee"),
