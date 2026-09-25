@@ -288,79 +288,70 @@ def _remove_handling_menu(env):
 HANDLING_MODELS = ("x_handling_line_b0f2a", "x_handling")
 
 
-def _remove_model_fields_multipass(env, model_name):
-    """Verwijder de handmatige velden van een model in meerdere passes.
-
-    De cascade van ir.model.unlink weigert een veld te verwijderen zolang een
-    ander veld van hetzelfde model ervan afhangt (bv. het related-veld
-    x_currency_id dat via x_handling_id naar x_handling.x_studio_currency_id
-    wijst — bevinding go-live-rehearsal 25-09-2026). Door de velden vooraf
-    per stuk te verwijderen valt in pass 1 het afhankelijke veld weg, waarna
-    het geblokkeerde veld in de volgende pass vrijkomt. x_name blijft staan
-    (rec_name); die verdwijnt met het model zelf.
-    """
-    for _pass in range(4):
-        fields = env["ir.model.fields"].search(
-            [
-                ("model", "=", model_name),
-                ("state", "=", "manual"),
-                ("name", "!=", "x_name"),
-            ]
-        )
-        if not fields:
-            return
-        progress = False
-        for field in fields:
-            try:
-                with env.cr.savepoint():
-                    field.unlink()
-                progress = True
-            except Exception:
-                # volgende pass opnieuw proberen; definitieve blokkades
-                # meldt de model-unlink zelf
-                continue
-        if not progress:
-            return
-
-
 def _remove_handling_models(env, model_names=HANDLING_MODELS):
     """Verwijder de handmatige Studio-modellen van de oude Handling-matrix.
 
     De data is al gemigreerd door d1_handling_cost; het menu en de automation
-    zijn eerder in deze hook opgeruimd. Unlink van het ir.model-record
-    verwijdert (cascade) ook de velden, toegangsregels en de databasetabel;
-    views op het model gaan eerst. Besluit 25-09-2026: de handmatige
-    verwijderstap na verificatie (deploy-checklist stap 9) vervalt hiermee.
+    zijn eerder in deze hook opgeruimd. Views op de modellen gaan eerst; de
+    modellen zelf worden in EEN unlink verwijderd met de uninstall-vlag
+    (_force_unlink). Daarmee laat Odoo's eigen cascade de interne
+    afhankelijkheden toe (het related-veld x_currency_id op x_handling_id,
+    het monetary-veld dat op x_currency_id hangt) en neemt het ook velden op
+    andere modellen die naar deze modellen verwijzen en hun delegaties mee —
+    hetzelfde mechanisme als bij het deinstalleren van studio_customization.
+    Bewust en beperkt tot deze twee vervangen matrix-modellen (bevinding
+    go-live-rehearsal 25-09-2026: losse veldverwijdering blokkeerde en liet
+    het register vervuild achter, waarna de view-deactivatie de installatie
+    liet afbreken op 'Field x_active does not exist').
+
+    Besluit 25-09-2026: de handmatige verwijderstap na verificatie
+    (deploy-checklist stap 9) vervalt hiermee.
     """
-    for model_name in model_names:
-        model = env["ir.model"].search(
-            [("model", "=", model_name), ("state", "=", "manual")]
+    from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
+
+    models = env["ir.model"].search(
+        [("model", "in", list(model_names)), ("state", "=", "manual")]
+    )
+    if not models:
+        return
+    names = models.mapped("model")
+    try:
+        with env.cr.savepoint():
+            views = env["ir.ui.view"].with_context(
+                active_test=False
+            ).search([("model", "in", names)])
+            view_count = len(views)
+            views.unlink()
+            # aantal datarijen loggen vóór de tabellen (cascade) verdwijnen;
+            # tabelnamen komen uit de vaste lijst hierboven
+            row_counts = []
+            for name in names:
+                env.cr.execute(
+                    'SELECT COUNT(*) FROM "%s"' % name.replace(".", "_"))
+                row_counts.append("%s: %s" % (name, env.cr.fetchone()[0]))
+            models.with_context(**{MODULE_UNINSTALL_FLAG: True}).unlink()
+        # de uninstall-vlag slaat de registry-herlaad over (die doet normaal
+        # de module-loader); hier zelf doen zodat views hierna tegen een
+        # kloppend register valideren
+        env.flush_all()
+        env.registry._setup_models__(env.cr)
+        _logger.info(
+            "%s: removed studio models %s (%s view(s); data rows %s)",
+            MODULE, ", ".join(names), view_count, "; ".join(row_counts),
         )
-        if not model:
-            continue
+    except Exception as exc:
+        # register kan velden kwijt zijn die de rollback in de database wél
+        # terugzette — herladen, anders breekt een latere view-validatie
+        env.invalidate_all()
         try:
-            with env.cr.savepoint():
-                views = env["ir.ui.view"].with_context(
-                    active_test=False
-                ).search([("model", "=", model_name)])
-                view_count = len(views)
-                views.unlink()
-                # aantal datarijen loggen vóór de tabel (cascade) verdwijnt;
-                # tabelnaam komt uit de vaste lijst hierboven
-                table = model_name.replace(".", "_")
-                env.cr.execute('SELECT COUNT(*) FROM "%s"' % table)
-                row_count = env.cr.fetchone()[0]
-                _remove_model_fields_multipass(env, model_name)
-                model.unlink()
-            _logger.info(
-                "%s: removed studio model %s (%s view(s), %s data row(s))",
-                MODULE, model_name, view_count, row_count,
-            )
-        except Exception as exc:
-            _logger.warning(
-                "%s: could not remove studio model %s (%s); "
-                "please clean up manually", MODULE, model_name, exc,
-            )
+            env.registry._setup_models__(env.cr)
+        except Exception:
+            _logger.warning("%s: could not reload registry", MODULE,
+                            exc_info=True)
+        _logger.warning(
+            "%s: could not remove studio models %s (%s); "
+            "please clean up manually", MODULE, ", ".join(names), exc,
+        )
 
 
 def _deactivate_remaining_studio_views(env):
@@ -374,12 +365,24 @@ def _deactivate_remaining_studio_views(env):
         ]
     )
     views = env["ir.ui.view"].browse(imds.mapped("res_id")).exists()
-    active_views = views.filtered("active")
-    if active_views:
-        active_views.write({"active": False})
+    deactivated = []
+    for view in views.filtered("active"):
+        # per view een savepoint: de write valideert de arch, en één
+        # niet-valideerbare view mag de installatie nooit afbreken
+        # (bevinding go-live-rehearsal 25-09-2026)
+        try:
+            with env.cr.savepoint():
+                view.active = False
+            deactivated.append(view.name)
+        except Exception as exc:
+            _logger.warning(
+                "%s: could not deactivate studio view %s (%s); "
+                "please review manually", MODULE, view.name, exc,
+            )
+    if deactivated:
         _logger.info(
             "%s: deactivated %s remaining studio views: %s",
-            MODULE, len(active_views), active_views.mapped("name"),
+            MODULE, len(deactivated), deactivated,
         )
 
 
