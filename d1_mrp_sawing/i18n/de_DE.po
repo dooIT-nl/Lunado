@@ -1,0 +1,240 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* d1_mrp_sawing
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-17 12:37+0000\n"
+"PO-Revision-Date: 2026-09-17 12:37+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_production__display_name
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_workorder__display_name
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_template__display_name
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_sale_order_line__display_name
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_stock_move__display_name
+msgid "Display Name"
+msgstr "Anzeigename"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_product__d1_framecalculator
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_template__d1_framecalculator
+msgid "Frame Calculator"
+msgstr "Rahmenkalkulator"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_sale_order_line__d1_frame_id
+msgid "Frame ID"
+msgstr "Rahmen-ID"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_production__d1_frame_nr
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_sale_order_line__d1_frame_nr
+msgid "Frame Number"
+msgstr "Rahmennummer"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,help:d1_mrp_sawing.field_sale_order_line__d1_frame_id
+msgid "Frame identification, filled by the frame calculator."
+msgstr "Rahmenkennung, gefuellt durch den Rahmenkalkulator."
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,help:d1_mrp_sawing.field_mrp_production__d1_frame_nr
+msgid "Frame number from the linked sale order line."
+msgstr "Rahmennummer aus der verknuepften Verkaufsauftragszeile."
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_production__id
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_workorder__id
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_template__id
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_sale_order_line__id
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_stock_move__id
+msgid "ID"
+msgstr "ID"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_production__d1_length
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_workorder__d1_length
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_stock_move__d1_length
+msgid "Length"
+msgstr "Laenge"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,help:d1_mrp_sawing.field_stock_move__d1_length
+msgid ""
+"Length for the quantity × length calculation. Automatically filled from the "
+"product when 'Use Length' is off."
+msgstr ""
+"Laenge fuer die Berechnung Menge × Laenge. Automatisch vom Produkt gefuellt, wenn 'Laenge verwenden' aus ist."
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,help:d1_mrp_sawing.field_mrp_production__d1_length
+#: model:ir.model.fields,help:d1_mrp_sawing.field_mrp_workorder__d1_length
+msgid "Length from the linked sale order line."
+msgstr "Laenge aus der verknuepften Verkaufsauftragszeile."
+
+#. module: d1_mrp_sawing
+#: model:ir.model,name:d1_mrp_sawing.model_mrp_production
+msgid "Manufacturing Order"
+msgstr "Fertigungsauftrag"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,help:d1_mrp_sawing.field_stock_move__d1_qty
+msgid "Number of pieces for the quantity × length calculation."
+msgstr "Stueckzahl fuer die Berechnung Menge × Laenge."
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,help:d1_mrp_sawing.field_product_product__d1_saw_capacity
+#: model:ir.model.fields,help:d1_mrp_sawing.field_product_template__d1_saw_capacity
+msgid ""
+"Number of pieces sawn per operation. Required (> 0) for products with the "
+"Manufacture route."
+msgstr ""
+"Anzahl pro Arbeitsgang gesaegter Stuecke. Erforderlich (> 0) fuer Produkte mit der Fertigungsroute."
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,help:d1_mrp_sawing.field_sale_order_line__d1_frame_nr
+msgid ""
+"Order number (without the leading 'S') combined with the last 3 characters "
+"of the Frame ID."
+msgstr ""
+"Auftragsnummer (ohne fuehrendes 'S') kombiniert mit den letzten 3 Zeichen der Rahmen-ID."
+
+#. module: d1_mrp_sawing
+#: model:ir.model,name:d1_mrp_sawing.model_product_template
+msgid "Product"
+msgstr "Produkt"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,help:d1_mrp_sawing.field_product_product__d1_sawn_product_id
+#: model:ir.model.fields,help:d1_mrp_sawing.field_product_template__d1_sawn_product_id
+msgid ""
+"Product code of the full-length article this product is sawn from "
+"(CIS20260922: the way of working was reversed; the field references the "
+"uncut, full-length article)."
+msgstr ""
+"Artikelcode des Artikels in voller Laenge, aus dem dieses Produkt gesaegt wird (CIS20260922)."
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_production__d1_production_time
+msgid "Production Time"
+msgstr "Produktionszeit"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_workorder__d1_production_time
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_stock_move__d1_production_time
+msgid "Production Time Finished Product"
+msgstr "Produktionszeit Endprodukt"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_sale_order_line__d1_qty_var_name
+msgid "Qty Var Name"
+msgstr "Qty var name"
+
+#. module: d1_mrp_sawing
+#: model:ir.model,name:d1_mrp_sawing.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Verkaufsauftragszeile"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_product__d1_saw_capacity
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_template__d1_saw_capacity
+msgid "Saw Capacity per Operation"
+msgstr "Saegekapazitaet pro Arbeitsgang"
+
+#. module: d1_mrp_sawing
+#. odoo-python
+#: code:addons/d1_mrp_sawing/models/product_template.py:0
+msgid ""
+"Saw Capacity per Operation must be greater than 0 for products with the "
+"Manufacture route."
+msgstr ""
+"Die Saegekapazitaet pro Arbeitsgang muss groesser als 0 sein fuer Produkte mit der Fertigungsroute."
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_product__d1_saw_time
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_template__d1_saw_time
+msgid "Saw Time per Operation"
+msgstr "Saegezeit pro Arbeitsgang"
+
+#. module: d1_mrp_sawing
+#. odoo-python
+#: code:addons/d1_mrp_sawing/models/product_template.py:0
+msgid ""
+"Saw Time per Operation must be greater than 0 for products with the "
+"Manufacture route."
+msgstr ""
+"Die Saegezeit pro Arbeitsgang muss groesser als 0 sein fuer Produkte mit der Fertigungsroute."
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,help:d1_mrp_sawing.field_mrp_production__d1_production_time
+#: model:ir.model.fields,help:d1_mrp_sawing.field_mrp_workorder__d1_production_time
+#: model:ir.model.fields,help:d1_mrp_sawing.field_stock_move__d1_production_time
+msgid ""
+"Saw time in minutes: ceil(quantity / saw capacity) x saw time per operation "
+"/ 60, rounded to whole minutes."
+msgstr ""
+"Saegezeit in Minuten: ⌈Menge / Saegekapazitaet⌉ × Saegezeit pro Arbeitsgang / 60, auf ganze Minuten gerundet."
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,help:d1_mrp_sawing.field_product_product__d1_saw_time
+#: model:ir.model.fields,help:d1_mrp_sawing.field_product_template__d1_saw_time
+msgid ""
+"Saw time per operation in seconds. Required (> 0) for products with the "
+"Manufacture route."
+msgstr ""
+"Saegezeit pro Arbeitsgang in Sekunden. Erforderlich (> 0) fuer Produkte mit der Fertigungsroute."
+
+#. module: d1_mrp_sawing
+#: model_terms:ir.ui.view,arch_db:d1_mrp_sawing.d1_product_template_view_form
+msgid "Sawing"
+msgstr "Saegen"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_production__d1_qty
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_mrp_workorder__d1_qty
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_stock_move__d1_qty
+msgid "Sawing Quantity"
+msgstr "Menge (Saegen)"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,help:d1_mrp_sawing.field_mrp_production__d1_qty
+#: model:ir.model.fields,help:d1_mrp_sawing.field_mrp_workorder__d1_qty
+msgid "Sawing quantity from the linked sale order line."
+msgstr "Menge aus der verknuepften Verkaufsauftragszeile."
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_product__d1_sawn_product_id
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_product_template__d1_sawn_product_id
+msgid "Full-Length Product Code"
+msgstr "Artikelcode volle Laenge"
+
+#. module: d1_mrp_sawing
+#: model:ir.model,name:d1_mrp_sawing.model_stock_move
+msgid "Stock Move"
+msgstr "Lagerbuchung"
+
+#. module: d1_mrp_sawing
+#: model:ir.model.fields,field_description:d1_mrp_sawing.field_sale_order_line__d1_weight
+msgid "Weight"
+msgstr "Gewicht"
+
+#. module: d1_mrp_sawing
+#. odoo-python
+#: code:addons/d1_mrp_sawing/models/product_template.py:0
+msgid "When 'Use Length' is checked, 'Use Quantity' must be checked as well."
+msgstr ""
+"Wenn 'Laenge verwenden' markiert ist, muss auch 'Menge verwenden' markiert werden."
+
+#. module: d1_mrp_sawing
+#: model:ir.model,name:d1_mrp_sawing.model_mrp_workorder
+msgid "Work Order"
+msgstr "Arbeitsauftrag"

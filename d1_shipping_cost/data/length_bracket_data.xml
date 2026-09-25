@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="length_bracket_lt_165" model="d1.shipping.length.bracket">
+            <field name="name">&lt; 1,65 m</field>
+            <field name="length_from_cm">0</field>
+            <field name="length_to_cm">164</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="length_bracket_lt_215" model="d1.shipping.length.bracket">
+            <field name="name">1,65 – 2,14 m</field>
+            <field name="length_from_cm">165</field>
+            <field name="length_to_cm">214</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="length_bracket_gte_215" model="d1.shipping.length.bracket">
+            <field name="name">&gt;= 2,15 m</field>
+            <field name="length_from_cm">215</field>
+            <field name="length_to_cm">0</field>
+            <field name="sequence">30</field>
+        </record>
+    </data>
+</odoo>

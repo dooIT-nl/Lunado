@@ -1,0 +1,111 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* d1_sale_commitment_date
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-11 12:21+0000\n"
+"PO-Revision-Date: 2026-09-11 12:21+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: d1_sale_commitment_date
+#: model_terms:ir.ui.view,arch_db:d1_sale_commitment_date.d1_sale_order_view_form
+msgid ""
+"<span>The customer requested delivery date is earlier than the earliest "
+"possible delivery date. The computed date is kept as delivery date. Earliest"
+" possible delivery:</span>"
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__d1_computed_commitment_date
+msgid "Computed Delivery Date"
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model,name:d1_sale_commitment_date.model_res_partner
+msgid "Contact"
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__d1_customer_request_date
+msgid "Customer Requested Date"
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_res_partner__d1_delivery_cutoff_hour
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_res_users__d1_delivery_cutoff_hour
+msgid ""
+"Cutoff time for the computed delivery date. If the computed delivery moment "
+"falls at or after this time, the delivery moves to the next working day. "
+"Leave 0:00 to use the system default (system parameter "
+"d1_sale_commitment_date.default_cutoff_hour)."
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__d1_delivery_date_warning
+msgid "D1 Delivery Date Warning"
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_res_partner__d1_delivery_cutoff_hour
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_res_users__d1_delivery_cutoff_hour
+msgid "Delivery Cutoff Time"
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__commitment_date
+msgid "Delivery Date"
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_sale_order__d1_customer_request_date
+msgid ""
+"Delivery date requested by the customer. If it is later than the computed "
+"delivery date, it is used as the delivery date. If it is earlier, a warning "
+"is shown and the computed date is kept."
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_res_partner__display_name
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__display_name
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order_line__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_sale_order__d1_computed_commitment_date
+msgid ""
+"Earliest possible delivery date computed from the order lines (free stock, "
+"next planned receipt or customer lead time)."
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_res_partner__id
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order__id
+#: model:ir.model.fields,field_description:d1_sale_commitment_date.field_sale_order_line__id
+msgid "ID"
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model,name:d1_sale_commitment_date.model_sale_order
+msgid "Sales Order"
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model,name:d1_sale_commitment_date.model_sale_order_line
+msgid "Sales Order Line"
+msgstr ""
+
+#. module: d1_sale_commitment_date
+#: model:ir.model.fields,help:d1_sale_commitment_date.field_sale_order__commitment_date
+msgid ""
+"This is the delivery date promised to the customer. If set, the delivery "
+"order will be scheduled based on this date rather than product lead times."
+msgstr ""

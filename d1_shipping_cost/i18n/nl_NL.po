@@ -1,0 +1,504 @@
+# Dutch (Netherlands) translation for d1_shipping_cost module.
+# Copyright (C) 2024 dooIT B.V.
+# This file is distributed under the same license as the d1_shipping_cost module.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-05 00:00+0000\n"
+"PO-Revision-Date: 2026-07-05 00:00+0000\n"
+"Last-Translator: dooIT B.V. <info@dooit.nl>\n"
+"Language-Team: Dutch <info@dooit.nl>\n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: d1_shipping_cost
+#. odoo-python
+#: code:addons/d1_shipping_cost/models/length_bracket.py:0
+#, python-format
+msgid "'Length from' (%.0f cm) cannot be greater than 'Length to' (%.0f cm)."
+msgstr "'Lengte vanaf' (%.0f cm) mag niet groter zijn dan 'Lengte t/m' (%.0f cm)."
+
+#. module: d1_shipping_cost
+#. odoo-python
+#: code:addons/d1_shipping_cost/models/transport_rate.py:0
+#, python-format
+msgid "'Quantity from' (%s) cannot be greater than 'Quantity to' (%s)."
+msgstr "'Aantal vanaf' (%s) mag niet groter zijn dan 'Aantal t/m' (%s)."
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_shipping_rate_form
+msgid "Address Filter"
+msgstr "Adresfilter"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields.selection,name:d1_shipping_cost.selection__d1_shipping_rate__unit_type__box
+msgid "Boxes"
+msgstr "Dozen"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_res_config_settings__d1_bundle_height_cm
+msgid "Bundle Height (cm)"
+msgstr "Bundelhoogte (cm)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_res_config_settings__d1_bundle_width_cm
+msgid "Bundle Width (cm)"
+msgstr "Bundelbreedte (cm)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields.selection,name:d1_shipping_cost.selection__d1_shipping_rate__unit_type__bundle
+msgid "Bundles"
+msgstr "Bundels"
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_sale_order_form_view
+msgid "Calculate transport costs"
+msgstr "Bereken transportkosten"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__carrier_id
+msgid "Carrier"
+msgstr "Transporteur"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_sale_order__d1_pallet_calculation
+msgid "Checked when transport costs could not be calculated automatically and manual pallet calculation is needed."
+msgstr "Aangevinkt wanneer de transportkosten niet automatisch berekend konden worden en handmatige palletberekening nodig is."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_class__code
+msgid "Code"
+msgstr "Code"
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_res_config_settings_view_form
+msgid "Configuration for the bundle calculation of TK1 products."
+msgstr "Configuratie voor de bundelberekening van TK1 producten."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__country_ids
+msgid "Countries"
+msgstr "Landen"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_rate__country_ids
+msgid "Countries this rate applies to. Leave empty for all countries."
+msgstr "Landen waarvoor dit tarief geldt. Laat leeg voor alle landen."
+
+#. module: d1_shipping_cost
+#: model_terms:ir.actions.act_window,help:d1_shipping_cost.d1_shipping_length_bracket_action
+msgid "Create a new length bracket"
+msgstr "Maak een nieuwe lengteklasse aan"
+
+#. module: d1_shipping_cost
+#: model_terms:ir.actions.act_window,help:d1_shipping_cost.d1_shipping_class_action
+msgid "Create a new shipping class"
+msgstr "Maak een nieuwe transportklasse aan"
+
+#. module: d1_shipping_cost
+#: model_terms:ir.actions.act_window,help:d1_shipping_cost.d1_shipping_rate_action
+msgid "Create a new shipping rate"
+msgstr "Maak een nieuw transporttarief aan"
+
+#. module: d1_shipping_cost
+#. odoo-python
+#: code:addons/d1_shipping_cost/models/sale_order.py:0
+#, python-format
+msgid "Customer delivery method: %s, transport cost calculation skipped"
+msgstr "Verzendwijze klant: %s, transportkostenberekening overgeslagen"
+
+#. module: d1_shipping_cost
+#: model:ir.model,name:d1_shipping_cost.model_d1_shipping_class
+msgid "D1 Shipping Class"
+msgstr "D1 Transportklasse"
+
+#. module: d1_shipping_cost
+#: model:ir.model,name:d1_shipping_cost.model_d1_shipping_length_bracket
+msgid "D1 Shipping Length Bracket"
+msgstr "D1 Lengteklasse"
+
+#. module: d1_shipping_cost
+#: model:ir.model,name:d1_shipping_cost.model_d1_shipping_rate
+msgid "D1 Shipping Rate"
+msgstr "D1 Transporttarief"
+
+#. module: d1_shipping_cost
+#: model:ir.model,name:d1_shipping_cost.model_d1_shipping_zip_prefix
+msgid "D1 Shipping Zip Prefix"
+msgstr "D1 Postcode-prefix"
+
+#. module: d1_shipping_cost
+#: model_terms:ir.actions.act_window,help:d1_shipping_cost.d1_shipping_length_bracket_action
+msgid "Define ranges in centimeters for TK1 rate lookup. Use 0 as upper bound for an open end."
+msgstr "Definieer bereiken in centimeters voor de TK1-tariefopzoeking. Gebruik 0 als bovengrens voor een open einde."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_class__description
+msgid "Description"
+msgstr "Omschrijving"
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_product_template_form_view
+msgid "Dimensions (cm)"
+msgstr "Afmetingen (cm)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_class__name
+msgid "Display name of the shipping class, e.g. 'TK1 — Bundles'."
+msgstr "Weergavenaam van de transportklasse, bv. 'TK1 — Bundels'."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_length_bracket__name
+msgid "Display name, e.g. '< 1.65 m' or '165 – 214 cm'."
+msgstr "Weergavenaam, bv. '< 1,65 m' of '165 – 214 cm'."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_class__description
+msgid "Explanation of the shipping class."
+msgstr "Toelichting op de transportklasse."
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_shipping_rate_form
+msgid "General"
+msgstr "Algemeen"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_product_template__d1_height_cm
+msgid "Height (cm)"
+msgstr "Hoogte (cm)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_product_template__d1_use_length
+msgid "If checked, the user can enter a custom length on the order line. Otherwise the product length is used."
+msgstr "Indien aangevinkt, kan de gebruiker een afwijkende lengte invoeren op de orderregel. Anders wordt de productlengte gebruikt."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_product_template__d1_use_qty
+msgid "If checked, the order line quantity is calculated as d1_qty × d1_length instead of being entered manually."
+msgstr "Indien aangevinkt, wordt de orderregelhoeveelheid berekend als d1_qty × d1_length in plaats van handmatig ingevoerd."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_sale_order_line__d1_length
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_sale_order_line_views
+msgid "Length"
+msgstr "Lengte"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__length_bracket_id
+msgid "Length Bracket"
+msgstr "Lengteklasse"
+
+#. module: d1_shipping_cost
+#: model:ir.actions.act_window,name:d1_shipping_cost.d1_shipping_length_bracket_action
+#: model:ir.ui.menu,name:d1_shipping_cost.d1_menu_length_bracket_config
+msgid "Length Brackets"
+msgstr "Lengteklassen"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_product_template__d1_length_cm
+msgid "Length (cm)"
+msgstr "Lengte (cm)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_sale_order_line__d1_length
+msgid "Length for the quantity × length calculation. Automatically filled from the product when 'Use Length' is off."
+msgstr "Lengte voor de hoeveelheid × lengte berekening. Wordt automatisch gevuld vanuit het product als 'Gebruik Lengte' uit staat."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_length_bracket__length_from_cm
+msgid "Length from (cm)"
+msgstr "Lengte vanaf (cm)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_length_bracket__length_to_cm
+msgid "Length to (cm)"
+msgstr "Lengte t/m (cm)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_length_bracket__length_from_cm
+msgid "Lower bound of the range (inclusive), in centimeters."
+msgstr "Ondergrens van het bereik (inclusief), in centimeters."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_rate__qty_from
+msgid "Lower bound of the tier (inclusive)."
+msgstr "Ondergrens van de staffel (inclusief)."
+
+#. module: d1_shipping_cost
+#: model_terms:ir.actions.act_window,help:d1_shipping_cost.d1_shipping_rate_action
+msgid "Manage rate tiers per shipping class, country and unit range. Use the address filter (country, state, zip prefix) for specific rates."
+msgstr "Beheer hier de tariefstaffels per transportklasse, land en eenheidsstaffel. Gebruik de adresfilter (land, provincie, postcode-prefix) voor afwijkende tarieven."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_res_config_settings__d1_box_max_weight_kg
+msgid "Max Box Weight (kg)"
+msgstr "Max gewicht doos (kg)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_res_config_settings__d1_bundle_max_weight_kg
+msgid "Max Bundle Weight (kg)"
+msgstr "Max gewicht bundel (kg)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_res_config_settings__d1_tk1_max_bundels
+msgid "Maximum number of bundles before pallet calculation (manual)."
+msgstr "Maximaal aantal bundels vóór palletberekening (handmatig)."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_res_config_settings__d1_tk2_max_gewicht_kg
+msgid "Maximum total weight TK2 before pallet calculation."
+msgstr "Maximaal totaalgewicht TK2 vóór palletberekening."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_res_config_settings__d1_tk3_max_gewicht_kg
+msgid "Maximum total weight TK3 before pallet calculation."
+msgstr "Maximaal totaalgewicht TK3 vóór palletberekening."
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_res_config_settings_view_form
+msgid "Maximum weight for TK2/TK3 before pallet calculation and max box weight."
+msgstr "Maximaal gewicht voor TK2/TK3 vóór palletberekening en max doosgewicht."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_class__name
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_length_bracket__name
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__name
+msgid "Name"
+msgstr "Naam"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_sale_order_line__d1_qty
+msgid "Number of pieces for the quantity × length calculation."
+msgstr "Aantal stuks voor de hoeveelheid × lengte berekening."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_rate__length_bracket_id
+msgid "Only applicable for TK1. Leave empty for TK2/TK3."
+msgstr "Alleen van toepassing voor TK1. Laat leeg voor TK2/TK3."
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_product_template_form_view
+msgid "Order Line Calculation"
+msgstr "Orderregel-berekening"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_sale_order__d1_pallet_calculation
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_sale_order_search_view
+msgid "Pallet Calculation"
+msgstr "Palletberekening"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_sale_order_line__d1_qty
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_sale_order_line_views
+msgid "Pieces"
+msgstr "Hoeveelheid"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_rate__carrier_id
+msgid "Preferred carrier for this rate. Automatically applied to the sales order."
+msgstr "Voorkeurstransporteur voor dit tarief. Wordt automatisch overgenomen op de verkooporder."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_zip_prefix__name
+msgid "Prefix"
+msgstr "Prefix"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_product_template__d1_height_cm
+msgid "Product height in centimeters, used for transport cost calculation."
+msgstr "Producthoogte in centimeters, gebruikt voor transportkostenberekening."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_product_template__d1_length_cm
+msgid "Product length in centimeters, used for transport cost calculation."
+msgstr "Productlengte in centimeters, gebruikt voor transportkostenberekening."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_product_template__d1_width_cm
+msgid "Product width in centimeters, used for transport cost calculation."
+msgstr "Productbreedte in centimeters, gebruikt voor transportkostenberekening."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__qty_from
+msgid "Quantity from"
+msgstr "Aantal vanaf"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__qty_to
+msgid "Quantity to"
+msgstr "Aantal t/m"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__price
+msgid "Rate"
+msgstr "Tarief"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_rate__price
+msgid "Rate for this tier. Applied as a total amount for the tier range."
+msgstr "Tarief voor deze staffel. Wordt als totaalbedrag voor de staffelrange toegepast."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_class__sequence
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_length_bracket__sequence
+msgid "Sequence"
+msgstr "Volgorde"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__shipping_class_id
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_product_template__d1_shipping_class_id
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_product_template_form_view
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_shipping_rate_search
+msgid "Shipping Class"
+msgstr "Transportklasse"
+
+#. module: d1_shipping_cost
+#: model:ir.actions.act_window,name:d1_shipping_cost.d1_shipping_class_action
+#: model:ir.ui.menu,name:d1_shipping_cost.d1_menu_shipping_class_config
+msgid "Shipping Classes"
+msgstr "Transportklassen"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_product_template__d1_shipping_class_id
+msgid "Shipping class for transport cost calculation. TK1 = bundles (long products), TK2 = boxes (by weight), TK3 = boxes (displays/voluminous)."
+msgstr "Transportklasse voor berekening van verzendkosten. TK1 = bundels (lange producten), TK2 = dozen (op gewicht), TK3 = dozen (displays/volumineus)."
+
+#. module: d1_shipping_cost
+#: model:ir.actions.act_window,name:d1_shipping_cost.d1_shipping_rate_action
+#: model:ir.ui.menu,name:d1_shipping_cost.d1_menu_transport_config
+msgid "Shipping Rates"
+msgstr "Transporttarieven"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__state_ids
+msgid "States"
+msgstr "Provincies"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_rate__state_ids
+msgid "States/provinces this rate applies to. Leave empty for all states."
+msgstr "Provincies/staten waarvoor dit tarief geldt. Laat leeg voor alle provincies."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_sale_order__d1_transport_message
+msgid "Summary of the last transport cost calculation."
+msgstr "Samenvatting van de laatste transportkostenberekening."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_class__code
+msgid "Technical code, e.g. 'TK1', 'TK2', 'TK3'. Used in calculation logic."
+msgstr "Technische code, bv. 'TK1', 'TK2', 'TK3'. Wordt gebruikt in de berekeningslogica."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_rate__unit_type
+msgid "TK1 = bundles; TK2/TK3 = boxes."
+msgstr "TK1 = bundels; TK2/TK3 = dozen."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_res_config_settings__d1_tk1_max_bundels
+msgid "TK1 Max Bundles"
+msgstr "TK1 max bundels"
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_res_config_settings_view_form
+msgid "TK1 Thresholds (bundles)"
+msgstr "Drempelwaarden TK1 (bundels)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_res_config_settings__d1_tk2_max_gewicht_kg
+msgid "TK2 Max Weight (kg)"
+msgstr "TK2 max gewicht (kg)"
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_res_config_settings_view_form
+msgid "TK2/TK3 Thresholds (boxes)"
+msgstr "Drempelwaarden TK2/TK3 (dozen)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_res_config_settings__d1_tk3_max_gewicht_kg
+msgid "TK3 Max Weight (kg)"
+msgstr "TK3 max gewicht (kg)"
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_shipping_rate_form
+msgid "Tier"
+msgstr "Staffel"
+
+#. module: d1_shipping_cost
+#: model:ir.ui.menu,name:d1_shipping_cost.d1_menu_transport_group
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_product_template_form_view
+msgid "Transport"
+msgstr "Transport"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_sale_order__d1_transport_message
+msgid "Transport Calculation"
+msgstr "Transport berekening"
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_sale_order_form_view
+msgid "Transport Cost Calculation"
+msgstr "Transportkostenberekening"
+
+#. module: d1_shipping_cost
+#: model_terms:ir.ui.view,arch_db:d1_shipping_cost.d1_res_config_settings_view_form
+msgid "Transport Costs"
+msgstr "Transportkosten"
+
+#. module: d1_shipping_cost
+#. odoo-python
+#: code:addons/d1_shipping_cost/models/sale_order.py:0
+#, python-format
+msgid "No delivery carrier (or no product on the carrier) is set. Cannot create the transport cost line."
+msgstr "Geen transporteur (of geen product op de transporteur) ingesteld. Kan de transportkostenregel niet aanmaken."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__unit_type
+msgid "Unit Type"
+msgstr "Eenheidstype"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_length_bracket__length_to_cm
+msgid "Upper bound of the range (inclusive), in centimeters. Use 0 for open end (no upper bound)."
+msgstr "Bovengrens van het bereik (inclusief), in centimeters. Gebruik 0 voor open einde (geen bovengrens)."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_rate__qty_to
+msgid "Upper bound of the tier (inclusive). Use 0 or a large number for open end."
+msgstr "Bovengrens van de staffel (inclusief). Gebruik 0 of een groot getal voor open einde."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_product_template__d1_use_length
+msgid "Use Length"
+msgstr "Gebruik Lengte"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_product_template__d1_use_qty
+msgid "Use Quantity"
+msgstr "Gebruik Hoeveelheid"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_product_template__d1_width_cm
+msgid "Width (cm)"
+msgstr "Breedte (cm)"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,field_description:d1_shipping_cost.field_d1_shipping_rate__zip_prefix_ids
+msgid "Zip Prefixes"
+msgstr "Postcode-prefixen"
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_zip_prefix__name
+msgid "Zip code prefix. Regular expressions are supported, e.g. '100$' matches only exact '100'. Automatically converted to uppercase."
+msgstr "Postcode-prefix. Reguliere expressies worden ondersteund, bv. '100$' matcht alleen exact '100'. Wordt automatisch naar hoofdletters omgezet."
+
+#. module: d1_shipping_cost
+#: model:ir.model.fields,help:d1_shipping_cost.field_d1_shipping_rate__zip_prefix_ids
+msgid "Zip prefixes this rate applies to. Regular expressions are supported. Leave empty for all zip codes."
+msgstr "Postcode-prefixen waarvoor dit tarief geldt. Reguliere expressies worden ondersteund. Laat leeg voor alle postcodes."
+
