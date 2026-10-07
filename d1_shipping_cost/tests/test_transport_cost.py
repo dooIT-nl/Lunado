@@ -43,10 +43,13 @@ class TestTransportCost(TransactionCase):
         ICP.set_param("d1_shipping.tk2_max_gewicht_kg", "200")
         ICP.set_param("d1_shipping.tk3_max_gewicht_kg", "200")
 
-        # Partner with NL address
+        # Partner with NL address; vaste leveringswijze expliciet leeg —
+        # demodata zet via ir.default anders 'Local Delivery' op elke
+        # nieuwe partner, waardoor de skip-route de berekening overslaat
         cls.partner = cls.env["res.partner"].create({
             "name": "Test Partner",
             "country_id": cls.country_nl.id,
+            "property_delivery_carrier_id": False,
         })
 
         # ---- Products ----
@@ -291,8 +294,8 @@ class TestTransportCost(TransactionCase):
         order.action_d1_compute_transport_cost()
 
         self.assertIn("TK1", order.d1_transport_message)
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line, "Transport cost line should exist")
         self.assertEqual(transport_line.price_unit, 25.0)
 
@@ -301,8 +304,8 @@ class TestTransportCost(TransactionCase):
         order = self._create_order([(self.product_tk1_long, 9)])
         order.action_d1_compute_transport_cost()
 
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line)
         self.assertEqual(transport_line.price_unit, 50.0)
 
@@ -312,8 +315,8 @@ class TestTransportCost(TransactionCase):
         order.action_d1_compute_transport_cost()
 
         self.assertIn("PALLETBEREKENING", order.d1_transport_message)
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertFalse(transport_line, "No transport line when pallet required")
 
     def test_tk1_weight_band_heavy_pallet(self):
@@ -334,8 +337,8 @@ class TestTransportCost(TransactionCase):
         order = self._create_order([(self.product_tk1_mid, 4)])
         order.action_d1_compute_transport_cost()
 
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line)
         self.assertEqual(transport_line.price_unit, 25.0)
         self.assertIn("één-per-bundel", order.d1_transport_message)
@@ -355,8 +358,8 @@ class TestTransportCost(TransactionCase):
         ])
         order.action_d1_compute_transport_cost()
 
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line)
         self.assertEqual(transport_line.price_unit, 25.0)
         self.assertIn("3 één-per-bundel + 1 normaal", order.d1_transport_message)
@@ -375,8 +378,8 @@ class TestTransportCost(TransactionCase):
         })
         order.action_d1_compute_transport_cost()
 
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line)
         self.assertEqual(transport_line.price_unit, 50.0,
                          "Should use gte_215 rate based on order line length 220cm")
@@ -390,8 +393,8 @@ class TestTransportCost(TransactionCase):
         order = self._create_order([(self.product_tk2, 30)])
         order.action_d1_compute_transport_cost()
 
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line)
         self.assertEqual(transport_line.price_unit, 15.0)
 
@@ -402,8 +405,8 @@ class TestTransportCost(TransactionCase):
         order = self._create_order([(self.product_tk2, 200)])
         order.action_d1_compute_transport_cost()
 
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line)
         self.assertEqual(transport_line.price_unit, 15.0)
 
@@ -432,8 +435,8 @@ class TestTransportCost(TransactionCase):
         order = self._create_order([(self.product_tk2_mid, 3)])
         order.action_d1_compute_transport_cost()
 
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line)
         self.assertEqual(transport_line.price_unit, 15.0)
         self.assertIn("één-per-doos", order.d1_transport_message)
@@ -450,8 +453,8 @@ class TestTransportCost(TransactionCase):
         ])
         order.action_d1_compute_transport_cost()
 
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line)
         self.assertEqual(transport_line.price_unit, 15.0)
         self.assertIn("2 één-per-doos + 1 normaal", order.d1_transport_message)
@@ -465,8 +468,8 @@ class TestTransportCost(TransactionCase):
         order = self._create_order([(self.product_tk3_small, 5)])
         order.action_d1_compute_transport_cost()
 
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line)
         self.assertEqual(transport_line.price_unit, 20.0)
 
@@ -509,8 +512,8 @@ class TestTransportCost(TransactionCase):
         order.action_d1_compute_transport_cost()
 
         self.assertIn("overgeslagen", order.d1_transport_message)
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertFalse(transport_line)
 
     def test_mixed_classes(self):
@@ -521,8 +524,8 @@ class TestTransportCost(TransactionCase):
         ])
         order.action_d1_compute_transport_cost()
 
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line)
         self.assertEqual(transport_line.price_unit, 40.0)
 
@@ -531,12 +534,13 @@ class TestTransportCost(TransactionCase):
         order = self._create_order([(self.product_tk2, 30)])
         order.action_d1_compute_transport_cost()
 
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        lines_before = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        lines_before = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertEqual(len(lines_before), 1)
 
         order.action_d1_compute_transport_cost()
-        lines_after = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        lines_after = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertEqual(len(lines_after), 1, "Should still be exactly one transport line")
 
     # ------------------------------------------------------------------
@@ -547,8 +551,12 @@ class TestTransportCost(TransactionCase):
         """TK1: when d1_use_qty=True, bundle calculation uses d1_qty (piece count)
         instead of product_uom_qty (which is d1_qty × d1_length = total meters).
 
-        Without fix: product_uom_qty=500 → ceil(500/25) = 20 bundles >= max → PALLET
+        Without fix: product_uom_qty=400 → ceil(400/25) = 16 bundles → geen
+                     1-10-tarief → handmatig, geen transportregel
         With fix:    d1_qty=250 → ceil(250/25) = 10 bundles → rate 1-10 → 25.00
+
+        NB: lengte 160 cm zodat het product in de staffel <1,65 m valt (de
+        testdata heeft geen staffel tussen 165 en 214 cm).
         """
         product = self.env["product.product"].create({
             "name": "Test TK1 Use Qty",
@@ -556,7 +564,7 @@ class TestTransportCost(TransactionCase):
             "d1_shipping_class_id": self.class_tk1.id,
             "d1_use_qty": True,
             "d1_use_length": False,
-            "d1_length_cm": 200.0,  # 200 cm → line gets 2.0 (/ 100)
+            "d1_length_cm": 160.0,  # 160 cm → line gets 1.6 (/ 100)
             "d1_width_cm": 3.0,
             "d1_height_cm": 3.0,
             "weight": 0.0,  # no weight to avoid weight correction
@@ -568,15 +576,15 @@ class TestTransportCost(TransactionCase):
             "product_id": product.id,
             "d1_qty": 250,
         })
-        # Verify setup: product_uom_qty = 250 * 2.0 = 500
-        self.assertEqual(line.product_uom_qty, 500.0)
+        # Verify setup: product_uom_qty = 250 * 1.6 = 400
+        self.assertEqual(line.product_uom_qty, 400.0)
 
         order.action_d1_compute_transport_cost()
 
         # d1_qty=250, tubes_per_bundle = floor(15/3)*floor(15/3) = 25
         # bundles = ceil(250/25) = 10, rate lt_165 1-10 → 25.00
-        transport_product = self.env.ref("d1_shipping_cost.product_transport_cost")
-        transport_line = order.order_line.filtered(lambda l: l.product_id == transport_product)
+        transport_line = order.order_line.filtered(
+            lambda l: "[TRANSPORT]" in (l.name or ""))
         self.assertTrue(transport_line, "Should find rate, NOT pallet")
         self.assertEqual(transport_line.price_unit, 25.0,
                          "Should use d1_qty=250 (10 bundles) not product_uom_qty=500 (20 bundles → pallet)")
@@ -779,6 +787,11 @@ class TestTransportCost(TransactionCase):
             lambda l: "[TRANSPORT]" in (l.name or "")
         )
         self.assertFalse(transport_line, "No transport line when skipped")
+
+        # v1.11: de vaste leveringswijze wordt bij het overslaan wél op de
+        # order overgenomen
+        self.assertEqual(order.carrier_id, self.carrier_tk1,
+                         "Fixed partner carrier taken over on skip")
 
     def test_no_skip_when_partner_carrier_empty(self):
         """Partner without property_delivery_carrier_id → normal calculation runs."""

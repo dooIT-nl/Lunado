@@ -2,9 +2,10 @@ from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
 
-@tagged("post_install", "-at_install", "d1_sale_partner_carrier")
-class TestD1SalePartnerCarrier(TransactionCase):
-    """Smoke tests: leveringswijze van de klant voorvullen op de order."""
+@tagged("post_install", "-at_install", "d1_shipping_cost")
+class TestD1PartnerCarrier(TransactionCase):
+    """Smoke tests: leveringswijze van de klant voorvullen op de order en
+    overnemen bij de transportberekening (v1.11)."""
 
     @classmethod
     def setUpClass(cls):
@@ -85,3 +86,15 @@ class TestD1SalePartnerCarrier(TransactionCase):
              "partner_shipping_id": contact.id}
         )
         self.assertEqual(order.carrier_id, self.carrier_a)
+
+    def test_06_transport_calc_takes_over_fixed_carrier(self):
+        """Klant met vaste leveringswijze + 'bereken transportkosten' ->
+        berekening overgeslagen EN de vaste leveringswijze op de order
+        (gat in v1.9: de skip-route liet carrier_id leeg)."""
+        order = self.env["sale.order"].create(
+            {"partner_id": self.partner_with.id}
+        )
+        order.carrier_id = self.carrier_b  # handmatig afwijkend gezet
+        order.action_d1_compute_transport_cost()
+        self.assertEqual(order.carrier_id, self.carrier_a)
+        self.assertTrue(order.d1_transport_message)
