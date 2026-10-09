@@ -14,9 +14,10 @@ class SaleOrder(models.Model):
         """Open de externe framecalculator voor deze order.
 
         Bouwt de URL uit de instellingen (Verkoop > Instellingen >
-        Framecalculator) met de order- en klant-id als parameters en opent
-        die in het huidige venster — zelfde gedrag als de oude handmatige
-        serveractie, maar zonder hardcoded URL/API-key.
+        Framecalculator) met de order- en klant-id en de taal van de
+        ingelogde gebruiker als parameters en opent die in het huidige
+        venster — zelfde gedrag als de oude handmatige serveractie, maar
+        zonder hardcoded URL/API-key.
 
         :return: ir.actions.act_url naar de framecalculator
         """
@@ -34,11 +35,16 @@ class SaleOrder(models.Model):
                     "section 'Framecalculator'."
                 )
             )
+        # Taal van de ingelogde gebruiker, teruggebracht tot de ISO-639-code
+        # die de framecalculator verwacht: nl_NL -> nl, en_US -> en,
+        # de_DE -> de. Werkt daardoor ook voor talen die later actief worden.
+        lang = self.env.context.get("lang") or self.env.user.lang or "en_US"
         params = urlencode(
             {
                 "apikey": api_key,
                 "orderid": self.id,
                 "customerid": self.partner_id.id,
+                "language": lang[:2].lower(),
             }
         )
         return {
