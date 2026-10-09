@@ -39,6 +39,23 @@ class TestD1Framecalculator(TransactionCase):
         self.assertIn("orderid=%s" % self.order.id, url)
         self.assertIn("customerid=%s" % self.partner.id, url)
 
+    def test_04_language_param_from_user_lang(self):
+        """De taal van de gebruiker gaat als ISO-639-code mee in de URL
+        (nl_NL -> nl, de_DE -> de); robuust voor toekomstige talen."""
+        self.params.set_param(
+            "d1_framecalculator.url", "https://calc.example.com/"
+        )
+        self.params.set_param("d1_framecalculator.api_key", "sleutel")
+        for odoo_lang, expected in (
+            ("nl_NL", "language=nl"),
+            ("de_DE", "language=de"),
+            ("en_US", "language=en"),
+        ):
+            action = self.order.with_context(
+                lang=odoo_lang
+            ).action_d1_open_framecalculator()
+            self.assertIn(expected, action["url"])
+
     def test_03_settings_fields_store_params(self):
         """Instellingen schrijven naar de systeemparameters."""
         settings = self.env["res.config.settings"].create(
