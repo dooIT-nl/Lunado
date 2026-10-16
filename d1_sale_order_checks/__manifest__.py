@@ -1,7 +1,7 @@
 {
     "name": "Sale Order Checks",
     "summary": "Credit limit, prospect and duplicate customer reference checks on sale orders (replaces Studio automations)",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -15,10 +15,12 @@
     "installable": True,
     "application": False,
     "description": """
-        Sale Order Checks 19.0.1.0.0
+        Sale Order Checks 19.0.1.0.1
         ============================
         Cluster C1 van de Studio-conversie (zie docs/studio_conversie_plan.md).
 
+        * v1.0.1: post_init_hook skips automation cleanup when base_automation
+          is not installed (fix: build failed on a fresh database)
         * v1.0: initiele versie — vervangt de Studio-automations
           'Kredietlimiet', 'Relatie is Prospect' en 'Verkooporder: Dubbele
           referentie' (2x) door Python-checks. Velden hernoemd:

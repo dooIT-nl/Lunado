@@ -1,7 +1,7 @@
 {
     "name": "Purchase Partner Delivery Defaults",
     "summary": "Default operation type and incoterm from the vendor on purchase orders (replaces Studio automation)",
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.0.2",
     "category": "Purchases",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -15,10 +15,12 @@
     "installable": True,
     "application": False,
     "description": """
-        Purchase Partner Delivery Defaults 19.0.1.0.0
+        Purchase Partner Delivery Defaults 19.0.1.0.2
         =============================================
         Cluster C3 van de Studio-conversie (zie docs/studio_conversie_plan.md).
 
+        * v1.0.2: post_init_hook skips automation cleanup when base_automation
+          is not installed (fix: build failed on a fresh database)
         * v1.0.1: optionele partnerlijst-kolom Type levering (view-pariteit)
         * v1.0: initiele versie — vervangt de Studio-automation 'Vul Leveren
           aan en Leverconditie'. Velden hernoemd:
