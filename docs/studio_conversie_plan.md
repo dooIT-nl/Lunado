@@ -88,6 +88,14 @@
 | C6 | `d1_mrp_sawing` ✅ | qty×lengte-logica al aanwezig in `d1_shipping_cost` (afhankelijkheid, wijkt af van besluit "letterlijk" — gemeld); pleister `d1_fix_studio_fields` verwijderd |
 | C7 | `d1_product_partner_data` ✅ | Beschikbaar-bug gefixt (besluit); KvK → `company_registry` (besluit); eindschoonmaak: handling-automation/-menu weg, resterende Studio-views gedeactiveerd |
 
+> **✅ Generale repetitie geslaagd (25-09-2026, staging-golive):** rebuild
+> (verse productiekopie) → merge `development` → `d1_fix_studio_fields`
+> gedeïnstalleerd → alle d1-modules geïnstalleerd behalve
+> `d1_studio_compat`. Resultaat: geen warnings, geen x_studio-velden meer
+> (wees-veldrijen en de Handling-modellen automatisch opgeruimd,
+> `d1_product_partner_data` v1.0.7). Deze volgorde is 1-op-1 het draaiboek
+> voor productie.
+
 **Deploy-checklist productie:**
 1. Vlak vóór de deploy: **export-serveractie nogmaals draaien** op productie en diffen tegen de export van 17-09 — vangt Studio-aanpassingen die ná de inventarisatie zijn gemaakt (les: de test-automation "Voeg volger toe" viel buiten de scope).
 2. `development` → staging (kopie productie) mergen: hooks + herstelmigraties draaien daar de échte datamigratie — logs controleren op `could not remove`-meldingen (les van 17/18-09: views met veld-verwijzingen in attributen worden nu gedeactiveerd; automation-matching op ilike). **Mergen altijd als merge-commit** — via Odoo.sh (branch slepen) of op GitHub met *Create a merge commit*; **nooit** *Rebase and merge* of *Squash and merge*: die herschrijven de commits, waarna elke volgende merge op conflicten loopt (les 25-09 op staging-golive).

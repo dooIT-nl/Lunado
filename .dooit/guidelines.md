@@ -378,6 +378,9 @@ Wanneer je een module of feature genereert:
 9. **Registreer het maatwerk** — leg elke customization vast in het Maatwerk
    register via `docs/customizations.csv`, in dezelfde commit/PR als de code
    (zie sectie 17).
+10. **Bestanden voor overdracht** — lever content die de gebruiker gaat
+    doorsturen of elders plakken (documenten, importbestanden, mailteksten)
+    óók aan als downloadlink (zie sectie 18).
 
 ---
 
@@ -514,4 +517,63 @@ niveau: eerder te hoog dan te laag inschatten en dit benoemen.
   `docs/customizations.csv` (standaard Odoo-import; kolomkoppen matchen 1-op-1).
 * Controleer na import de automatisch toegekende `code` (CUST-…) en vul
   `technical_owner_id` waar nodig.
+
+---
+
+## 18. Bestanden aanleveren via downloadlink (Odoo.sh AI-sessies)
+
+Knippen/plakken uit de chat-terminal is onbetrouwbaar: leestekens (é, ë)
+raken beschadigd en lange teksten knippen af. Lever daarom elk bestand dat
+de gebruiker buiten de chat nodig heeft — Word/Excel/CSV/afbeeldingen, maar
+ook langere teksten zoals mails of handleidingen — aan als **downloadlink
+via een bijlage in de database**.
+
+### Werkwijze
+
+1. Schrijf het bestand naar een tijdelijke map (bv. de scratchpad-map).
+2. Upload het als `ir.attachment` via `odoo-bin shell`:
+
+   ```bash
+   cat << 'EOF' | odoo-bin shell --no-http 2>/dev/null
+   import base64
+   with open("/pad/naar/bestand.xlsx", "rb") as f:
+       data = f.read()
+   att = env["ir.attachment"].create({
+       "name": "bestand.xlsx",
+       "datas": base64.b64encode(data).decode(),
+       "mimetype": "application/vnd.openxmlformats-officedocument."
+                   "spreadsheetml.sheet",
+   })
+   env.cr.commit()  # verplicht: de shell commit niet vanzelf
+   print("ATTACHMENT_ID:", att.id)
+   EOF
+   ```
+
+   Gangbare mimetypes: `text/markdown`, `text/csv`, `application/pdf`,
+   `application/vnd.openxmlformats-officedocument.wordprocessingml.document`
+   (docx),
+   `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
+   (xlsx).
+
+3. Geef de gebruiker in het antwoord **beide** links, met echte waarden
+   (nooit de variabelenaam):
+   * **Download:** `<ODOO_BUILD_URL>/web/content/<ATTACHMENT_ID>?download=true`
+   * **Inloggen (indien nog niet ingelogd):** de admin auto-login-URL uit
+     `$ODOO_BACKEND_URL` — de downloadlink werkt alleen voor een ingelogde
+     gebruiker.
+
+### Regels
+
+* Gebruik dit **altijd** voor content die de gebruiker gaat doorsturen of
+  elders plakken (handleidingen, importbestanden, mailteksten,
+  mapping-overzichten). Korte tekst daarnaast gewoon óók in de chat tonen;
+  de link is een aanvulling, geen vervanging.
+* CSV die in een Odoo-import-wizard geplakt moet worden: ook ruw in een
+  code-blok in de chat tonen (muisselectie werkt daarvoor wél) — zie 17.4.
+* Bijlagen staan alleen in deze (dev-)database en verdwijnen bij een
+  rebuild — het is een overdrachtskanaal, geen opslag. Wat bewaard moet
+  blijven hoort in de repo.
+* Let op de 1GB-limiet van de omgeving; geen grote bestanden laten
+  slingeren. Ruim op verzoek oude bijlagen op
+  (`env["ir.attachment"].browse(id).unlink()`).
 

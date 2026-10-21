@@ -29,6 +29,48 @@ class SaleOrder(models.Model):
         help="Checked when transport costs could not be calculated automatically "
              "and manual pallet calculation is needed.",
     )
+    # Standaard vult Odoo carrier_id nooit bij aanmaken: de klantvoorkeur
+    # (property_delivery_carrier_id) wordt alleen als default in de
+    # verzendkosten-wizard gebruikt. Hier wordt het veld al bij het aanmaken
+    # van de offerte voorgevuld; precompute + store dekt zowel de UI als
+    # API-creates. De transportberekening hieronder blijft leidend en
+    # overschrijft de waarde met de berekende transporteur.
+    carrier_id = fields.Many2one(
+        compute="_compute_carrier_id",
+        store=True,
+        readonly=False,
+        precompute=True,
+    )
+
+    @api.depends("partner_shipping_id")
+    def _compute_carrier_id(self):
+        """Neem de vaste leveringswijze van de klant over zodra het
+        afleveradres wordt gezet of gewijzigd. Alleen op openstaande
+        offertes; een handmatige keuze of de uitkomst van de
+        transportberekening blijft staan totdat het afleveradres opnieuw
+        wijzigt, en wordt nooit automatisch leeggemaakt."""
+        for order in self:
+            carrier = order.carrier_id
+            if not order.state or order.state in ("draft", "sent"):
+                preferred = order._d1_get_partner_carrier()
+                if preferred:
+                    carrier = preferred
+            order.carrier_id = carrier
+
+    def _d1_get_partner_carrier(self):
+        """Vaste leveringswijze van de klant: die van het afleveradres, met
+        terugval op de commerciele partner (zelfde opzoeklogica als de
+        standaard verzendkosten-wizard). Alleen actieve vervoerders; het
+        property-veld is bedrijfsafhankelijk en wordt in het bedrijf van de
+        order gelezen. Return: delivery.carrier-recordset (0 of 1 record)."""
+        self.ensure_one()
+        partner = self.partner_shipping_id.with_company(self.company_id)
+        return (
+            partner.property_delivery_carrier_id.filtered("active")
+            or partner.commercial_partner_id
+            .property_delivery_carrier_id.filtered("active")
+        )[:1]
+
     # ------------------------------------------------------------------
     # Public action (button)
     # ------------------------------------------------------------------
@@ -57,11 +99,11 @@ class SaleOrder(models.Model):
         """
         self.ensure_one()
 
-        # Skip calculation when the customer has a fixed delivery method.
-        partner_carrier = self.partner_id.with_company(
-            self.company_id
-        ).property_delivery_carrier_id
+        # Skip calculation when the customer has a fixed delivery method,
+        # and take that method over on the order (v1.11).
+        partner_carrier = self._d1_get_partner_carrier()
         if partner_carrier:
+            self.carrier_id = partner_carrier
             skip_msg = _(
                 "Customer delivery method: %s, transport cost calculation skipped"
             ) % partner_carrier.display_name
