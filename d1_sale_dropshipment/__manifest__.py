@@ -1,7 +1,7 @@
 {
     "name": "Sale Dropshipment Flag",
     "summary": "Copy the partner's dropshipment flag to sale orders (replaces Studio automations)",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -15,10 +15,12 @@
     "installable": True,
     "application": False,
     "description": """
-        Sale Dropshipment Flag 19.0.1.0.0
+        Sale Dropshipment Flag 19.0.1.0.1
         =================================
         Cluster C2 van de Studio-conversie (zie docs/studio_conversie_plan.md).
 
+        * v1.0.1: post_init_hook skips automation cleanup when base_automation
+          is not installed (fix: build failed on a fresh database)
         * v1.0: initiele versie — vervangt de 2 Studio-automations
           'Verkooporder: Dropshipment overnemen van klantgegevens'
           (on_change + on_create_or_write voor API-users) door een stored
