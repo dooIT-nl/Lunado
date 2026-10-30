@@ -81,6 +81,12 @@ def _copy_columns(env):
 def _remove_replaced_automations(env):
     """Verwijder de vervangen Studio-automations inclusief hun
     server-acties."""
+    if "base.automation" not in env:
+        # base_automation is niet geinstalleerd (verse database zonder
+        # Studio): er valt niets op te ruimen.
+        _logger.info("d1_sale_order_checks: base.automation not available, "
+                     "skipping automation cleanup")
+        return
     for model_name, name in REPLACED_AUTOMATIONS:
         autos = env["base.automation"].search(
             [

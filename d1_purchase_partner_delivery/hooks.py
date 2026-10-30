@@ -75,6 +75,12 @@ def _flag_dropship_picking_type(env):
 
 def _remove_replaced_automations(env):
     """Verwijder de vervangen Studio-automation inclusief server-acties."""
+    if "base.automation" not in env:
+        # base_automation is niet geinstalleerd (verse database zonder
+        # Studio): er valt niets op te ruimen.
+        _logger.info("%s: base.automation not available, skipping "
+                     "automation cleanup", MODULE)
+        return
     for model_name, name in REPLACED_AUTOMATIONS:
         autos = env["base.automation"].search(
             [
