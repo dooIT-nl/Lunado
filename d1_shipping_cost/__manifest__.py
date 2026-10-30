@@ -1,7 +1,7 @@
 {
     "name": "Transport Costs",
     "summary": "Calculate transport costs for quotations and sales orders based on three transport classes (TK1/TK2/TK3)",
-    "version": "1.11",
+    "version": "1.12",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -23,8 +23,9 @@
     "installable": True,
     "application": False,
     "description": """
-        Transport Costs 1.4
-        ===================
+        Transport Costs 1.12
+        ====================
+        * v1.12: sneltoets Alt+B op de knop 'Bereken transportkosten' (data-hotkey)
         * v1.11: leveringswijze van de klant wordt bij het aanmaken van de offerte voorgevuld op de order (UI en API, stored precompute); de skip-route van v1.9 neemt de vaste leveringswijze nu ook echt over op de order; opzoeklogica geuniformeerd naar afleveradres met terugval op de commerciele partner (zoals de standaardwizard). Vervangt de kortstondige losse module d1_sale_partner_carrier. Opschoning: dood databestand data/product_data.xml verwijderd (stond nooit in de manifest; de code gebruikt het product van de carrier) en de transporttests gerepareerd die nog op dat product filterden — die waren op een verse database nooit groen.
         * v1.10: _sql_constraints omgezet naar models.Constraint (Odoo 19; oude syntax werd genegeerd waardoor de unieke-constraints niet actief waren)
         * v1.9: Skip transport calculation when customer has a fixed delivery method (partner property_delivery_carrier_id); note it in the chatter (i18n: en source + nl_NL)

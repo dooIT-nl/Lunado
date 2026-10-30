@@ -10,7 +10,8 @@
                 <button name="action_d1_open_framecalculator"
                         type="object"
                         string="Framecalculator"
-                        invisible="state == 'cancel'"/>
+                        invisible="state == 'cancel'"
+                        data-hotkey="l"/>
             </xpath>
         </field>
     </record>

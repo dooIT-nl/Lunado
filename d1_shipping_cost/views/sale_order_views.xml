@@ -12,7 +12,8 @@
                         string="Calculate transport costs"
                         type="object"
                         class="btn-secondary"
-                        icon="fa-truck"/>
+                        icon="fa-truck"
+                        data-hotkey="b"/>
             </xpath>
 
             <!-- Transport summary + pallet flag below order lines -->

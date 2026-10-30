@@ -1,7 +1,7 @@
 {
     "name": "Framecalculator",
     "summary": "Open the external frame calculator from the sale order, with configurable URL and API key (replaces a manual server action)",
-    "version": "19.0.1.0.2",
+    "version": "19.0.1.0.3",
     "category": "Sales",
     "author": "dooIT B.V.",
     "website": "https://dooit.nl",
@@ -15,8 +15,9 @@
     "installable": True,
     "application": False,
     "description": """
-        Framecalculator 19.0.1.0.0
+        Framecalculator 19.0.1.0.3
         ==========================
+        * v1.0.3: sneltoets Alt+L op de knop 'Framecalculator' (data-hotkey)
         * v1.0.2: taal van de ingelogde gebruiker als &language=-parameter
           in de URL (nl_NL -> nl, en_US -> en, de_DE -> de; eerste twee
           posities van de Odoo-taalcode, dus robuust voor toekomstige talen)
